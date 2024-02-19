@@ -20,7 +20,7 @@ class Task(models.Model):
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.ForeignKey('File', verbose_name='Файлы')
+    files = models.ForeignKey('File', verbose_name='Файлы', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Proposal(models.Model):
@@ -42,7 +42,7 @@ class Proposal(models.Model):
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника заявка',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.ForeignKey('File', verbose_name='Файлы')
+    files = models.ForeignKey('File', verbose_name='Файлы', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class Comment(models.Model):
