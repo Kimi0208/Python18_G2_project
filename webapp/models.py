@@ -10,16 +10,17 @@ class Task(models.Model):
     done_at = models.DateTimeField(auto_now=True, verbose_name='Время завершения задачи')
     deadline = models.DateField(null=True, verbose_name='Дедлайн задачи')
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус задачи', null=True, blank=True)
-    priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи', null=True, blank=True)
+    priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи', null=True,
+                                 blank=True)
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор задачи',
                                related_name='task_author')
-    subtask = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Подзадача',
-                                related_name='tasks')
+    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Подзадача',
+                                    related_name='tasks')
     destination_to_department = models.ForeignKey('accounts.Department', verbose_name='На какой отдел задача',
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.FileField(verbose_name='Файлы')
+    files = models.ForeignKey('File', verbose_name='Файлы')
 
 
 class Proposal(models.Model):
@@ -31,16 +32,17 @@ class Proposal(models.Model):
     done_at = models.DateTimeField(auto_now=True, verbose_name='Время завершения заявки')
     deadline = models.DateField(null=True, verbose_name='Дедлайн заявки')
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус заявки', null=True, blank=True)
-    priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет заявки', null=True, blank=True)
+    priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет заявки', null=True,
+                                 blank=True)
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор задачи',
                                related_name='proposal_author')
-    subtask = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE,
-                                verbose_name='Подзадача/задача')
+    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE,
+                                    verbose_name='Подзадача/задача')
     destination_to_department = models.ForeignKey('accounts.Department', verbose_name='На какой отдел заявка',
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника заявка',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.FileField(verbose_name='Файлы')
+    files = models.ForeignKey('File', verbose_name='Файлы')
 
 
 class Comment(models.Model):
@@ -65,3 +67,7 @@ class Priority(models.Model):
     # proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE, verbose_name='Приоритет заявки',
     #                              related_name='priorities')
     name = models.CharField(max_length=10, verbose_name='Приоритет задачи/заявки')
+
+
+class File(models.Model):
+    file = models.FileField(verbose_name="Файлы", upload_to='Files/')

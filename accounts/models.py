@@ -9,7 +9,7 @@ class DefUser(AbstractUser):
     email = models.EmailField(verbose_name='Почтовый адрес')
     position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=30, verbose_name='Номер телефона', null=True, blank=True)
-
+    department = models.ForeignKey('Department', on_delete=models.CASCADE, blank=True, null=True, verbose_name='')
 
 def __str__(self):
     return self.first_name
