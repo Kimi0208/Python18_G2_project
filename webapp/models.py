@@ -7,8 +7,8 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания задачи')
     start_date = models.DateTimeField(verbose_name='Приступить к задаче', null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время обновления задачи')
-    done_at = models.DateTimeField(auto_now=True, verbose_name='Время завершения задачи')
-    deadline = models.DateField(null=True, verbose_name='Дедлайн задачи')
+    done_at = models.DateTimeField(verbose_name='Время завершения задачи', null=True, blank=True)
+    deadline = models.DateField(null=True, verbose_name='Дедлайн задачи', blank=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус задачи', null=True, blank=True)
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи', null=True,
                                  blank=True)
@@ -29,7 +29,7 @@ class Proposal(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания заявки')
     start_date = models.DateTimeField(verbose_name='Приступить к заявке', null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время обновления заявки')
-    done_at = models.DateTimeField(auto_now=True, verbose_name='Время завершения заявки')
+    done_at = models.DateTimeField(verbose_name='Время завершения заявки')
     deadline = models.DateField(null=True, verbose_name='Дедлайн заявки')
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус заявки', null=True, blank=True)
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет заявки', null=True,
@@ -55,19 +55,12 @@ class Comment(models.Model):
 
 
 class Status(models.Model):
-    # task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Статус задачи', related_name='statuses')
-    # proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE, verbose_name='Статус заявки',
-    #                              related_name='statuses')
     name = models.CharField(max_length=10, verbose_name='Статус задачи/заявки')
 
 
 class Priority(models.Model):
-    # task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Приоритет задачи',
-    #                          related_name='priorities')
-    # proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE, verbose_name='Приоритет заявки',
-    #                              related_name='priorities')
     name = models.CharField(max_length=10, verbose_name='Приоритет задачи/заявки')
 
 
 class File(models.Model):
-    file = models.FileField(verbose_name="Файлы", upload_to='Files/')
+    file = models.FileField(verbose_name="Файлы", upload_to='user_docs', null=True, blank=True)

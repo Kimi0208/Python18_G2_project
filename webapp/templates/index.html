@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Tasks
+{% endblock %}
+
+{% block menu %}
+{% endblock %}
+
+{% block content %}
+    {% for task in tasks %}
+        {{ task.title }}
+    {% endfor %}
+    <button id="create-task-btn">Создать</button>
+    
+{#    <div id="create-task-modal" class="modal">#}
+{#      <div class="modal-content">#}
+{#        <span class="close">&times;</span>#}
+{#        <form id="create-task-form">#}
+{#          <input type="text" name="title" placeholder="Название задачи">#}
+{#          <input type="text" name="description" placeholder="Описание задачи">#}
+{#          <input type="submit" id="button_create_task" data-action="POST" value="Создать">#}
+{#        </form>#}
+{#      </div>#}
+{#    </div>#}
+    
+    <div id="create-task-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="create-task-form">
+          <div class="form-group">
+            <label for="task-title">Название задачи:</label>
+            <input type="text" id="task-title" name="title" required>
+          </div>
+            <div class="form-group">
+            <label for="task-description">Описание задачи:</label>
+            <textarea id="task-description" name="description"></textarea>
+          </div>
+            <div class="form-group">
+            <label for="task-start-date">Дата начала задачи:</label>
+            <input type="date" id="task-start-date" name="start_date">
+          </div>
+            <div class="form-group">
+            <label for="task-deadline">Дедлайн задачи:</label>
+            <input type="date" id="task-deadline" name="deadline">
+          </div>
+            <div class="form-group">
+            <label for="task-status">Статус задачи:</label>
+            <select id="task-status" name="status">
+              <option value="new">Новая</option>
+              <option value="in_progress">В процессе</option>
+              <option value="done">Завершена</option>
+            </select>
+          </div>
+            <div class="form-group">
+            <label for="task-priority">Приоритет задачи:</label>
+            <select id="task-priority" name="priority">
+              <option value="high">Высокий</option>
+              <option value="medium">Средний</option>
+              <option value="low">Низкий</option>
+            </select>
+          </div>
+          <div class="form-group">
+              <label for="task-files">Файлы:</label>
+              <input type="file" id="task-files" name="files" multiple>
+          </div>
+            <button type="submit" id="button_create_task" data-task_action="POST">Сохранить</button>
+        </form>
+      </div>
+    </div>
+    
+    
+    <div>
+        <button id="tom">wqeqw</button>
+    </div>
+    
+    <div id="create-task-modal_window" class="modal">
+    
+    </div>
+    
+{% endblock %}
