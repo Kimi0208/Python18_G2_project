@@ -60,6 +60,9 @@ class Status(models.Model):
     #                              related_name='statuses')
     name = models.CharField(max_length=10, verbose_name='Статус задачи/заявки')
 
+    def __str__(self):
+        return self.name
+
 
 class Priority(models.Model):
     # task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Приоритет задачи',
@@ -67,6 +70,9 @@ class Priority(models.Model):
     # proposal = models.ForeignKey('Proposal', on_delete=models.CASCADE, verbose_name='Приоритет заявки',
     #                              related_name='priorities')
     name = models.CharField(max_length=10, verbose_name='Приоритет задачи/заявки')
+
+    def __str__(self):
+        return self.name
 
 
 class File(models.Model):

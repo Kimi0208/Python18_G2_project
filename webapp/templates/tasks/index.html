@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block menu %}
+    <a class="nav-link" aria-current="page" href="{% url 'webapp:task_add' %}">Создать задачу</a>
+{% endblock %}
+
+<body>
+{% block content %}
+    <h1>Мои задачи</h1>
+    <div>
+    </div>
+    {% include 'partial/task_list.html' %}
+
+
+
+{% endblock %}

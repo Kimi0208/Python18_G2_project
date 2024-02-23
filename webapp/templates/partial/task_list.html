@@ -1,0 +1,21 @@
+<div class="row row-cols-3">
+
+    {% for task in tasks %}
+        <div class="col">
+        <div class="card my-3" >
+            <div class="card-body">
+                <h5 class="card-title">{{ task.title }}</h5>
+{#                <h6 class="card-subtitle mb-2 text-body-secondary">{{ task.description }}</h6>#}
+                <p class="card-text">Автор: {{ task.author }}</p>
+                <p class="card-text">Создано: {{ task.created_at }}</p>
+                <p class="card-text">Дедлайн: {{ task.deadline }}</p>
+                <p class="card-text">Отдел: {{ task.destination_to_department }}</p>
+                <p class="card-text">Cотрудник: {{ task.destination_to_user }}</p>
+                <a href="{% url 'webapp:task_view' pk=task.pk %}" class="card-link">Подробнее...</a>
+                <a href={% url 'webapp:task_update_view' pk=task.pk %} class="card-link">Редактировать</a>
+                <a href={% url 'webapp:task_delete_view' pk=task.pk %} class="card-link">Удалить</a>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Create task{% endblock %}
+{% block menu %}<a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>{% endblock %}
+
+
+{% block content %}
+<h1>Создать задачу</h1>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {% include 'partial/task_form.html' with value_submit='Create' %}
+</form>
+
+
+{% endblock %}
