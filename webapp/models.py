@@ -8,7 +8,7 @@ class Task(models.Model):
     start_date = models.DateTimeField(verbose_name='Приступить к задаче', null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время обновления задачи')
     done_at = models.DateTimeField(verbose_name='Время завершения задачи', null=True, blank=True)
-    deadline = models.DateField(null=True, verbose_name='Дедлайн задачи', blank=True)
+    deadline = models.DateTimeField(null=True, verbose_name='Дедлайн задачи', blank=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус задачи', null=True, blank=True)
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи', null=True,
                                  blank=True)
@@ -20,8 +20,9 @@ class Task(models.Model):
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.ForeignKey('File', verbose_name='Файлы', on_delete=models.CASCADE, null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.title} - {self.author}'
 
 class Proposal(models.Model):
     title = models.CharField(max_length=150, verbose_name='Заголовок заявки')
@@ -42,7 +43,9 @@ class Proposal(models.Model):
                                                   on_delete=models.CASCADE, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника заявка',
                                             on_delete=models.CASCADE, null=True, blank=True)
-    files = models.ForeignKey('File', verbose_name='Файлы', on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.title} - {self.author}'
 
 
 class Comment(models.Model):
@@ -53,14 +56,25 @@ class Comment(models.Model):
                                  related_name='comments', null=True, blank=True)
     description = models.TextField(max_length=2500, verbose_name='Текст комментария')
 
+    def __str__(self):
+        return f'{self.description}'
+
 
 class Status(models.Model):
     name = models.CharField(max_length=10, verbose_name='Статус задачи/заявки')
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Priority(models.Model):
     name = models.CharField(max_length=10, verbose_name='Приоритет задачи/заявки')
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class File(models.Model):
     file = models.FileField(verbose_name="Файлы", upload_to='user_docs', null=True, blank=True)
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', default=1)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', default=1)

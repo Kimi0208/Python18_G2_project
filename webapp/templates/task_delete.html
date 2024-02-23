@@ -1,0 +1,10 @@
+<div class="modal-content">
+    <div>
+        <h1>Вы уверены, что хотите удалить задачу?</h1>
+        <form id="test_form" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Да</button>
+            <button id="close_modal" class="btn btn-danger">Нет</button>
+        </form>
+    </div>
+</div>
