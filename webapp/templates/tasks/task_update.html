@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Update task{% endblock %}
+{% block menu %}<a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>{% endblock %}
+
+
+{% block content %}
+<h1>Редактировать задачу</h1>
+
+<form action="" method="post">
+    {% include 'partial/task_form.html' with value_submit='Update' %}
+</form>
+
+
+{% endblock %}
