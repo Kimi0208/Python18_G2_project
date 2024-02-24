@@ -34,9 +34,11 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     async function onClick(e){
         e.preventDefault()
         let element = e.currentTarget;
+        console.log(element)
         let data_attribute= element.dataset['action_task']
         let response = await makeRequest(data_attribute, "GET")
         let datar = await response.text();
+        console.log(datar)
         let modal = document.getElementById('action-task-modal_window')
         modal.innerHTML = datar
         modal.style.display = 'block'
@@ -52,9 +54,14 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
 
     function onLoad() {
             let action_buttons = document.getElementsByClassName('action-btn_task')
+            console.log(action_buttons)
             for (let action_button of action_buttons) {
                 action_button.addEventListener('click', onClick)
             }
         }
-    // window.addEventListener('load', onLoad);
+
+
     window.addEventListener('load', onLoad);
+
+
+export { onLoad, makeRequest, onClick };

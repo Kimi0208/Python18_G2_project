@@ -1,0 +1,17 @@
+ <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> 
+            {% for task in tasks %}
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ task.title }}</h5>
+                            <p style="margin-bottom: 20px">{{ task.author.username }}</p>
+                            <p class="card-text">Created at: {{ task.created_at }}</p>
+                            <p class="card-text">Updated at: {{ task.updated_at }}</p>
+                            <p>{{ task.description }}</p>
+                            <button class="action-btn_task" data-action_task="{% url 'webapp:update_task' pk=task.pk %}">Изменить</button>
+                            <button class="action-btn_task" data-action_task="{% url 'webapp:delete_task' pk=task.pk %}">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+    </div>
