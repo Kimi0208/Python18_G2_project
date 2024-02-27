@@ -4,13 +4,9 @@ from webapp.models import Task
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
-def index_view(request):
-    return render(request, 'index.html')
-
-
 class TaskListView(ListView):
     model = Task
-    template_name = 'partial/task_list.html'
+    template_name = 'index.html'
     context_object_name = 'tasks'
 
 

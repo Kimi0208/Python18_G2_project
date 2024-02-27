@@ -1,4 +1,4 @@
-from webapp.models import Task, Proposal
+from webapp.models import Task
 from rest_framework import serializers
 
 

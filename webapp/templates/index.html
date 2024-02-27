@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Tasks
+    CRM
 {% endblock %}
 
 {% block menu %}
@@ -10,11 +10,11 @@
 
 {% block content %}
     <div>
-        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>
-        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>
+{#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
+{#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
     </div>
     <div id="main_area">
-         
+         {% include 'partial/task_list.html' %}
     </div>
     
     </div>

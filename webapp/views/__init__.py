@@ -1,2 +1,1 @@
-from .task_views import TaskListView, TaskCreateView, TaskDeleteView, TaskUpdateView, index_view
-from .proposal_views import ProposalListView, ProposalCreateView, ProposalDeleteView, ProposalUpdateView
+from .task_views import TaskListView, TaskCreateView, TaskDeleteView, TaskUpdateView

@@ -3,7 +3,8 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ task.title }}</h5>
+                            <h4 class="card-title">{{ task.title }}</h4>
+                            <h5 lass="card-text">Тип: {{ task.type }}</h5>
                             <p style="margin-bottom: 20px">{{ task.author.username }}</p>
                             <p class="card-text">Created at: {{ task.created_at }}</p>
                             <p class="card-text">Updated at: {{ task.updated_at }}</p>
@@ -14,4 +15,4 @@
                     </div>
                 </div>
             {% endfor %}
-    </div>
+</div>
