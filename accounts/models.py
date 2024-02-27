@@ -11,12 +11,13 @@ class DefUser(AbstractUser):
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, verbose_name='Номер телефона', null=True, blank=True)
 
+
 def __str__(self):
     return self.username
 
 
 class Position(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название должности')
+    name = models.CharField(max_length=30, verbose_name='Название должности', unique=True)
     department = models.ForeignKey('Department', on_delete=models.CASCADE, verbose_name='Отдел')
 
     def __str__(self):
@@ -24,4 +25,7 @@ class Position(models.Model):
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название отдела')
+    name = models.CharField(max_length=30, verbose_name='Название отдела', unique=True)
+
+    def __str__(self):
+        return self.name
