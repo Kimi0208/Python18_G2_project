@@ -36,3 +36,12 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.column {
+    flex: 1;
+    border: 1px solid black;
+}
+.container {
+    display: flex;
+    width: 100%;
+}

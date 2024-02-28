@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, reverse
 from webapp.forms import TaskForm
 from webapp.models import Task
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+
 
 
 def index_view(request):
@@ -10,7 +11,7 @@ def index_view(request):
 
 class TaskListView(ListView):
     model = Task
-    template_name = 'partial/task_list.html'
+    template_name = 'base.html'
     context_object_name = 'tasks'
 
 
@@ -23,7 +24,7 @@ class TaskCreateView(CreateView):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
-        return redirect('webapp:index')
+        return redirect('webapp:base')
 
 
 class TaskUpdateView(UpdateView):
@@ -41,3 +42,10 @@ class TaskDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('webapp:index')
+
+
+class TaskDetailView(DetailView):
+    model = Task
+    template_name = 'task_proposal_details.html'
+    context_object_name = 'task'
+

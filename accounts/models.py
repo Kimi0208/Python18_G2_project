@@ -11,6 +11,7 @@ class DefUser(AbstractUser):
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, verbose_name='Номер телефона', null=True, blank=True)
 
+
 def __str__(self):
     return self.username
 
