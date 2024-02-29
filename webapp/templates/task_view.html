@@ -17,6 +17,12 @@
         Дата завершения  {{ task.done_at }}
         Дедлайн  {{ task.deadline }}
       </div>
+    <div>
+        <button class="action-btn_task" data-action_task="{% url 'webapp:add_file' task_pk=task.pk %}">Прикрепить файл</button>
+        {% for file in files %}
+            <a href="{{ file.file.url }}" target="_blank">Документ {{ file.pk }}</a>
+        {% endfor %}
+    </div>
     </div>
     {% if task.type.name == "Заявка" %}
         <div class="dropdown">
@@ -36,4 +42,5 @@
             {{ task.title }}
         {% endfor %}
     {% endif %}
+    <div id="action-task-modal_window" class="modal"></div>>
 {% endblock %}
