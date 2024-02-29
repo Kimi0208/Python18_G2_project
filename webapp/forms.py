@@ -1,5 +1,5 @@
 from django import forms
-from webapp.models import Task
+from webapp.models import Task, File
 
 
 class TaskForm(forms.ModelForm):
@@ -14,3 +14,9 @@ class TaskForm(forms.ModelForm):
             'done_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'})
         }
+
+
+class FileForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ['id', 'file']

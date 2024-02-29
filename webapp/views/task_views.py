@@ -1,15 +1,18 @@
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, reverse
-from webapp.forms import TaskForm
-from webapp.models import Task, Status, Priority, Type
+from webapp.forms import TaskForm, FileForm
+from webapp.models import Task, Status, Priority, Type, File
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from accounts.models import DefUser
+from docxtpl import DocxTemplate
+from shutil import copyfile
 
 
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'tasks'
+    ordering = ['-type']
 
 
 class TaskDetailView(DetailView):
@@ -23,6 +26,8 @@ class TaskDetailView(DetailView):
         context['checklists'] = checklists
         subtasks = Task.objects.filter(parent_task=self.object)
         context['subtasks'] = subtasks
+        files = File.objects.filter(task=self.object)
+        context['files'] = files
         return context
 
 
@@ -69,4 +74,27 @@ def add_subtasks(request, group_pk, task_pk):
         main_task = Task.objects.get(pk=task_pk)
         task.parent_task = main_task
         task.save()
-    return redirect('webapp:index')
+    file_count = File.objects.count()
+    doc_name = f'Задача{task_pk}_{file_count}'
+    base_file_path = 'uploads/user_docs/Шаблон.docx'
+    new_file_path = f'uploads/user_docs/{doc_name}.docx'
+    copyfile(base_file_path, new_file_path)
+    doc = DocxTemplate(new_file_path)
+    context = {'title': task.title, 'description': task.description, 'users': users}
+    doc.render(context)
+    doc.save(new_file_path)
+    File.objects.create(user=request.user, task=main_task, file=new_file_path)
+    return redirect('webapp:detail_task', pk=task_pk)
+
+
+class FileAddView(CreateView):
+    model = File
+    form_class = FileForm
+    template_name = 'file_add.html'
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
+        self.object.save()
+        return redirect('webapp:detail_task', pk=self.object.task.pk)

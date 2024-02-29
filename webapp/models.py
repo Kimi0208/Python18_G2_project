@@ -58,6 +58,7 @@ class Priority(models.Model):
 
 
 class File(models.Model):
-    file = models.FileField(verbose_name="Файлы", upload_to='user_docs', null=True, blank=True)
-    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', default=1)
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', default=1)
+    file = models.FileField(verbose_name="Файлы", upload_to='uploads/user_docs', null=True, blank=True)
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
+                             blank=True)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
