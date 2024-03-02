@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    <h1>Регистрация</h1>
+    
+    {% include 'partial/form.html' with value_submit='Зарегистрироваться'  form_method='post' %}
+    
+{% endblock %}
