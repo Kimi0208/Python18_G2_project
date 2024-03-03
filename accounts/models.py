@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -7,14 +8,18 @@ class DefUser(AbstractUser):
     last_name = models.CharField(max_length=30, null=False, blank=False, verbose_name='Фамилия сотрудника')
 
     email = models.EmailField(null=False, blank=False, verbose_name='Почтовый адрес')
-    email_password = models.CharField(max_length=30, null=True, blank=True, verbose_name='Пароль от почтового ящика')
+    email_password = models.CharField(max_length=500, null=True, blank=True, verbose_name='Пароль от почтового ящика')
     position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE,
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
 
+    def __str__(self):
+        return self.username
 
-def __str__(self):
-    return self.username
+    def save(self, *args, **kwargs):
+        if self.email_password:
+            self.email_password = make_password(self.email_password)
+        super().save(*args, **kwargs)
 
 
 class Position(models.Model):

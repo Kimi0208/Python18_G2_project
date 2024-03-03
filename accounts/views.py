@@ -3,7 +3,7 @@ from django.shortcuts import redirect, reverse, get_object_or_404
 from django.contrib.auth import login, get_user_model
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from accounts.forms import MyUserCreationForm, UserChangeForm
+from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView
 from accounts.models import DefUser
 
@@ -51,6 +51,8 @@ class UserChangeView(LoginRequiredMixin, UpdateView):
 
 class UserPasswordChangeView(UserPassesTestMixin, PasswordChangeView):
     template_name = 'user_password_change.html'
+    form_class = MyPasswordChangeForm
+
 
     def test_func(self):
         return self.request.user.pk == self.kwargs.get('pk')

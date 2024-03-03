@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django import forms
 
 from accounts.models import DefUser
@@ -21,3 +21,18 @@ class UserChangeForm(forms.ModelForm):
         model = get_user_model()
         fields = ['first_name', 'last_name', 'email', 'phone_number']
         labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email', 'phone_number': 'Номер телефона'}
+
+
+class MyPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={'autofocus': True}),
+    )
+    new_password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput,
+    )
+    new_password2 = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.PasswordInput,
+    )
