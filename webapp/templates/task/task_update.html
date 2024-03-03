@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block menu %}
+        <a class="nav-link" href="{% url 'webapp:task_detail' pk=task.pk %}">Назад</a>
+{% endblock %}
+{% block content %}
+    <h1>Изменения задачи</h1>
+    {% include 'partial/form.html' with form_method="post" is_data=True value_submit='Сохранить' %}
+{% endblock %}

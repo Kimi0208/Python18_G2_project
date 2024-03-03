@@ -17,8 +17,10 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="d-flex">
+            {% block menu %}
                 <a class="nav-link" href="{% url 'webapp:task_create' %}">Добавить Задачу</a>
+            {% endblock %}
+            <div class="d-flex">
             </div>
         </div>
     </div>

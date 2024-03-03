@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block menu %}
+    <a class="nav-link" href="{% url 'webapp:task_update' pk=task.pk %}">Изменить</a>
+{% endblock %}
 {% block content %}
     <h1 class="mb-3" style="text-align: center">Задача №{{ task.id }} - {{ task.destination_to_department }}
         - {{ task.destination_to_user.get_full_name }}</h1>

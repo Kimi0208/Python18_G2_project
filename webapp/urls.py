@@ -1,6 +1,6 @@
 from django.urls import path
 
-from webapp.views.task_views import TaskListView, TaskDetailView, TaskCreateView
+from webapp.views.task_views import TaskListView, TaskDetailView, TaskCreateView, TaskUpdateView
 
 app_name = 'webapp'
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path('home/', TaskListView.as_view(), name='home'),
     path('task/<int:pk>/', TaskDetailView.as_view(), name='task_detail'),
     path('task/create/', TaskCreateView.as_view(), name='task_create'),
+    path('task/<int:pk>/update/', TaskUpdateView.as_view(), name='task_update'),
 ]
