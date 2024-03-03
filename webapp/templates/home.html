@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-3">Задачи:</h1>
+
+    <div class="row">
+        {% for task in tasks %}
+            <div class="col-sm-3 mb-3">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ task.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary"><b>Клиент:</b></h6>
+                        <h6 class="card-text"><b>Дата начала:</b> {{ task.start_date|date:"d.m.Y H:i:s" }}.</h6>
+                        <h6 class="card-text"><b>Дедлайн:</b> {{ task.deadline|date:"d.m.Y" }}</h6>
+                        <h6 class="card-text"><b>От кого:</b> {{ task.author.get_full_name }}</h6>
+                        <h6 class="card-text"><b>Кому:</b> {{ task.destination_to_user.get_full_name }}</h6>
+                        <a href="{% url 'webapp:task_detail' pk=task.pk %}" class="card-link">Просмотреть</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

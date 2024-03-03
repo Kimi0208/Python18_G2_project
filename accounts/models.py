@@ -11,13 +11,19 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=20, verbose_name='Номер телефона', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.username} {self.email}, {self.position}'
+        return f'{self.username} ({self.position})'
 
 
 class Position(models.Model):
     title = models.CharField(max_length=30, verbose_name='Название должности')
     department = models.ForeignKey('accounts.Department', on_delete=models.CASCADE, verbose_name='Отдел')
 
+    def __str__(self):
+        return f'{self.title} - {self.department}'
+
 
 class Department(models.Model):
     name = models.CharField(max_length=30, verbose_name='Название отдела')
+
+    def __str__(self):
+        return self.name

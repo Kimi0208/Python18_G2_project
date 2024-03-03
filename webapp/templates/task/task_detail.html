@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1 class="mb-3" style="text-align: center">Задача №{{ task.id }} - {{ task.destination_to_department }}
+        - {{ task.destination_to_user.get_full_name }}</h1>
+    <div class="row" style="display: flex; justify-content: space-between">
+        <div class="col-sm-4 mb-3">
+            <div class="card h-100 pb-2">
+                <div class="card-body">
+                    <h4 class="card-title"><b>{{ task.title }}</b></h4>
+                    <p class="card-text"><b>Департамент:</b><br>{{ task.destination_to_department }}</p>
+                    <p class="card-text"><b>Дата и время создания:</b><br>{{ task.created_at|date:"d.m.Y H:i:s" }}</p>
+                    <p class="card-text"><b>Дата и время обновления:</b><br>{{ task.updated_at|date:"d.m.Y H:i:s" }}</p>
+                    <p class="card-text"><b>Период выполнения задачи:</b><br>{{ task.created_at|date:"d.m.Y H:i:s" }} - {{ task.deadline|date:"d.m.Y" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title"><b>Описание</b></h4>
+                    <p class="card-text">{{ task.description }}</p>
+                    <p class="card-text"><b>Статус:</b><br>{{ task.get_status_display }}</p>
+                    <p class="card-text"><b>На кого возложена
+                        задача:</b><br>{{ task.destination_to_user.get_full_name }} - {{ task.destination_to_user }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4 class="card-title"><b>Файлы</b></h4>
+                    <p class="card-text">*Все файлы данной задачи</p>
+                    <a href="#" class="btn btn-primary">Добавить файл</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
