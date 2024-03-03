@@ -11,18 +11,14 @@
 <body class="bg-body-secondary">
 <nav class="navbar navbar-expand-lg bg-body-tertiary bg-white mb-4">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'webapp:home' %}">Home</a>
+        <a class="navbar-brand" href="{% url 'webapp:home' %}">На главную</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-{#            <form action="{% url 'accounts:user_search' %}" class="d-flex  mx-auto" role="search">#}
-{#                {% csrf_token %}#}
-{#                <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">#}
-{#                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>#}
-{#            </form>#}
             <div class="d-flex">
+                <a class="nav-link" href="{% url 'webapp:task_create' %}">Добавить Задачу</a>
             </div>
         </div>
     </div>
