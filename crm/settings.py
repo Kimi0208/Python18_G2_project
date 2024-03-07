@@ -151,3 +151,6 @@ AUTH_USER_MODEL = 'accounts.DefUser'
 MEDIA_ROOT = Path.joinpath(BASE_DIR, '')
 
 MEDIA_URL = '/uploads/'
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"

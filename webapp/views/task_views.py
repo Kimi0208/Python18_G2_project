@@ -1,9 +1,7 @@
-from django.contrib.auth.models import Group
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import redirect, reverse
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from accounts.models import DefUser
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
@@ -75,17 +73,6 @@ class TaskDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('webapp:index')
-
-
-def deadline_task_notification(request, *args, **kwargs):
-    print(123)
-    # tasks = Task.objects.exclude(status='Выполнена').filter(deadline__gt=datetime.now())
-    # for task in tasks:
-    #     if task.destination_to_user:
-    #         subject = f'CRM: Задача #{task.id} истек дедлайн {task.title}'
-    #         message = ''
-    #         send_email_notification(subject, message, task.author.email, task.author.email,
-    #                                 smtp_server, smtp_port, task.author.email, task.author.email_password)
 
 
 def add_subtasks(request, checklist_pk, task_pk):
