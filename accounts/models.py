@@ -7,7 +7,8 @@ class DefUser(AbstractUser):
     last_name = models.CharField(max_length=30, verbose_name='Фамилия сотрудника')
     patronymic = models.CharField(max_length=30, verbose_name='Отчество', null=True, blank=True)
     email = models.EmailField(verbose_name='Почтовый адрес')
-    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE,
+    email_password = models.CharField(max_length=128, verbose_name='Пароль почты', null=True, blank=True)
+    position = models.ForeignKey('Position', max_length=100, verbose_name='Должность', on_delete=models.CASCADE,
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, verbose_name='Номер телефона', null=True, blank=True)
 

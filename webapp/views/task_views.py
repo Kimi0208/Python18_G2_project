@@ -6,6 +6,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from accounts.models import DefUser
 from docxtpl import DocxTemplate
 from shutil import copyfile
+from webapp.views.mail_send import send_email_notification
 
 
 class TaskListView(ListView):
@@ -31,6 +32,10 @@ class TaskDetailView(DetailView):
         return context
 
 
+smtp_server = "mail.elcat.kg"
+smtp_port = 465
+
+
 class TaskCreateView(CreateView):
     model = Task
     form_class = TaskForm
@@ -40,6 +45,11 @@ class TaskCreateView(CreateView):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
+        if self.object.destination_to_user:
+            subject = f'CRM: Новая задача #{self.object.id}  {self.object.title}'
+            message = self.object.description
+            send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
+                                    smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
         return redirect('webapp:index')
 
 
@@ -49,6 +59,13 @@ class TaskUpdateView(UpdateView):
     template_name = 'task_proposal_edit.html'
 
     def get_success_url(self):
+        if self.object.status.name == 'Выполнена':
+            if self.object.destination_to_user:
+                subject = f'CRM: Задача #{self.object.id} выполнена {self.object.title}'
+                message = self.object.description
+                send_email_notification(subject, message, self.request.user.email, self.object.author.email,
+                                        smtp_server, smtp_port, self.request.user.email,
+                                        self.request.user.email_password)
         return reverse('webapp:index')
 
 
@@ -60,20 +77,37 @@ class TaskDeleteView(DeleteView):
         return reverse('webapp:index')
 
 
+def deadline_task_notification(request, *args, **kwargs):
+    print(123)
+    # tasks = Task.objects.exclude(status='Выполнена').filter(deadline__gt=datetime.now())
+    # for task in tasks:
+    #     if task.destination_to_user:
+    #         subject = f'CRM: Задача #{task.id} истек дедлайн {task.title}'
+    #         message = ''
+    #         send_email_notification(subject, message, task.author.email, task.author.email,
+    #                                 smtp_server, smtp_port, task.author.email, task.author.email_password)
+
+
+
 def add_subtasks(request, group_pk, task_pk):
+    main_task = Task.objects.get(pk=task_pk)
     group1 = Group.objects.get(pk=group_pk)
     users = DefUser.objects.filter(groups=group1)
     title = 'Подпись'
-    description = ''
+    description = f'Необходима подпись документа в задаче #{task_pk}'
     status = Status.objects.get(pk=1)
     priority = Priority.objects.get(pk=1)
     type = Type.objects.get(pk=1)
     for user in users:
-        task = Task.objects.create(author=user, title=title, description=description, status=status, priority=priority,
-                                   type=type)
-        main_task = Task.objects.get(pk=task_pk)
+        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status, priority=priority,
+                                   type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
+        subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
+        message = task.description
+        send_email_notification(subject, message, task.author.email, user.email,
+                                smtp_server, smtp_port, task.author.email, task.author.email_password)
+
     file_count = File.objects.count()
     doc_name = f'Задача{task_pk}_{file_count}'
     base_file_path = 'uploads/user_docs/Шаблон.docx'

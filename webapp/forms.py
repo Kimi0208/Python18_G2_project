@@ -15,6 +15,11 @@ class TaskForm(forms.ModelForm):
             'deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'})
         }
 
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields.pop('status', None)
+
 
 class FileForm(forms.ModelForm):
     class Meta:

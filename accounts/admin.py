@@ -12,7 +12,8 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'first_name', 'email', 'phone_number')
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (("Personal info"), {"fields": ('first_name', 'last_name', 'patronymic', 'email', 'phone_number', 'position')}),
+        (("Personal info"), {"fields": ('first_name', 'last_name', 'patronymic', 'email', 'email_password',
+                                        'phone_number', 'position')}),
         (
             ("Permissions"),
             {
@@ -33,7 +34,7 @@ class CustomUserAdmin(UserAdmin):
             {
                 "classes": ("wide",),
                 "fields": ('username', 'first_name', 'last_name', 'patronymic', 'password1', 'password2', 'email',
-                           'phone_number', 'position'),
+                           'email_password', 'phone_number', 'position'),
             },
         ),
     )
