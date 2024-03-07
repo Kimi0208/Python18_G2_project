@@ -31,7 +31,7 @@
           </button>
           <ul class="dropdown-menu">
               {% for checklist in checklists %}
-            <li><a class="dropdown-item" href="{% url 'webapp:add_subtasks' task_pk=task.pk group_pk=checklist.pk%}">{{ checklist.name }}</a></li>
+            <li><a class="dropdown-item" href="{% url 'webapp:add_subtasks' task_pk=task.pk checklist_pk=checklist.pk%}">{{ checklist.name }}</a></li>
               {% endfor %}
           </ul> 
         </div>

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, reverse
 from webapp.forms import TaskForm, FileForm
-from webapp.models import Task, Status, Priority, Type, File
+from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from accounts.models import DefUser
 from docxtpl import DocxTemplate
@@ -23,7 +23,7 @@ class TaskDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        checklists = Group.objects.all()
+        checklists = Checklist.objects.all()
         context['checklists'] = checklists
         subtasks = Task.objects.filter(parent_task=self.object)
         context['subtasks'] = subtasks
@@ -88,11 +88,10 @@ def deadline_task_notification(request, *args, **kwargs):
     #                                 smtp_server, smtp_port, task.author.email, task.author.email_password)
 
 
-
-def add_subtasks(request, group_pk, task_pk):
+def add_subtasks(request, checklist_pk, task_pk):
     main_task = Task.objects.get(pk=task_pk)
-    group1 = Group.objects.get(pk=group_pk)
-    users = DefUser.objects.filter(groups=group1)
+    checklist = Checklist.objects.get(pk=checklist_pk)
+    users = checklist.users.all()
     title = 'Подпись'
     description = f'Необходима подпись документа в задаче #{task_pk}'
     status = Status.objects.get(pk=1)

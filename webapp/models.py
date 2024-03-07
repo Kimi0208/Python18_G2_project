@@ -67,8 +67,7 @@ class File(models.Model):
 
 class Checklist(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
-    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Пользователь', null=True,
-                             blank=True, related_name='Checklists')
+    users = models.ManyToManyField('accounts.DefUser', verbose_name='Сотрудники', related_name='checklists')
 
     def __str__(self):
         return f'{self.name}'
