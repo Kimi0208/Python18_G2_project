@@ -1,12 +1,11 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
 {% load static %}
 
-{% block head %}<link rel="stylesheet" href="{% static 'css/user.css' %}">{% endblock %}
-
-{% block title %}{{ user_obj.get_full_name }}{% endblock %}
+{% block title %}Личная страница {{ user_obj.get_full_name|default:user_obj.username }}{% endblock %}
 
 {% block content %}
-    <h1>Личная страница {{ user_obj.get_full_name|default:user_obj.username }}</h1>
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    
     <div class="card mb-3">
         <div class="row g-0">
             <div class="col-md-8">
@@ -29,6 +28,5 @@
             </div>
         </div>
     </div>
-
-
+    
 {% endblock %}

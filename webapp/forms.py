@@ -5,12 +5,16 @@ from webapp.models import Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'type', 'description', 'start_date', 'done_at', 'deadline',
+        fields = ['title', 'type', 'description', 'start_date', 'done_at', 'deadline',
                   'status', 'priority', 'parent_task', 'destination_to_department', 'destination_to_user',
                   ]
 
         widgets = {
-            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'done_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'deadline': forms.DateTimeInput(attrs={'type': 'datetime-local'})
+            'title': forms.TextInput(attrs={'class': 'form-control', 'style': 'width: 50%' }),
+            'description': forms.Textarea(attrs={'class': 'form-control','style': 'width: 50%' })
         }
+        for i in fields:
+            if i not in ('title', 'description', 'start_date', 'done_at', 'deadline'):
+                widgets[i] = forms.Select(attrs={'class': 'form-control','style': 'width: 50%'})
+        for i in ('start_date', 'done_at', 'deadline'):
+            widgets[i] = forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control', 'style': 'width: 50%'})

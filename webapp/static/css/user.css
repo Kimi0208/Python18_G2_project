@@ -1,31 +1,22 @@
 .card {
-    margin-top: 20px;
+    margin-left: 15%;
+    width: 70%;
+    /*margin: 20px;*/
 }
 
 .card-body {
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
-.card-title {
-    font-weight: bold;
+.card-title, .card-text {
+    margin-bottom: 5px;
 }
 
-.card-text {
-    margin-bottom: 10px;
+.d-flex {
+    margin-top: 10px;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    padding: 10px 20px;
+.btn {
     margin-right: 10px;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-}
-
-h1 {
-    text-align: center;
 }

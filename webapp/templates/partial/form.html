@@ -1,9 +1,7 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/form.css' %}">
-
 
 {% if not fields_only %}
-<form action="{{ action_url }}" method="{{ form_method }}">
+<form class="custom_form" action="{{ action_url }}" method="{{ form_method }}">
 
     
 {% csrf_token %}
@@ -28,6 +26,6 @@
 {% endfor %}
 
 {% if not fields_only %}
-<input type="submit" value="{{ value_submit }}"/>
-</form>
+<input id="submit_button" class="btn btn-success w-25 text-center" type="submit" value="{{ value_submit }}"/>
 {% endif %}
+</form>
