@@ -152,5 +152,11 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, '')
 
 MEDIA_URL = '/uploads/'
 
+
+LOGIN_URL = 'accounts:login'
+
+LOGIN_REDIRECT_URL = 'webapp:index'
+LOGOUT_REDIRECT_URL = 'webapp:index'
 CELERY_BROKER_URL = "redis://localhost:6379"
 # CELERY_RESULT_BACKEND = "redis://localhost:6379"
+

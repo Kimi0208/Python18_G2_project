@@ -1,13 +1,31 @@
-{% csrf_token %}
+{% load static %}
 
+{% if not fields_only %}
+<form class="custom_form" action="{{ action_url }}" method="{{ form_method }}">
+
+    
+{% csrf_token %}
+{% endif %}
 {% for error in form.non_field_errors %}
-   <p class="form-error">{{ error }}</p>
+
+    <p class="text-danger">{{ error }}</p>
+
 {% endfor %}
+
 {% for field in form %}
-   <p><label for="{{ field.id_for_label }}">{{ field.label }}</label></p>
-   {% for error in field.errors %}
-       <p class="form-error">{{ error }}</p>
-   {% endfor %}
-   <p>{{ field }}</p>
+    <label for="{{ field.id_for_label }}">{{ field.label }}:</label><br/>
+    {{ field }}
+
+
+    {% for error in field.errors %}
+        <p class="text-danger">{{ error }}</p>
+    {% endfor %}
+
+
+    <br/>
 {% endfor %}
-<button type="submit" class="btn btn-primary" id="send_data" data-task_action="POST">{{ button_text }}</button>
+
+{% if not fields_only %}
+<input id="submit_button" class="btn btn-success w-25 text-center" type="submit" value="{{ value_submit }}"/>
+{% endif %}
+</form>

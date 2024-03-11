@@ -1,0 +1,24 @@
+#test_form {
+    margin-top: 20px;
+}
+
+#test_form label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+#test_form input,
+#test_form select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+#test_form button {
+    padding: 10px 15px;
+}
+
+#submit_button {
+    margin: 0 auto;
+}
