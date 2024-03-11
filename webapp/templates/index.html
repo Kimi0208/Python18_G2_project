@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
 {% load static %}
 
 {% block title %}
-    CRM
+    Мои задачи
 {% endblock %}
 
 {% block menu %}
@@ -13,13 +13,25 @@
 {#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
 {#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
     </div>
+{#    <div id="main_area">#}
+{#         {% include 'partial/task_list.html' %}#}
+{#    </div>#}
     <div id="main_area">
-         {% include 'partial/task_list.html' %}
+         {% include 'partial/tables.html' %}
+        <div class="container">
+            {% include 'partial/cards.html' %}
+        </div>
     </div>
-    
-    </div>
+
     <div id="action-task-modal_window" class="modal">
 
     </div>
 
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+          $('#DataTable').DataTable();
+        });
+    </script>
 {% endblock %}

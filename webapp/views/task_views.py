@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -34,6 +34,15 @@ smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
+class TaskView(DetailView):
+    model = Task
+    template_name = "task_proposal_view.html"
+
+    def task_view(request, *args, pk, **kwargs):
+        task = get_object_or_404(Task, pk=pk)
+        return render(request, "task_proposal_view.html", {"task": task})
+
+
 class TaskCreateView(CreateView):
     model = Task
     form_class = TaskForm
@@ -48,7 +57,8 @@ class TaskCreateView(CreateView):
             message = self.object.description
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
-        return redirect('webapp:index')
+        return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
+
 
 
 class TaskUpdateView(UpdateView):
@@ -64,7 +74,7 @@ class TaskUpdateView(UpdateView):
                 send_email_notification(subject, message, self.request.user.email, self.object.author.email,
                                         smtp_server, smtp_port, self.request.user.email,
                                         self.request.user.email_password)
-        return reverse('webapp:index')
+        return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
 
 
 class TaskDeleteView(DeleteView):
