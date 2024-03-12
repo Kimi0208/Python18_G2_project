@@ -14,6 +14,38 @@ class TaskListView(ListView):
     ordering = ['-type']
 
 
+def record_history(task_pk):
+    history_list = []
+    task = Task.objects.get(pk=task_pk)
+    task_history = list(task.history.all().order_by('history_date'))
+    print(f'Все записи историй {task_history}\n')
+    print(f'Длина списка {len(task_history)}\n')
+    for i in range(1, len(task_history)):
+        current_record = task_history[i]
+        print(f'Запись последняя{current_record}\n')
+        previous_record = task_history[i - 1]
+        print(f'Запись предыдущая{previous_record}\n')
+        delta = current_record.diff_against(previous_record)
+        change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
+        change_user = current_record.history_user
+        print(delta.changes[0])
+        #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
+        # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
+
+        changes = []
+        for change in delta.changes:
+            verbose_name = current_record._meta.get_field(change.field).verbose_name
+            change_info = (verbose_name, change.old, change.new, change_date, change_user)
+            changes.append(change_info)
+
+        # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
+        # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
+        print(f'Изменения {changes}\n')
+        history_list.append(changes)
+    sorted_history = sorted(history_list, key=lambda x: x[0][3], reverse=True)
+    return sorted_history
+
+
 class TaskDetailView(DetailView):
     model = Task
     template_name = 'task_view.html'
@@ -27,6 +59,9 @@ class TaskDetailView(DetailView):
         context['subtasks'] = subtasks
         files = File.objects.filter(task=self.object)
         context['files'] = files
+        history_list = record_history(self.object.pk)
+        context['history'] = history_list
+
         return context
 
 
@@ -42,12 +77,12 @@ class TaskCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
-        self.object.save()
         if self.object.destination_to_user:
             subject = f'CRM: Новая задача #{self.object.id}  {self.object.title}'
             message = self.object.description
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
+        self.object.save()
         return redirect('webapp:index')
 
 
