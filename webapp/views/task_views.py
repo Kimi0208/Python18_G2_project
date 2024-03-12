@@ -60,7 +60,6 @@ class TaskCreateView(CreateView):
         return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
 
 
-
 class TaskUpdateView(UpdateView):
     model = Task
     form_class = TaskForm
@@ -128,3 +127,5 @@ class FileAddView(CreateView):
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
         return redirect('webapp:detail_task', pk=self.object.task.pk)
+
+

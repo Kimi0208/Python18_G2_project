@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.contrib.auth import login, get_user_model
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView
@@ -64,3 +64,9 @@ class UserPasswordChangeView(UserPassesTestMixin, PasswordChangeView):
         context = super().get_context_data(**kwargs)
         context['user_obj'] = get_object_or_404(DefUser, pk=self.kwargs.get('pk'))
         return context
+
+
+class UserListView(ListView):
+    model = DefUser
+    template_name = 'user_list.html'
+    context_object_name = 'users'

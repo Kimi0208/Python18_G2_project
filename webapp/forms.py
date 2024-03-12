@@ -24,9 +24,10 @@ class TaskForm(forms.ModelForm):
             super(TaskForm, self).__init__(*args, **kwargs)
             if not self.instance.pk:
                 self.fields.pop('status', None)
-            
-    class FileForm(forms.ModelForm):
-        class Meta:
-            model = File
-            fields = ['id', 'file']
+
+
+class FileForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = ['id', 'file']
 

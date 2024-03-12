@@ -2,12 +2,9 @@
 {% load static %}
 
 {% block title %}
-    Мои задачи
+    Cписок пользователей
 {% endblock %}
-{% block links %}
-    <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Создать задачу </a>
-{% endblock %}
+
 {% block menu %}
 {% endblock %}
 
@@ -20,7 +17,7 @@
 {#         {% include 'partial/task_list.html' %}#}
 {#    </div>#}
     <div id="main_area">
-         {% include 'partial/tables.html' %}
+         {% include 'partial/tables_users.html' %}
 {#        <div class="container">#}
 {#            {% include 'partial/cards.html' %}#}
 {#        </div>#}
