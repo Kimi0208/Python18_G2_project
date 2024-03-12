@@ -5,12 +5,14 @@ from crm import settings
 
 
 class DefUser(AbstractUser):
+
     first_name = models.CharField(max_length=30, null=False, blank=False, verbose_name='Имя сотрудника')
     last_name = models.CharField(max_length=30, null=False, blank=False, verbose_name='Фамилия сотрудника')
 
     email = models.EmailField(null=False, blank=False, verbose_name='Почтовый адрес')
     email_password = models.CharField(max_length=5000, null=True, blank=True, verbose_name='Пароль от почтового ящика')
     position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE,
+
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
 
