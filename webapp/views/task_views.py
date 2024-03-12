@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm
 from webapp.models import Task
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 
 class TaskListView(ListView):
@@ -10,19 +11,21 @@ class TaskListView(ListView):
     context_object_name = 'tasks'
 
 
-class TaskView(DetailView):
+class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
     template_name = "task_proposal_view.html"
+    permission_required = 'webapp.view_task'
 
     def task_view(request, *args, pk, **kwargs):
         task = get_object_or_404(Task, pk=pk)
         return render(request, "task_proposal_view.html", {"task": task})
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(PermissionRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_create.html'
+    permission_required = 'webapp.add_task'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -34,10 +37,11 @@ class TaskCreateView(CreateView):
         return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_edit.html'
+    permission_required = 'webapp.change_task'
 
     def get_success_url(self):
         return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
