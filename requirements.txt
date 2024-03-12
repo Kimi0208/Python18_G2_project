@@ -1,6 +1,12 @@
 asgiref==3.7.2
+cffi==1.16.0
+cryptography==42.0.5
 Django==5.0.2
+django-appconf==1.0.6
+django-cryptography==1.1
 djangorestframework==3.14.0
 psycopg2-binary==2.9.9
+pycparser==2.21
 pytz==2024.1
 sqlparse==0.4.4
+typing_extensions==4.10.0
