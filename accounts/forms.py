@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django import forms
-
-from accounts.models import DefUser
+from accounts.models import DefUser, Position, Department
 
 
 class MyUserCreationForm(UserCreationForm):
@@ -38,3 +37,15 @@ class MyPasswordChangeForm(PasswordChangeForm):
         label='Подтверждение нового пароля',
         widget=forms.PasswordInput,
     )
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = DefUser
+        fields = ('username', 'first_name', 'last_name', 'email', 'phone_number', 'position')
+    username = forms.CharField(max_length=50, required=True, label="Логин")
+    first_name = forms.CharField(max_length=50, required=True, label="Имя")
+    last_name = forms.CharField(max_length=50, required=True, label="Фамилия")
+    email = forms.EmailField(required=True, label="Email")
+    phone_number = forms.CharField(required=True, label="Номер телефона")
+    position = forms.ModelChoiceField(queryset=Position.objects.all(), label="Должность")

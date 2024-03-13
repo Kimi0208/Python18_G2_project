@@ -14,13 +14,13 @@ class Task(models.Model):
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи', null=True,
                                  blank=True)
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор задачи',
-                               related_name='task_author')
+                               related_name='task_author', null=True)
     parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Подзадача',
                                     related_name='tasks')
     destination_to_department = models.ForeignKey('accounts.Department', verbose_name='На какой отдел задача',
-                                                  on_delete=models.CASCADE, null=True, blank=True)
+                                                  on_delete=models.SET_NULL, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
-                                            on_delete=models.CASCADE, null=True, blank=True)
+                                            on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип', null=True, blank=True)
 
     def __str__(self):
