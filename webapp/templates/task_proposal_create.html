@@ -4,16 +4,12 @@
 {% block title %}Новая задача{% endblock %}
 
 {% block content %}
-
+    <link rel="stylesheet" href="{% static 'css/task.css' %}">
+    
     <div class="modal-content p-4">
         <div>
-            {% include 'partial/form.html' with value_submit='Добавить' %}
-
+            {% include 'partial/form.html' with value_submit='Добавить' form_method='post' %}
         </div>
     </div>
 
-{% endblock %}
-
-{% block scripts %}
-    <link rel="stylesheet" href="{% static 'css/task.css' %}">
 {% endblock %}

@@ -11,7 +11,8 @@ class MyUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = DefUser
-        fields = ('username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'email_password', 'phone_number')
+        fields = (
+        'username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'email_password', 'phone_number')
         labels = {'username': 'Логин', 'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email',
                   'phone_number': 'Номер телефона', 'email_password': 'Пароль от почтового ящика'}
 
@@ -19,8 +20,9 @@ class MyUserCreationForm(UserCreationForm):
 class UserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email', 'phone_number']
-        labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email', 'phone_number': 'Номер телефона'}
+        fields = ['first_name', 'last_name', 'email', 'email_password', 'phone_number']
+        labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email',
+                  'email_password': 'Пароль от почтового ящика', 'phone_number': 'Номер телефона'}
 
 
 class MyPasswordChangeForm(PasswordChangeForm):

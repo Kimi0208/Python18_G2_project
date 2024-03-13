@@ -57,8 +57,8 @@ class TaskCreateView(CreateView):
             message = self.object.description
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
-        return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
-
+        # return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
+        return redirect('webapp:task_proposal_view', pk=self.object.pk)
 
 class TaskUpdateView(UpdateView):
     model = Task
