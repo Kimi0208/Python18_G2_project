@@ -5,6 +5,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
+from django.db.models import ForeignKey
 
 
 class TaskListView(ListView):
@@ -14,33 +15,69 @@ class TaskListView(ListView):
     ordering = ['-type']
 
 
+def get_object_from_model(model, value):
+    try:
+        return model.objects.get(pk=value)
+    except model.DoesNotExist:
+        return None
+
+def check_is_foreign_key(field, old_value, new_value):
+    if isinstance(field, ForeignKey):
+        # if old_value is not None:
+        #     old_obj_name = field.related_model.objects.get(pk=old_value)
+        # else:
+        #     old_obj_name = None
+        # if new_value is not None:
+        #     new_obj_name = field.related_model.objects.get(pk=new_value)
+        # else:
+        #     new_obj_name = None
+        old_obj_name = get_object_from_model(field.related_model, old_value)
+        new_obj_name = get_object_from_model(field.related_model, new_value)
+
+        return old_obj_name, new_obj_name
+    else:
+        return old_value, new_value
+
+
 def record_history(task_pk):
     history_list = []
     task = Task.objects.get(pk=task_pk)
     task_history = list(task.history.all().order_by('history_date'))
-    print(f'Все записи историй {task_history}\n')
-    print(f'Длина списка {len(task_history)}\n')
+    # print(f'Все записи историй {task_history}\n')
+    # print(f'Длина списка {len(task_history)}\n')
     for i in range(1, len(task_history)):
         current_record = task_history[i]
-        print(f'Запись последняя{current_record}\n')
+        # print(f'Запись последняя{current_record}\n')
         previous_record = task_history[i - 1]
-        print(f'Запись предыдущая{previous_record}\n')
+        # print(f'Запись предыдущая{previous_record}\n')
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
         change_user = current_record.history_user
-        print(delta.changes[0])
+        # print(delta.changes[0])
         #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
-
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
-            change_info = (verbose_name, change.old, change.new, change_date, change_user)
+            ttt = current_record._meta.get_field(change.field)
+            # print(ttt)
+
+            # print(check_is_foreign_key(ttt, change.old, change.new))
+            old, new = check_is_foreign_key(ttt, change.old, change.new)
+            # if isinstance(ttt, ForeignKey):
+            #     obj_name = ttt.related_model.objects.get(pk=change.old)
+            #     print(obj_name)
+            # else:
+            #     print(1111)
+
+
+            # change_info = (verbose_name, change.old, change.new, change_date, change_user)
+            change_info = (verbose_name, old, new, change_date, change_user)
             changes.append(change_info)
 
         # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
         # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
-        print(f'Изменения {changes}\n')
+        # print(f'Изменения {changes}\n')
         history_list.append(changes)
     sorted_history = sorted(history_list, key=lambda x: x[0][3], reverse=True)
     return sorted_history
@@ -61,7 +98,6 @@ class TaskDetailView(DetailView):
         context['files'] = files
         history_list = record_history(self.object.pk)
         context['history'] = history_list
-
         return context
 
 
