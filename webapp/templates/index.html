@@ -5,8 +5,12 @@
     Мои задачи
 {% endblock %}
 {% block links %}
-    <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+    {% if request.user.is_authenticated %}
+        {% if perms.webapp.add_task %}
+            <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Создать задачу </a>
+        {% endif %}
+    {% endif %}
 {% endblock %}
 {% block menu %}
 {% endblock %}

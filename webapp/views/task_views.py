@@ -64,6 +64,7 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
         # return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
         return redirect('webapp:task_proposal_view', pk=self.object.pk)
 
+
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
@@ -99,7 +100,8 @@ def add_subtasks(request, checklist_pk, task_pk):
     priority = Priority.objects.get(pk=1)
     type = Type.objects.get(pk=1)
     for user in users:
-        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status, priority=priority,
+        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
+                                   priority=priority,
                                    type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
@@ -132,5 +134,3 @@ class FileAddView(CreateView):
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
         return redirect('webapp:detail_task', pk=self.object.task.pk)
-
-
