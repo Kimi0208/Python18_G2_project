@@ -4,7 +4,10 @@
 {% block title %}
     Мои задачи
 {% endblock %}
-
+{% block links %}
+    <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Создать задачу </a>
+{% endblock %}
 {% block menu %}
 {% endblock %}
 
@@ -18,9 +21,9 @@
 {#    </div>#}
     <div id="main_area">
          {% include 'partial/tables.html' %}
-        <div class="container">
-            {% include 'partial/cards.html' %}
-        </div>
+{#        <div class="container">#}
+{#            {% include 'partial/cards.html' %}#}
+{#        </div>#}
     </div>
 
     <div id="action-task-modal_window" class="modal">

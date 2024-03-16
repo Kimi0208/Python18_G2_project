@@ -1,0 +1,32 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Личная страница {{ user_obj.get_full_name|default:user_obj.username }}{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/user.css' %}">
+    
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-title">Логин: {{ user_obj.username }}</p>
+                    <p class="card-text">Имя: {{ user_obj.first_name }}</p>
+                    <p class="card-text">Фамилия: {{ user_obj.last_name }}</p>
+                    <p class="card-text">Должность: {{ user_obj.position }}</p>
+                    <p class="card-text">Почта: {{ user_obj.email }}</p>
+                    <p class="card-text">Номер телефона: {{ user_obj.phone_number }}</p>
+
+                    <div class="d-flex">
+                        <a class="nav-link btn btn-primary" aria-current="page"
+                           href="{% url 'accounts:user_change' request.user.pk %}">Редактировать</a>
+                        <a class="nav-link btn btn-primary" aria-current="page"
+                           href="{% url 'accounts:password_change' request.user.pk %}">Смена пароля</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

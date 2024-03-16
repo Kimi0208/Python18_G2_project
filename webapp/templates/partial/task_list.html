@@ -12,6 +12,7 @@
                             <p>{{ task.description }}</p>
                             <button class="action-btn_task" data-action_task="{% url 'webapp:update_task' pk=task.pk %}">Изменить</button>
                             <button class="action-btn_task" data-action_task="{% url 'webapp:delete_task' pk=task.pk %}">Удалить</button>
+                            <a href="{% url 'webapp:detail_task' pk=task.pk %}">Подробнее</a>
                         </div>
                     </div>
                 </div>
