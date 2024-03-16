@@ -39,48 +39,71 @@ def check_is_foreign_key(field, old_value, new_value):
         return old_value, new_value
 
 
+# def get_files_history(task):
+#     try:
+#         files_history = []
+#         files = File.objects.filter(task=task)
+#         print(files)
+#         for file in files:
+#             task_file_history = file.history.all()
+#             for history in task_file_history:
+#                 action = ""
+#                 if history.history_type == '+':
+#                     action = "Добавлен файл"
+#                 elif history.history_type == '-':
+#                     action = "Удален файл"
+#                 history_info = (action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, file.file.name)
+#                 files_history.append(history_info)
+#         print(files_history)
+#         return files_history
+#     except File.DoesNotExist:
+#         pass
+
+def get_files_history(task_pk):
+    files_history_list = []
+    files = File.objects.filter(task_id=task_pk)
+    for file in files:
+        file_history = file.history.all()
+        for history in file_history:
+            action = ""
+            if history.history_type == "+":
+                action = "Добавлен файл"
+            elif history.history_type == "-":
+                action = "Удален файл"
+            history_info = [(action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, history.file)]
+            files_history_list.append(history_info)
+    return files_history_list
+
+
 def record_history(task_pk):
     history_list = []
     task = Task.objects.get(pk=task_pk)
     task_history = list(task.history.all().order_by('history_date'))
-    # print(f'Все записи историй {task_history}\n')
-    # print(f'Длина списка {len(task_history)}\n')
     for i in range(1, len(task_history)):
         current_record = task_history[i]
-        # print(f'Запись последняя{current_record}\n')
         previous_record = task_history[i - 1]
-        # print(f'Запись предыдущая{previous_record}\n')
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
         change_user = current_record.history_user
-        # print(delta.changes[0])
         #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
             ttt = current_record._meta.get_field(change.field)
-            # print(ttt)
-
-            # print(check_is_foreign_key(ttt, change.old, change.new))
             old, new = check_is_foreign_key(ttt, change.old, change.new)
-            # if isinstance(ttt, ForeignKey):
-            #     obj_name = ttt.related_model.objects.get(pk=change.old)
-            #     print(obj_name)
-            # else:
-            #     print(1111)
-
-
-            # change_info = (verbose_name, change.old, change.new, change_date, change_user)
-            change_info = (verbose_name, old, new, change_date, change_user)
+            change_info = (verbose_name, change_date, change_user, old, new)
             changes.append(change_info)
-
         # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
         # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
         # print(f'Изменения {changes}\n')
         history_list.append(changes)
-    sorted_history = sorted(history_list, key=lambda x: x[0][3], reverse=True)
-    return sorted_history
+    history_list.extend(get_files_history(task_pk))
+    if history_list:
+        sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
+        return sorted_history
+    else:
+        return history_list
 
 
 class TaskDetailView(DetailView):
