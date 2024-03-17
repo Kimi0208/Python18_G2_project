@@ -32,7 +32,12 @@
 
     {% if subtasks %}
         {% for subtask in subtasks %}
-            <p>{{ task.title }}</p>
+            <div class="card">
+                <h5 class="card-title"><a href="{% url 'webapp:task_proposal_view' pk=task.pk %}">{{ task.title }}</a>
+                </h5>
+            <p class="card-text">{{ task.description }}</p>
+            <p class="card-text">Автор: {{ task.author }}</p>
+            </div>
         {% endfor %}
     {% else %}
         Нет подзадач
@@ -40,10 +45,12 @@
 
     {% if comments %}
         {% for comment in comments %}
+            <div class="card">
             <p>{{ comment.author }}</p>
             <p>{{ comment.description }}</p>
             <a href="{% url 'webapp:update_comment' pk=comment.pk %}">Изменить комментарий</a>
             <a href="{% url 'webapp:delete_comment' pk=comment.pk %}">Удалить комментарий</a>
+            </div>
         {% endfor %}
     {% else %}
         <p>нет комментариев</p>
