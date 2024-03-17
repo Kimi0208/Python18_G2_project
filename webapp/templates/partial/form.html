@@ -1,7 +1,7 @@
 {% load static %}
 
 {% if not fields_only %}
-<form class="custom_form" action="{{ action_url }}" method="{{ form_method }}">
+<form class="custom_form" action="{{ action_url }}" method="POST">
 
     
 {% csrf_token %}

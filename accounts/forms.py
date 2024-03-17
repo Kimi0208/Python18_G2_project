@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django import forms
-
 from accounts.models import DefUser
 
 
@@ -11,7 +10,8 @@ class MyUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = DefUser
-        fields = ('username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'email_password', 'phone_number')
+        fields = (
+            'username', 'password1', 'password2', 'first_name', 'last_name', 'email', 'email_password', 'phone_number')
         labels = {'username': 'Логин', 'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email',
                   'phone_number': 'Номер телефона', 'email_password': 'Пароль от почтового ящика'}
 

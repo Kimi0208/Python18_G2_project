@@ -1,2 +1,2 @@
-from .task_views import (TaskListView, TaskCreateView, TaskDeleteView, TaskUpdateView, TaskView, add_subtasks,
-                         FileAddView)
+from .task_views import (TaskListView, TaskCreateView, TaskDeleteView, TaskUpdateView, add_subtasks,
+                         FileAddView, CommentAddView, TaskDetailView, CommentUpdateView, CommentDeleteView)

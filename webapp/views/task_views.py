@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from webapp.forms import TaskForm, FileForm
-from webapp.models import Task, Status, Priority, Type, File, Checklist
+from webapp.forms import TaskForm, FileForm, CommentForm
+from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from docxtpl import DocxTemplate
 from shutil import copyfile
@@ -16,7 +16,7 @@ class TaskListView(ListView):
 
 class TaskDetailView(DetailView):
     model = Task
-    template_name = 'task_view.html'
+    template_name = 'task_proposal_view.html'
     context_object_name = 'task'
 
     def get_context_data(self, **kwargs):
@@ -27,6 +27,8 @@ class TaskDetailView(DetailView):
         context['subtasks'] = subtasks
         files = File.objects.filter(task=self.object)
         context['files'] = files
+        comments = Comment.objects.filter(task=self.object)
+        context['comments'] = comments
         return context
 
 
@@ -34,13 +36,13 @@ smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
-class TaskView(DetailView):
-    model = Task
-    template_name = "task_proposal_view.html"
-
-    def task_view(request, *args, pk, **kwargs):
-        task = get_object_or_404(Task, pk=pk)
-        return render(request, "task_proposal_view.html", {"task": task})
+# class TaskView(DetailView):
+#     model = Task
+#     template_name = "task_proposal_view.html"
+#
+#     def task_view(request, *args, pk, **kwargs):
+#         task = get_object_or_404(Task, pk=pk)
+#         return render(request, "task_view.html", {"task": task})
 
 
 class TaskCreateView(CreateView):
@@ -94,7 +96,8 @@ def add_subtasks(request, checklist_pk, task_pk):
     priority = Priority.objects.get(pk=1)
     type = Type.objects.get(pk=1)
     for user in users:
-        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status, priority=priority,
+        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
+                                   priority=priority,
                                    type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
@@ -129,3 +132,32 @@ class FileAddView(CreateView):
         return redirect('webapp:detail_task', pk=self.object.task.pk)
 
 
+class CommentAddView(CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'comment_create.html'
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
+        self.object.author = self.request.user
+        self.object.save()
+        return redirect('webapp:task_proposal_view', pk=self.object.task.pk)
+
+
+class CommentUpdateView(UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'comment_update.html'
+
+    def get_success_url(self):
+        return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.task.pk})
+
+
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'comment_delete.html'
+
+    def get_success_url(self):
+        return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.task.pk})
