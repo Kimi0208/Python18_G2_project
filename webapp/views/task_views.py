@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
@@ -14,10 +15,11 @@ class TaskListView(ListView):
     ordering = ['-type']
 
 
-class TaskDetailView(DetailView):
+class TaskDetailView(PermissionRequiredMixin, DetailView):
     model = Task
     template_name = 'task_view.html'
     context_object_name = 'task'
+    permission_required = 'webapp.view_task'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -34,19 +36,21 @@ smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
-class TaskView(DetailView):
+class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
     template_name = "task_proposal_view.html"
+    permission_required = 'webapp.view_task'
 
     def task_view(request, *args, pk, **kwargs):
         task = get_object_or_404(Task, pk=pk)
         return render(request, "task_proposal_view.html", {"task": task})
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(PermissionRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_create.html'
+    permission_required = 'webapp.add_task'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -60,10 +64,12 @@ class TaskCreateView(CreateView):
         # return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
         return redirect('webapp:task_proposal_view', pk=self.object.pk)
 
-class TaskUpdateView(UpdateView):
+
+class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_edit.html'
+    permission_required = 'webapp.change_task'
 
     def get_success_url(self):
         if self.object.status.name == 'Выполнена':
@@ -94,7 +100,8 @@ def add_subtasks(request, checklist_pk, task_pk):
     priority = Priority.objects.get(pk=1)
     type = Type.objects.get(pk=1)
     for user in users:
-        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status, priority=priority,
+        task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
+                                   priority=priority,
                                    type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
@@ -127,5 +134,3 @@ class FileAddView(CreateView):
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
         return redirect('webapp:detail_task', pk=self.object.task.pk)
-
-

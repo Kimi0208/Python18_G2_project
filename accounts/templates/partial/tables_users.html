@@ -385,6 +385,8 @@
                                                 <td>{{ user.position.name }}</td>
                                                 <td>{{ user.position.department.name }}</td>
                                                 <td>{{ user.date_joined }}</td>
+                                                <td><a href="{% url 'accounts:user_update' user.id %}"><i class="fas fa-fw fa-edit"></i></a>
+                                                <a href="{% url 'accounts:user_delete' user.id %}"><i class="fas fa-fw fa-trash-alt"></i></a></td>
                                             </tr>
                                           {% endfor %}
                                     </tbody>
