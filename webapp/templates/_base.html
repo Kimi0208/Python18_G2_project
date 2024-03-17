@@ -51,6 +51,12 @@
                     <i class="fas fa-fw fa-user-friends"></i>
                     <span>Пользователи</span></a>
             </li>
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'accounts:group_list' %}">
+                    <i class="fas fa-fw fa-user-friends"></i>
+                    <span>Группы</span></a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -348,11 +354,13 @@
                                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Вход
                                     </a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url 'accounts:create' %}">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        Зарегистрироваться
-                                    </a>
+                                    
+{#                                    //закомментирова ниже ссылка для регистрации #}
+{#                                    <a class="dropdown-item" href="{% url 'accounts:create' %}">#}
+{#                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>#}
+{#                                        Зарегистрироваться#}
+{#                                    </a>#}
+{#                                    \\#}
                                     
                                 {% else %}
                                     <a class="dropdown-item" href="{% url 'accounts:user_detail' pk=user.id %}">

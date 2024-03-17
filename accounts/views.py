@@ -1,11 +1,12 @@
 from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.contrib.auth import login, get_user_model
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm
 from django.contrib.auth.views import PasswordChangeView
-from accounts.models import DefUser
+from accounts.models import DefUser, Department
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -53,7 +54,6 @@ class UserPasswordChangeView(UserPassesTestMixin, PasswordChangeView):
     template_name = 'user_password_change.html'
     form_class = MyPasswordChangeForm
 
-
     def test_func(self):
         return self.request.user.pk == self.kwargs.get('pk')
 
@@ -70,3 +70,13 @@ class UserListView(ListView):
     model = DefUser
     template_name = 'user_list.html'
     context_object_name = 'users'
+
+
+class GroupListView(ListView):
+    model = Department
+    template_name = 'group_list.html'
+    context_object_name = 'departments'
+
+    def get_queryset(self):
+        queryset = Department.objects.annotate(num_users=Count('position__defuser'))
+        return queryset
