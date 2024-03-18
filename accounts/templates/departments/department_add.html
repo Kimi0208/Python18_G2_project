@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Добавить новый отдел{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+
+    {% include 'partial/form.html' with value_submit='Добавить' form_method='post' %}
+
+{% endblock %}

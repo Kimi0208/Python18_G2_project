@@ -16,18 +16,18 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'user_obj'
 
 
-class RegisterView(CreateView):
-    model = get_user_model()
-    template_name = 'user_create.html'
-    form_class = MyUserCreationForm
-
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse('webapp:index')
+# class RegisterView(CreateView):
+#     model = get_user_model()
+#     template_name = 'user_create.html'
+#     form_class = MyUserCreationForm
+#
+#     def form_valid(self, form):
+#         user = form.save()
+#         login(self.request, user)
+#         return redirect(self.get_success_url())
+#
+#     def get_success_url(self):
+#         return reverse('webapp:index')
 
 
 class UserChangeView(LoginRequiredMixin, UpdateView):
@@ -72,15 +72,6 @@ class UserListView(ListView):
     template_name = 'user_crud/user_list.html'
     context_object_name = 'users'
 
-
-class GroupListView(ListView):
-    model = Department
-    template_name = 'group_list.html'
-    context_object_name = 'departments'
-
-    def get_queryset(self):
-        queryset = Department.objects.annotate(num_users=Count('position__defuser'))
-        return queryset
 
 class UserCreateView(CreateView):
     model = DefUser
