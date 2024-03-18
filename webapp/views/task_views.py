@@ -59,20 +59,34 @@ def check_is_foreign_key(field, old_value, new_value):
 #     except File.DoesNotExist:
 #         pass
 
+# def get_files_history(task_pk):
+#     files_history_list = []
+#     files = File.objects.filter(task_id=task_pk)
+#     for file in files:
+#         file_history = file.history.all()
+#         for history in file_history:
+#             action = ""
+#             if history.history_type == "+":
+#                 action = "Добавлен файл"
+#             elif history.history_type == "-":
+#                 action = "Удален файл"
+#             history_info = [(action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, history.file)]
+#             files_history_list.append(history_info)
+#     return files_history_list
+
 def get_files_history(task_pk):
     files_history_list = []
-    files = File.objects.filter(task_id=task_pk)
-    for file in files:
-        file_history = file.history.all()
-        for history in file_history:
-            action = ""
-            if history.history_type == "+":
-                action = "Добавлен файл"
-            elif history.history_type == "-":
-                action = "Удален файл"
-            history_info = [(action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, history.file)]
-            files_history_list.append(history_info)
+    files_history = File.history.filter(task_id=task_pk)
+    for file_history in files_history:
+        action = ""
+        if file_history.history_type == "+":
+             action = "Добавлен файл"
+        elif file_history.history_type == "-":
+            action = "Удален файл"
+        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user, file_history.file)]
+        files_history_list.append(history_info)
     return files_history_list
+
 
 
 def record_history(task_pk):
@@ -104,6 +118,12 @@ def record_history(task_pk):
         return sorted_history
     else:
         return history_list
+
+
+def delete_file(request, task_pk, file_pk):
+    file = File.objects.get(pk=file_pk)
+    file.delete()
+    return redirect('webapp:detail_task', pk=task_pk)
 
 
 class TaskDetailView(DetailView):

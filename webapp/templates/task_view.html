@@ -21,6 +21,7 @@
         <button class="action-btn_task" data-action_task="{% url 'webapp:add_file' task_pk=task.pk %}">Прикрепить файл</button>
         {% for file in files %}
             <a href="{{ file.file.url }}" target="_blank">{{ file.file.name|cut:'uploads/user_docs/' }}</a>
+            <a href="{% url 'webapp:delete_file' task_pk=file.task.pk file_pk=file.pk %}">Удалить</a>
         {% endfor %}
     </div>
     </div>
@@ -55,7 +56,7 @@
             <ul>
                 {% for change in changes %}
                     {% if "файл" in change.0 %}
-                        <li>{{ change.0 }} {{ change.3|cut:'uploads/user_docs/' }} Дата добавления: {{ change.1 }} Автор {{ change.2 }}</li>
+                        <li>{{ change.0 }} {{ change.3|cut:'uploads/user_docs/' }} Дата: {{ change.1 }} Автор {{ change.2 }}</li>
                         {{ change.del }}
                         {% else %}
                         <li>Поле {{ change.0 }} изменено с {{ change.3 }} на {{ change.4 }} Дата изменения: {{ change.1 }} Кто изменил: {{ change.2 }}</li>
