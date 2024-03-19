@@ -9,6 +9,7 @@ from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
 
 
+
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
