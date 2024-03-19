@@ -1,0 +1,11 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Изменить личные данные{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    
+    {% include 'partial/form.html' with value_submit='Обновить данные'  form_method='post' %}
+    
+{% endblock %}

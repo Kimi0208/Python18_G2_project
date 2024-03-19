@@ -1,10 +1,17 @@
-{% extends 'base.html' %}
+{% extends '_base.html' %}
 {% load static %}
 
 {% block title %}
-    CRM
+    Мои задачи
 {% endblock %}
-
+{% block links %}
+    {% if request.user.is_authenticated %}
+        {% if perms.webapp.add_task %}
+            <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Создать задачу </a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
 {% block menu %}
 {% endblock %}
 
@@ -13,13 +20,25 @@
 {#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
 {#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
     </div>
+{#    <div id="main_area">#}
+{#         {% include 'partial/task_list.html' %}#}
+{#    </div>#}
     <div id="main_area">
-         {% include 'partial/task_list.html' %}
+         {% include 'partial/tables.html' %}
+{#        <div class="container">#}
+{#            {% include 'partial/cards.html' %}#}
+{#        </div>#}
     </div>
-    
-    </div>
+
     <div id="action-task-modal_window" class="modal">
 
     </div>
 
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+          $('#DataTable').DataTable();
+        });
+    </script>
 {% endblock %}

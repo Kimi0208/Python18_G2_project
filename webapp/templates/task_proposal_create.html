@@ -1,8 +1,15 @@
-<div class="modal-content">
-    <div>
-        <button id="close_modal" style="background: white; border: none">Закрыть</button>
-        <form id="test_form" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
-          {% include 'partial/form.html' with button_text='Добавить'%}
-        </form>
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Новая задача{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/task.css' %}">
+    
+    <div class="modal-content p-4">
+        <div>
+            {% include 'partial/form.html' with value_submit='Добавить' form_method='post' %}
+        </div>
     </div>
-</div>
+
+{% endblock %}

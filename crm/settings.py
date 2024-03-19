@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-08ibxc279e)x+uksp8w)od1%jx04woyth-5c9dpmqyg$3hbzd!'
+SECRET_KEY = 'X7a-zjfpIk-0my3J657ewSwuXsmf0Nv6cfKR7bQHXDY='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework.authtoken',
-    'simple_history'
+    'simple_history',
+    'cryptography',
 ]
 
 REST_FRAMEWORK = {
@@ -99,8 +100,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'crm_db',
-        'USER': 'dkan',
-        'PASSWORD': '',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -154,5 +155,11 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR, '')
 
 MEDIA_URL = '/uploads/'
 
+
+LOGIN_URL = 'accounts:login'
+
+LOGIN_REDIRECT_URL = 'webapp:index'
+LOGOUT_REDIRECT_URL = 'webapp:index'
 CELERY_BROKER_URL = "redis://localhost:6379"
 # CELERY_RESULT_BACKEND = "redis://localhost:6379"
+

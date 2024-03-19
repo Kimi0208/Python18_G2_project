@@ -1,0 +1,55 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+    Отделы
+{% endblock %}
+
+{% block links %}
+    <a href="{% url 'accounts:create_department' %}"
+       class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+            class="fas fa-download fa-sm text-white-50"></i> Добавить новый отдел </a>
+{% endblock %}
+
+{% block content %}
+
+    <div id="main_area">
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Назавание отдела</th>
+                        <th>Количество сотрудников</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for department in departments %}
+                        <tr>
+                            <td>{{ department.name }}</td>
+                            <td style="text-align: center;">{{ department.num_users }}</td>
+                            <td><a href="{% url 'accounts:update_department' department.id %}"><i
+                                    class="fas fa-fw fa-edit"></i></a>
+                                <a href="{% url 'accounts:delete_department' department.id %}"><i
+                                        class="fas fa-fw fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('#DataTable').DataTable();
+        });
+    </script>
+{% endblock %}
