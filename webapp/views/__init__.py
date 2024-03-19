@@ -1,2 +1,2 @@
 from .task_views import (TaskListView, TaskCreateView, TaskDeleteView, TaskUpdateView, TaskView, add_subtasks,
-                         FileAddView)
+                         FileAddView, delete_file, TaskDetailView)

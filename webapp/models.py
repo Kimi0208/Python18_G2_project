@@ -1,11 +1,13 @@
+from django.utils import timezone
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class Task(models.Model):
     title = models.CharField(max_length=150, verbose_name='Заголовок задачи')
     description = models.TextField(max_length=2500, verbose_name='Описание задачи')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Время создания задачи')
-    start_date = models.DateTimeField(verbose_name='Приступить к задаче', null=True, blank=True)
+    start_date = models.DateTimeField(verbose_name='Приступить к задаче', null=True, blank=True, default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время обновления задачи')
     done_at = models.DateTimeField(verbose_name='Время завершения задачи', null=True, blank=True)
     deadline = models.DateTimeField(null=True, verbose_name='Дедлайн задачи', blank=True)
@@ -22,6 +24,7 @@ class Task(models.Model):
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип', null=True, blank=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.id}){self.title}'
@@ -39,6 +42,7 @@ class Comment(models.Model):
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Коммент к задаче', related_name='comments',
                              null=True, blank=True)
     description = models.TextField(max_length=2500, verbose_name='Текст комментария')
+    history = HistoricalRecords()
 
     def __str__(self):
         return f'{self.description}'
@@ -63,6 +67,7 @@ class File(models.Model):
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
+    history = HistoricalRecords()
 
 
 class Checklist(models.Model):
