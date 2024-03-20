@@ -7,6 +7,7 @@
     <a class="nav-link" aria-current="page" href={% url 'webapp:delete_task' pk=task.pk %}>Удалить</a>
     <a class="nav-link" aria-current="page" href="{% url 'webapp:add_comment' task_pk=task.pk %}">добавить
         комментарий</a>
+    <a class="nav-link" aria-current="page" href="{% url 'webapp:add_file' task_pk=task.pk %}">Добавить файл</a>
 {% endblock %}
 
 {% block content %}
@@ -36,8 +37,8 @@
             <div class="card">
                 <h5 class="card-title"><a href="{% url 'webapp:task_proposal_view' pk=task.pk %}">{{ task.title }}</a>
                 </h5>
-            <p class="card-text">{{ task.description }}</p>
-            <p class="card-text">Автор: {{ task.author }}</p>
+                <p class="card-text">{{ task.description }}</p>
+                <p class="card-text">Автор: {{ task.author }}</p>
             </div>
         {% endfor %}
     {% else %}
@@ -47,16 +48,21 @@
     {% if comments %}
         {% for comment in comments %}
             <div class="card">
-            <p>{{ comment.author }}</p>
-            <p>{{ comment.description }}</p>
-            <a href="{% url 'webapp:update_comment' pk=comment.pk %}">Изменить комментарий</a>
-            <a href="{% url 'webapp:delete_comment' pk=comment.pk %}">Удалить комментарий</a>
+                <p>{{ comment.author }}</p>
+                <p>{{ comment.description }}</p>
+                <a href="{% url 'webapp:update_comment' pk=comment.pk %}">Изменить комментарий</a>
+                <a href="{% url 'webapp:delete_comment' pk=comment.pk %}">Удалить комментарий</a>
             </div>
         {% endfor %}
     {% else %}
         <p>нет комментариев</p>
     {% endif %}
 
-
+    {% if files %}
+        {% for file in files %}
+            <a href="{{ file.file.url }}" target="_blank">{{ file.file.name|cut:'uploads/user_docs/' }}</a>
+            <a href="{% url 'webapp:file_delete' pk=file.pk %}">Удалить</a>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

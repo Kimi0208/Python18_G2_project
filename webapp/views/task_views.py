@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm, CommentForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
@@ -59,7 +60,7 @@ class TaskCreateView(CreateView):
             message = self.object.description
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
-        return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
+        return JsonResponse({'status': '200'})
 
 
 class TaskUpdateView(UpdateView):
@@ -129,7 +130,7 @@ class FileAddView(CreateView):
         self.object.user = self.request.user
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
-        return redirect('webapp:detail_task', pk=self.object.task.pk)
+        return redirect('webapp:task_proposal_view', pk=self.object.task.pk)
 
 
 class CommentAddView(CreateView):
@@ -158,6 +159,14 @@ class CommentUpdateView(UpdateView):
 class CommentDeleteView(DeleteView):
     model = Comment
     template_name = 'comment_delete.html'
+
+    def get_success_url(self):
+        return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.task.pk})
+
+
+class FileDeleteView(DeleteView):
+    model = File
+    template_name = 'file_delete.html'
 
     def get_success_url(self):
         return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.task.pk})
