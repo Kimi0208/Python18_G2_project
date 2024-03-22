@@ -64,4 +64,4 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     window.addEventListener('load', onLoad);
 
 
-export { onLoad, makeRequest, onClick };
+// export { onLoad, makeRequest, onClick };
