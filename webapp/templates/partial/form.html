@@ -1,17 +1,14 @@
 {% load static %}
 
 {% if not fields_only %}
-<form class="custom_form" action="{{ action_url }}" method="{{ form_method }}">
-
-    
-{% csrf_token %}
+    <form class="custom_form" action="{{ action_url }}" method="{{ form_method }}">
 {% endif %}
+
 {% for error in form.non_field_errors %}
-
     <p class="text-danger">{{ error }}</p>
-
 {% endfor %}
 
+{% csrf_token %}
 {% for field in form %}
     <label for="{{ field.id_for_label }}">{{ field.label }}:</label><br/>
     {{ field }}
@@ -26,6 +23,6 @@
 {% endfor %}
 
 {% if not fields_only %}
-<input id="submit_button" class="btn btn-success w-25 text-center" type="submit" value="{{ value_submit }}"/>
+    <input id="submit_button" class="btn btn-success w-25 text-center" type="submit" value="{{ value_submit }}"/>
+    </form>
 {% endif %}
-</form>

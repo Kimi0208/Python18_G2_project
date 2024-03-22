@@ -454,10 +454,11 @@
     <script src="{% static 'vendor/chart/Chart.min.js' %}"></script>
 
     <!-- Page level custom scripts -->
-    <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
-    <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>
+{#    <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>#}
+{#    <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>#}
     <script src="//cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
-    
+    <script src="{% static 'js/main.js' %}"></script>
+
     {% block scripts %}{% endblock %}
 </body>
 

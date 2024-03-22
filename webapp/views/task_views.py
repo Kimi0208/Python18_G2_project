@@ -173,11 +173,11 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
         if self.object.destination_to_user:
             subject = f'CRM: Новая задача #{self.object.id}  {self.object.title}'
             message = self.object.description
-            send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
-                                    smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
+            # send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
+            #                         smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
         self.object.save()
         # return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
-        return redirect('webapp:task_proposal_view', pk=self.object.pk)
+        return redirect('webapp:index')
 
 
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):

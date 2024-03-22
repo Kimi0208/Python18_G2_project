@@ -31,37 +31,48 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
 
 
 
-    async function onClick(e){
-        e.preventDefault()
-        let element = e.currentTarget;
-        console.log(element)
-        let data_attribute= element.dataset['action_task']
-        let response = await makeRequest(data_attribute, "GET")
-        let datar = await response.text();
-        console.log(datar)
-        let modal = document.getElementById('action-task-modal_window')
-        modal.innerHTML = datar
-        modal.style.display = 'block'
-        let form = document.getElementById('test_form');
-        form.action = data_attribute
-        let closeBtn = document.getElementById("close_modal");
-            closeBtn.onclick = function() {
-              modal.style.display = "none";
-              modal.innerHTML = ''
-            }
+async function onClick(e){
+    e.preventDefault()
+    let element = e.currentTarget;
+    console.log(element)
+    let data_attribute= element.dataset['action_task']
+    let response = await makeRequest(data_attribute, "GET")
+    let datar = await response.text();
+    console.log(datar)
+    let modal = document.getElementById('action-task-modal_window')
+    modal.innerHTML = datar
+    modal.style.display = 'block'
+    let form = document.getElementById('test_form');
+    form.action = data_attribute
+    let closeBtn = document.getElementById("close_modal");
+        closeBtn.onclick = function() {
+          modal.style.display = "none";
+          modal.innerHTML = ''
         }
+    }
 
 
-    function onLoad() {
-            let action_buttons = document.getElementsByClassName('action-btn_task')
-            console.log(action_buttons)
-            for (let action_button of action_buttons) {
-                action_button.addEventListener('click', onClick)
-            }
-        }
+function onLoad(e) {
+    e.preventDefault();
+    let action_buttons = document.getElementsByClassName('action-btn_task')
+    console.log(action_buttons)
+    for (let action_button of action_buttons) {
+        action_button.addEventListener('click', onClick)
+    }
+}
 
 
-    window.addEventListener('load', onLoad);
+window.addEventListener('load', onLoad);
 
+function showModal(objectId) {
+    // 1. API
+    // 1.1 Get task JSON
+    // 1.2 Update task JSON
+    $('#modal-title').text(`Object id: ${objectId}`);
+    $('#taskModal').modal('show')
+}
 
-export { onLoad, makeRequest, onClick };
+function showCreateModal() {
+    $('#taskCreateModal').modal('show')
+}
+
