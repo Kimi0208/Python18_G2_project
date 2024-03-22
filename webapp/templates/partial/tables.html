@@ -381,7 +381,7 @@
                                     <tbody>
                                         {% for task in tasks %}
                                             <tr>
-                                                <td><a href="{% url 'webapp:task_proposal_view' pk=task.pk%}">{{ task.title }}</a></td>
+                                                <td><a href="{% url 'webapp:detail_task' pk=task.pk%}">{{ task.title }}</a></td>
                                                 <td>{{ task.type }}</td>
                                                 <td>{{ task.status }}</td>
                                                 <td>{{ task.priority }}</td>

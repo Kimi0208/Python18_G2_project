@@ -105,10 +105,10 @@ def add_subtasks(request, checklist_pk, task_pk):
                                    type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
-        subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
-        message = task.description
-        send_email_notification(subject, message, task.author.email, user.email,
-                                smtp_server, smtp_port, task.author.email, task.author.email_password)
+        # subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
+        # message = task.description
+        # send_email_notification(subject, message, task.author.email, user.email,
+        #                         smtp_server, smtp_port, task.author.email, task.author.email_password)
 
     file_count = File.objects.count()
     doc_name = f'Задача{task_pk}_{file_count}'
