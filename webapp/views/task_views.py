@@ -130,41 +130,6 @@ def delete_file(request, task_pk, file_pk):
     return redirect('webapp:detail_task', pk=task_pk)
 
 
-class TaskDetailView(PermissionRequiredMixin, DetailView):
-    model = Task
-    template_name = 'task_view.html'
-    context_object_name = 'task'
-    permission_required = 'webapp.view_task'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        checklists = Checklist.objects.all()
-        context['checklists'] = checklists
-        subtasks = Task.objects.filter(parent_task=self.object)
-        context['subtasks'] = subtasks
-        files = File.objects.filter(task=self.object)
-        context['files'] = files
-        history_list = record_history(self.object.pk)
-        context['history'] = history_list
-        return context
-
-    def render_to_response(self, context, **response_kwargs):
-        task_data = {
-            'id': self.object.pk,
-            'title': self.object.title,
-            'description': self.object.description,
-            'created_at' : self.object.created_at,
-            'start_date' : self.object.start_date,
-            'updated_at' : self.object.updated_at,
-            'done_at' : self.object.done_at,
-            'deadline' : self.object.deadline,
-            'status' : self.object.status.name,
-            'priority' : self.object.priority.name,
-            'author' : self.object.author,
-            'type' : self.object.type.name
-        }
-        return JsonResponse({'task_data': task_data})
-
 
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
@@ -202,7 +167,7 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name
         }
-        return JsonResponse({'task_data': task_data})
+        return JsonResponse({'task':task_data})
 
 
 class TaskCreateView(PermissionRequiredMixin, CreateView):

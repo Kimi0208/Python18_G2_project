@@ -15,17 +15,16 @@
             <tbody id="table_body">
                 {% for task in tasks %}
                     <tr style="cursor: pointer" class="detail-btn_task" data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}">
-                        <td><a href="{% url 'webapp:task_proposal_view' pk=task.pk%}">{{ task.title }}</a></td>
+                        <td>{{ task.title }}</td>
                         <td>{{ task.type }}</td>
                         <td>{{ task.status }}</td>
                         <td>{{ task.priority }}</td>
-                        <td>{{ task.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ task.created_at|date:"d-m-Y H:i" }}</td>
                         {% if task.deadline %}
                             <td>{{ task.deadline }}</td>
                         {% else %}
                             <td></td>
                         {% endif %}
-                        
                         <td>{{ task.author }}</td>
                     </tr>
                 {% endfor %}

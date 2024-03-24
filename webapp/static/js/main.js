@@ -135,15 +135,46 @@ async function onSubmitData(e) {
         tableBody.appendChild(newTask);
     }
 
+function formatDate(dateTimeString) {
+    if (!dateTimeString) return ''; // Возвращаем пустую строку, если строка пуста или undefined
+    const dateTime = new Date(dateTimeString);
+    const year = dateTime.getFullYear();
+    const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
+    const day = ('0' + dateTime.getDate()).slice(-2);
+    const hours = ('0' + dateTime.getHours()).slice(-2);
+    const minutes = ('0' + dateTime.getMinutes()).slice(-2);
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
 
 async function onGetInfo(e) {
     e.preventDefault()
     let element = e.currentTarget
-    console.log(element)
-    let detail_attribute = element.data['detail_task']
-    console.log(detail_attribute)
+    let detail_attribute = element.dataset['detail_task']
     let response = await makeRequest(detail_attribute, "GET")
-    console.log(response)
+    console.log(response.task)
+    let response_data = response.task
+    let task_title = document.getElementById('task_title')
+    task_title.innerHTML = `#${response_data.id} ${response_data.title}`
+    let task_created_at = document.getElementById('task_created_at')
+    task_created_at.innerHTML = `Создана: ${formatDate(response_data.created_at)}`
+    let task_start_date = document.getElementById('task_start_date')
+    task_start_date.innerHTML = `Начать: ${formatDate(response_data.start_date)}`
+    let task_status = document.getElementById('task_status')
+    task_status.innerHTML = `Статус: ${response_data.status}`
+    let task_priority = document.getElementById('task_priority')
+    task_priority.innerHTML = `Приоритет: ${response_data.priority}`
+    let task_updated_at = document.getElementById('task_updated_at')
+    task_updated_at.innerHTML = `Изменена: ${formatDate(response_data.updated_at)}`
+    let task_done_at = document.getElementById('task_done_at')
+    task_done_at.innerHTML = `Выполенена: ${formatDate(response_data.done_at)}`
+    let task_deadline = document.getElementById('task_deadline')
+    task_deadline.innerHTML = `Дедлайн: ${formatDate(response_data.deadline)}`
+    let task_author = document.getElementById('task_author')
+    task_author.innerHTML = `От кого: ${response_data.author}`
+    let task_type = document.getElementById('task_type')
+    task_type.innerHTML = `Тип: ${response_data.type}`
+
 }
 
 
