@@ -11,6 +11,7 @@ from django.db.models import ForeignKey
 import json
 
 
+
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
@@ -244,6 +245,7 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
 
 
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):

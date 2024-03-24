@@ -15,9 +15,7 @@
             <tbody id="table_body">
                 {% for task in tasks %}
                     <tr style="cursor: pointer" class="detail-btn_task" data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}">
-                        <td>
-                            {{ task.title }}
-                        </td>
+                        <td><a href="{% url 'webapp:task_proposal_view' pk=task.pk%}">{{ task.title }}</a></td>
                         <td>{{ task.type }}</td>
                         <td>{{ task.status }}</td>
                         <td>{{ task.priority }}</td>
@@ -35,12 +33,3 @@
         </table>
     </div>
 </div>
-
-<script src="vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#dataTable').DataTable();
-    });
-</script>

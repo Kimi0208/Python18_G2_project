@@ -80,9 +80,7 @@ class UserCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        # position = Position.objects.get(id=form.cleaned_data.get("position_id"))
-        # self.object.position = position
-        self.object.author = self.request.user
+        self.object.set_password(form.cleaned_data.get('password'))
         self.object.save()
         return redirect('accounts:user_list')
 
@@ -92,8 +90,11 @@ class UserUpdateView(UpdateView):
     form_class = UserForm
     template_name = 'user_crud/user_update.html'
 
-    def get_success_url(self):
-        return reverse('accounts:user_list')
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.set_password(form.cleaned_data.get('password'))
+        self.object.save()
+        return redirect('accounts:user_list')
 
 
 class UserDeleteView(DeleteView):

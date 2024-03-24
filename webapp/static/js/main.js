@@ -163,4 +163,27 @@ function onLoad() {
 
 
 window.addEventListener('load', onLoad);
+// function onLoad(e) {
+//     e.preventDefault();
+//     let action_buttons = document.getElementsByClassName('action-btn_task')
+//     console.log(action_buttons)
+//     for (let action_button of action_buttons) {
+//         action_button.addEventListener('click', onClick)
+//     }
+// }
+
+
+// window.addEventListener('load', onLoad);
+
+// function showModal(objectId) {
+//     // 1. API
+//     // 1.1 Get task JSON
+//     // 1.2 Update task JSON
+//     $('#modal-title').text(`Object id: ${objectId}`);
+//     $('#taskModal').modal('show')
+// }
+
+// function showCreateModal() {
+//     $('#taskCreateModal').modal('show')
+// }
 
