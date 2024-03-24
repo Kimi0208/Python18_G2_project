@@ -8,6 +8,7 @@ from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
+import json
 
 
 class TaskListView(ListView):
@@ -212,12 +213,13 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
+        self.object.save()
         if self.object.destination_to_user:
-            subject = f'CRM: Новая задача #{self.object.id}  {self.object.title}'
+            subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
             message = self.object.description
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
-        self.object.save()
+
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
