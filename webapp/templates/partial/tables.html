@@ -2,28 +2,33 @@
     <div class="table-responsive">
         <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
             <thead>
-                <tr>
-                    <th>Задача</th>
-                    <th>Тип</th>
-                    <th>Статус</th>
-                    <th>Приоритет</th>
-                    <th>Дедлайн</th>
-                    <th>Сотрудник</th>
-                    <th>Отдел</th>
-                </tr>
+            <tr>
+                <th>Задача</th>
+                <th>Тип</th>
+                <th>Статус</th>
+                <th>Приоритет</th>
+                <th>Дата создания</th>
+                <th>Дедлайн</th>
+                <th>От кого</th>
+            </tr>
             </thead>
-            <tbody>
+            <tbody id="table_body">
                 {% for task in tasks %}
-                    <tr>
+                    <tr style="cursor: pointer" class="detail-btn_task" data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}">
                         <td><a href="{% url 'webapp:task_proposal_view' pk=task.pk%}">{{ task.title }}</a></td>
                         <td>{{ task.type }}</td>
                         <td>{{ task.status }}</td>
                         <td>{{ task.priority }}</td>
-                        <td>{{ task.deadline }}</td>
-                        <td>{{ task.destination_to_user }}</td>
-                        <td>{{ task.destination_to_department }}</td>
+                        <td>{{ task.created_at|date:"Y-m-d H:i" }}</td>
+                        {% if task.deadline %}
+                            <td>{{ task.deadline }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        
+                        <td>{{ task.author }}</td>
                     </tr>
-                  {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </div>
