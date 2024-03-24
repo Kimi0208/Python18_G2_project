@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import redirect, reverse
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -145,6 +146,23 @@ class TaskDetailView(PermissionRequiredMixin, DetailView):
         context['history'] = history_list
         return context
 
+    def render_to_response(self, context, **response_kwargs):
+        task_data = {
+            'id': self.object.pk,
+            'title': self.object.title,
+            'description': self.object.description,
+            'created_at' : self.object.created_at,
+            'start_date' : self.object.start_date,
+            'updated_at' : self.object.updated_at,
+            'done_at' : self.object.done_at,
+            'deadline' : self.object.deadline,
+            'status' : self.object.status.name,
+            'priority' : self.object.priority.name,
+            'author' : self.object.author,
+            'type' : self.object.type.name
+        }
+        return JsonResponse({'task_data': task_data})
+
 
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
@@ -155,9 +173,34 @@ class TaskView(PermissionRequiredMixin, DetailView):
     template_name = "task_proposal_view.html"
     permission_required = 'webapp.view_task'
 
-    def task_view(request, *args, pk, **kwargs):
-        task = get_object_or_404(Task, pk=pk)
-        return render(request, "task_proposal_view.html", {"task": task})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        checklists = Checklist.objects.all()
+        context['checklists'] = checklists
+        subtasks = Task.objects.filter(parent_task=self.object)
+        context['subtasks'] = subtasks
+        files = File.objects.filter(task=self.object)
+        context['files'] = files
+        history_list = record_history(self.object.pk)
+        context['history'] = history_list
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        task_data = {
+            'id': self.object.pk,
+            'title': self.object.title,
+            'description': self.object.description,
+            'created_at': self.object.created_at,
+            'start_date': self.object.start_date,
+            'updated_at': self.object.updated_at,
+            'done_at': self.object.done_at,
+            'deadline': self.object.deadline,
+            'status': self.object.status.name,
+            'priority': self.object.priority.name,
+            'author': self.object.author.username,
+            'type': self.object.type.name
+        }
+        return JsonResponse({'task_data': task_data})
 
 
 class TaskCreateView(PermissionRequiredMixin, CreateView):
@@ -175,8 +218,30 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
             send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
                                     smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
         self.object.save()
-        # return redirect('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
-        return redirect('webapp:task_proposal_view', pk=self.object.pk)
+        task_data = {
+            'id': self.object.pk,
+            'title': self.object.title,
+            'description': self.object.description,
+            'created_at': self.object.created_at,
+            'start_date': self.object.start_date,
+            'updated_at': self.object.updated_at,
+            'done_at': self.object.done_at,
+            'deadline': self.object.deadline,
+            'status': self.object.status.name,
+            'priority': self.object.priority.name,
+            'author': self.object.author.username,
+            'type': self.object.type.name
+        }
+        return JsonResponse(task_data)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        self.object = None
+        form = TaskForm(data)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):

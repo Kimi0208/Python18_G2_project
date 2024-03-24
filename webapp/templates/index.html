@@ -1,9 +1,6 @@
 {% extends '_base.html' %}
 {% load static %}
 
-{% block title %}
-    Мои задачи
-{% endblock %}
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
@@ -18,23 +15,19 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-{#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
-{#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
-    </div>
-{#    <div id="main_area">#}
-{#         {% include 'partial/task_list.html' %}#}
-{#    </div>#}
+   
     <div id="main_area">
          {% include 'partial/tables.html' %}
-{#        <div class="container">#}
-{#            {% include 'partial/cards.html' %}#}
-{#        </div>#}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
     </div>
 
-    <div id="action-task-modal_window" class="modal">
+    
 
-    </div>
+    <div id="action-task-modal_window" class="modal"></div>
 
 {% endblock %}
 {% block scripts %}
