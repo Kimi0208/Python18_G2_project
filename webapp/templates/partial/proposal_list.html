@@ -1,0 +1,17 @@
+{# <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> #}
+{#            {% for proposal in proposals %}#}
+{#                <div class="col">#}
+{#                    <div class="card">#}
+{#                        <div class="card-body">#}
+{#                            <h5 class="card-title">{{ proposal.title }}</h5>#}
+{#                            <p style="margin-bottom: 20px">{{ proposal.author.username }}</p>#}
+{#                            <p class="card-text">Created at: {{ proposal.created_at }}</p>#}
+{#                            <p class="card-text">Updated at: {{ proposal.updated_at }}</p>#}
+{#                            <p>{{ proposal.description }}</p>#}
+{#                            <button class="action-btn_task" data-action_task="{% url 'webapp:proposal_update' pk=proposal.pk %}">Изменить</button>#}
+{#                            <button class="action-btn_task" data-action_task="{% url 'webapp:proposal_delete' pk=proposal.pk %}">Удалить</button>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#    </div>#}

@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+{% load static %}
+
+
+{% block title %}Удалить отдел{% endblock %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="{% static 'css/task.css' %}">
+
+    <div class="modal-content p-4">
+        <div>
+
+            <h3>Вы собираетесь удалить отдел "{{ object }}". Подтвердите действие:</h3>
+
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="btn btn-primary" type="submit" value="Удалить" style="background: red"/>
+            </form>
+            </p>
+
+            <a class="btn btn-primary" style="background: forestgreen" href="{% url 'accounts:department_list' %}">Отмена</a>
+
+        </div>
+    </div>
+
+{% endblock %}
+
