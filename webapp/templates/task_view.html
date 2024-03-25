@@ -1,46 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="card text-center">
-      <div class="card-header">
-          {{ task.type }}
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ task.title }}</h5>
-        <p class="card-text">Статус {{ task.status }}</p>
-        <p class="card-text">Приоритет {{ task.priority }}</p>
-        <p class="card-text">{{ task.description }}</p>
-{#        <a href="#" class="btn btn-primary">Go somewhere</a>#}
-      </div>
-      <div class="card-footer text-body-secondary">
-        Дата создания {{ task.created_at }}
-        Дата начала {{ task.start_date }}
-        Дата завершения  {{ task.done_at }}
-        Дедлайн  {{ task.deadline }}
-      </div>
-    <div>
-        <button class="action-btn_task" data-action_task="{% url 'webapp:add_file' task_pk=task.pk %}">Прикрепить файл</button>
-        {% for file in files %}
-            <a href="{{ file.file.url }}" target="_blank">Документ {{ file.pk }}</a>
-        {% endfor %}
+        <div class="card-header">
+            {{ task.type }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{ task.title }}</h5>
+            <p class="card-text">Статус {{ task.status }}</p>
+            <p class="card-text">Приоритет {{ task.priority }}</p>
+            <p class="card-text">{{ task.description }}</p>
+            {#        <a href="#" class="btn btn-primary">Go somewhere</a>#}
+        </div>
+        <div class="card-footer text-body-secondary">
+            Дата создания {{ task.created_at }}
+            Дата начала {{ task.start_date }}
+            Дата завершения {{ task.done_at }}
+            Дедлайн {{ task.deadline }}
+        </div>
+        <div>
+            <button class="action-btn_task" data-action_task="{% url 'webapp:add_file' task_pk=task.pk %}">Прикрепить
+                файл
+            </button>
+            {% for file in files %}
+                <a href="{{ file.file.url }}" target="_blank">Документ {{ file.pk }}</a>
+            {% endfor %}
+        </div>
     </div>
-    </div>
+
     {% if task.type.name == "Заявка" %}
         <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Чеклисты
-          </button>
-          <ul class="dropdown-menu">
-              {% for checklist in checklists %}
-            <li><a class="dropdown-item" href="{% url 'webapp:add_subtasks' task_pk=task.pk checklist_pk=checklist.pk%}">{{ checklist.name }}</a></li>
-              {% endfor %}
-          </ul> 
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                Чеклисты
+            </button>
+            <ul class="dropdown-menu">
+                {% for checklist in checklists %}
+                    <li><a class="dropdown-item"
+                           href="{% url 'webapp:add_subtasks' task_pk=task.pk checklist_pk=checklist.pk %}">{{ checklist.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
+
+        </p>
+
+        {% if files %}
+            {% for file in files %}
+                <form action="{% url 'webapp:sign_checklist' file_id=file.id %}" method="post">
+                    {% csrf_token %}
+                    {% if request.user in checklist_users %}
+                        <button type="submit" class="btn btn-primary">Подписать чеклист</button>
+                    {% endif %}
+                </form>
+            {% endfor %}
+        {% endif %}
+
     {% endif %}
+    
+    
     {% if subtasks %}
         <div style="margin-top: 80px">Подзадачи</div>
         {% for task in subtasks %}
             {{ task.title }}
         {% endfor %}
     {% endif %}
+
     <div id="action-task-modal_window" class="modal"></div>
+
 {% endblock %}

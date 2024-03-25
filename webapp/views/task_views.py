@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
@@ -6,6 +7,8 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
+from docx import Document
+from docx.shared import Inches
 
 
 class TaskListView(ListView):
@@ -29,6 +32,13 @@ class TaskDetailView(PermissionRequiredMixin, DetailView):
         context['subtasks'] = subtasks
         files = File.objects.filter(task=self.object)
         context['files'] = files
+
+        # Получаем список пользователей, включенных в чеклист текущей задачи
+        checklist_users = []
+        for checklist in checklists:
+            checklist_users.extend(checklist.users.all())
+        context['checklist_users'] = checklist_users
+
         return context
 
 
@@ -134,3 +144,27 @@ class FileAddView(CreateView):
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
         return redirect('webapp:detail_task', pk=self.object.task.pk)
+
+
+def sign_checklist(request, file_id):
+    checklist_file = get_object_or_404(File, pk=file_id)
+
+    signature_path = 'uploads/signature/test.png'
+
+    doc = Document(checklist_file.file)
+
+    current_user = request.user
+    current_user_position = str(current_user.position)
+
+    if current_user.signature:
+        signature_path = current_user.signature.path
+
+    for paragraph in doc.paragraphs:
+        if current_user_position in paragraph.text:
+            run = paragraph.add_run()
+            run.add_picture(signature_path, width=Inches(2))
+            break
+
+    doc.save(checklist_file.file.path)
+
+    return HttpResponse()
