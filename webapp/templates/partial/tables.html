@@ -21,9 +21,9 @@
                         <td id="task_{{ task.pk }}_priority">{{ task.priority }}</td>
                         <td id="task_{{ task.pk }}_created_at">{{ task.created_at|date:"d-m-Y H:i" }}</td>
                         {% if task.deadline %}
-                            <td id="task_{{ task.pk }}_deadline">{{ task.deadline }}</td>
+                            <td id="task_{{ task.pk }}_deadline">{{ task.deadline|date:"d-m-Y H:i" }}</td>
                         {% else %}
-                            <td></td>
+                            <td id="task_{{ task.pk }}_deadline"></td>
                         {% endif %}
                         <td id="task_{{ task.pk }}_author">{{ task.author }}</td>
                     </tr>

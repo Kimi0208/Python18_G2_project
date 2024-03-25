@@ -94,16 +94,16 @@ async function onSubmitData(e) {
         response.id,
         response.title,
         response.type,
-        response.created_at,
+        formatDate(response.created_at),
         response.status,
         response.priority,
-        response.deadline,
+        formatDate(response.deadline),
         response.author,
         `/task/${response.id}/`);
     } else if (form.action.includes('update')) {
-        await updateTableTask(response.id, response.title, response.type, response.status, response.priority, response.deadline);
+        await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
-            response.deadline, response.start_date, response.updated_at, response.done_at)
+            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
 
     }
 
@@ -118,10 +118,7 @@ async function updateTableTask(id, title, type, status, priority, deadline) {
     task_type.innerHTML = type
     task_status.innerHTML = status
     task_priority.innerHTML = priority
-    if (deadline){
-        task_deadline.innerHTML = deadline
-    }
-
+    task_deadline.innerHTML = deadline
 
 }
 
@@ -137,28 +134,28 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
 
 
     for (title_element of detail_task_title){
-        title_element.innerHTML = title
+        title_element.innerHTML = `#${id} ${title}`
     }
     for (type_element of detail_task_type){
-        type_element.innerHTML = type
-    }
-    for (status_element of detail_task_status){
-        status_element.innerHTML = status
-    }
-    for (priority_element of detail_task_priority){
-        priority_element.innerHTML = priority
-    }
-    for (deadline_element of detail_task_deadline){
-        deadline_element.innerHTML = deadline
+        type_element.innerHTML = `Тип: ${type}`
     }
     for (start_date_element of detail_task_start_date){
-        start_date_element.innerHTML = start_date
+        start_date_element.innerHTML = `Начать: ${start_date}`
+    }
+    for (status_element of detail_task_status){
+        status_element.innerHTML = `Статус: ${status}`
+    }
+    for (priority_element of detail_task_priority){
+        priority_element.innerHTML = `Приоритет: ${priority}`
     }
     for (updated_at_element of detail_task_updated_at){
-        updated_at_element.innerHTML = updated_at
+        updated_at_element.innerHTML = `Изменена: ${updated_at}`
     }
     for (done_at_element of detail_task_done_at){
-        done_at_element.innerHTML = done_at
+        done_at_element.innerHTML = `Выполнена: ${done_at}`
+    }
+    for (deadline_element of detail_task_deadline){
+        deadline_element.innerHTML = `Дедлайн: ${deadline}`
     }
 }
 async function addTask(id, title, type, created_at, status, priority, deadline, author, url) {
@@ -190,11 +187,11 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
     taskPriority.id = `task_${id}_priority`
 
     let taskCreatedAt = document.createElement('td');
-    taskCreatedAt.textContent = formatDate(created_at);
+    taskCreatedAt.textContent = created_at;
     taskCreatedAt.id = `task_${id}_created_at`
 
     let taskDeadline = document.createElement('td');
-    taskDeadline.textContent = formatDate(deadline);
+    taskDeadline.textContent = deadline;
     taskDeadline.id = `task_${id}_deadline`
 
     let taskAuthor = document.createElement('td');

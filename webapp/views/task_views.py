@@ -137,7 +137,6 @@ smtp_port = 465
 
 class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
-    template_name = "task_proposal_view.html"
     permission_required = 'webapp.view_task'
 
     def get_context_data(self, **kwargs):
@@ -148,8 +147,8 @@ class TaskView(PermissionRequiredMixin, DetailView):
         context['subtasks'] = subtasks
         files = File.objects.filter(task=self.object)
         context['files'] = files
-        history_list = record_history(self.object.pk)
-        context['history'] = history_list
+        # history_list = record_history(self.object.pk)
+        # context['history'] = history_list
         return context
 
     def render_to_response(self, context, **response_kwargs):
