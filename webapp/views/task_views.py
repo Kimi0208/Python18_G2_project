@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
@@ -167,4 +167,6 @@ def sign_checklist(request, file_id):
 
     doc.save(checklist_file.file.path)
 
-    return HttpResponse()
+    task_id = checklist_file.task_id
+
+    return HttpResponseRedirect(reverse('webapp:detail_task', kwargs={'pk': task_id}))
