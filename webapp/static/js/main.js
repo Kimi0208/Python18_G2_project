@@ -258,7 +258,7 @@ async function onGetInfo(e) {
     task_updated_at.classList.add(`detail_task_${response_data.id}_updated_at`)
 
     let task_done_at = document.getElementById('task_done_at')
-    task_done_at.innerHTML = `Выполенена: ${formatDate(response_data.done_at)}`
+    task_done_at.innerHTML = `Выполнена: ${formatDate(response_data.done_at)}`
     task_done_at.classList.add(`detail_task_${response_data.id}_done_at`)
 
     let task_deadline = document.getElementById('task_deadline')
