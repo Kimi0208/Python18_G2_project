@@ -130,41 +130,6 @@ def delete_file(request, task_pk, file_pk):
     return redirect('webapp:detail_task', pk=task_pk)
 
 
-class TaskDetailView(PermissionRequiredMixin, DetailView):
-    model = Task
-    template_name = 'task_view.html'
-    context_object_name = 'task'
-    permission_required = 'webapp.view_task'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        checklists = Checklist.objects.all()
-        context['checklists'] = checklists
-        subtasks = Task.objects.filter(parent_task=self.object)
-        context['subtasks'] = subtasks
-        files = File.objects.filter(task=self.object)
-        context['files'] = files
-        history_list = record_history(self.object.pk)
-        context['history'] = history_list
-        return context
-
-    def render_to_response(self, context, **response_kwargs):
-        task_data = {
-            'id': self.object.pk,
-            'title': self.object.title,
-            'description': self.object.description,
-            'created_at' : self.object.created_at,
-            'start_date' : self.object.start_date,
-            'updated_at' : self.object.updated_at,
-            'done_at' : self.object.done_at,
-            'deadline' : self.object.deadline,
-            'status' : self.object.status.name,
-            'priority' : self.object.priority.name,
-            'author' : self.object.author,
-            'type' : self.object.type.name
-        }
-        return JsonResponse({'task_data': task_data})
-
 
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
@@ -172,7 +137,6 @@ smtp_port = 465
 
 class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
-    template_name = "task_proposal_view.html"
     permission_required = 'webapp.view_task'
 
     def get_context_data(self, **kwargs):
@@ -183,8 +147,8 @@ class TaskView(PermissionRequiredMixin, DetailView):
         context['subtasks'] = subtasks
         files = File.objects.filter(task=self.object)
         context['files'] = files
-        history_list = record_history(self.object.pk)
-        context['history'] = history_list
+        # history_list = record_history(self.object.pk)
+        # context['history'] = history_list
         return context
 
     def render_to_response(self, context, **response_kwargs):
@@ -202,7 +166,7 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name
         }
-        return JsonResponse({'task_data': task_data})
+        return JsonResponse({'task':task_data})
 
 
 class TaskCreateView(PermissionRequiredMixin, CreateView):
@@ -254,7 +218,8 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = 'task_proposal_edit.html'
     permission_required = 'webapp.change_task'
 
-    def get_success_url(self):
+    def form_valid(self, form):
+        self.object = form.save()
         if self.object.status.name == 'Выполнена':
             if self.object.destination_to_user:
                 subject = f'CRM: Задача #{self.object.id} выполнена {self.object.title}'
@@ -262,7 +227,32 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
                 send_email_notification(subject, message, self.request.user.email, self.object.author.email,
                                         smtp_server, smtp_port, self.request.user.email,
                                         self.request.user.email_password)
-        return reverse('webapp:task_proposal_view', kwargs={'pk': self.object.pk})
+        task_data = {
+            'id': self.object.pk,
+            'title': self.object.title,
+            'description': self.object.description,
+            'start_date': self.object.start_date,
+            'updated_at': self.object.updated_at,
+            'done_at': self.object.done_at,
+            'deadline': self.object.deadline,
+            'status': self.object.status.name,
+            'priority': self.object.priority.name,
+            'type': self.object.type.name
+        }
+        return JsonResponse(task_data)
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        self.object = self.get_object()
+        form = TaskForm(data, instance=self.object)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+
+
 
 
 class TaskDeleteView(DeleteView):
