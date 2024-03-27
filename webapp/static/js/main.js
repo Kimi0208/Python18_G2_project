@@ -1,6 +1,6 @@
 async function makeRequest(url, method = 'GET', data = null, token = null) {
     let headers = {
-        "Content-Type": "application/json"
+        // "Content-Type": "application/json"
     };
     if (token) {
         headers['Authorization'] = 'Token ' + token;
@@ -11,9 +11,13 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     let options;
 
     if (method !== "GET") {
-        options = {method, headers, body: JSON.stringify(data),};
+        if (data instanceof FormData) {
+            options = { method, headers, body: data };
+        } else {
+            options = { method, headers, body: JSON.stringify(data) };
+        }
     } else {
-        options = {method, headers};
+        options = { method, headers };
     }
     console.log(url)
     console.log(options)
@@ -234,6 +238,9 @@ async function onGetInfo(e) {
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
 
+    let task_add_file = document.getElementById('add_file')
+    task_add_file.dataset.add_file = `task/${response_data.id}/file/`
+
     let task_title = document.getElementById('task_title')
     task_title.innerHTML = `#${response_data.id} ${response_data.title}`
     task_title.classList.add(`detail_task_${response_data.id}_title`)
@@ -274,16 +281,86 @@ async function onGetInfo(e) {
 
 }
 
+async function onAddFile(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.dataset['add_file']
+    let response = await makeRequest(data_attribute, "GET")
+    let datar = await response.text();
+    let modal = document.getElementById('action-task-modal_window')
+    modal.innerHTML = datar
+    modal.style.display = 'block'
+    let form = document.getElementById('test_form');
+    form.action = data_attribute
+    let send_file = document.getElementById('send_data')
+    send_file.addEventListener('click', onPostFile)
+}
+
+// async function onPostFile(e) {
+//     e.preventDefault()
+//     console.log(e)
+//     let element = e.currentTarget
+//     console.log(element)
+//     let data_attribute = element.dataset['add_file']
+//     console.log(data_attribute)
+//     let form = document.getElementById('test_form');
+//     form.action = data_attribute
+//     let file = form.elements['file'].value
+//     console.log(file)
+//     let data = {
+//         'file': file
+//     }
+//     let response = await makeRequest(data_attribute, "POST", data)
+//     console.log(response)
+//
+// }
+
+// async function onPostFile(e) {
+//     e.preventDefault();
+//     let form = document.getElementById('test_form');
+//     console.log(form)
+//     let formData = new FormData(form);
+//     console.log(form.elements['file'].files[0])
+//     let response1 = await fetch(form.action, {
+//         method:"POST",
+//         body: formData
+//     })
+//     console.log(response1)
+//     let task_file = {'task_file': form.elements['file'].files[0]}
+//
+//     let data_attribute = form.action;
+//     // let response = await makeRequest(data_attribute, "POST", task_file);
+//     // console.log(response);
+// }
+
+async function onPostFile(e) {
+    e.preventDefault();
+    let form = document.getElementById('test_form');
+    console.log(form)
+    let formData = new FormData(form);
+    let data_attribute = form.action;
+    let response = await makeRequest(data_attribute, "POST", formData);
+    console.log(response);
+}
+
+
+
+
+
+
 
 function onLoad() {
     let action_buttons = document.getElementsByClassName('action-btn_task')
-    console.log(action_buttons)
     for (let action_button of action_buttons) {
         action_button.addEventListener('click', onClick)
     }
     let detail_buttons = document.getElementsByClassName('detail-btn_task')
     for (let detail_button of detail_buttons) {
         detail_button.addEventListener('click', onGetInfo)
+    }
+    let add_file_buttons = document.getElementsByClassName('add-file-btn_task')
+    for (let add_file_button of add_file_buttons) {
+        add_file_button.addEventListener('click', onAddFile)
     }
 }
 

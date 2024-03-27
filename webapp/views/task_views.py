@@ -302,8 +302,14 @@ class FileAddView(CreateView):
     template_name = 'file_add.html'
 
     def form_valid(self, form):
+        print(self.object)
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
-        return redirect('webapp:detail_task', pk=self.object.task.pk)
+        file = {
+            'file': self.object.file.name,
+        }
+        print(self.object.file.name)
+        return JsonResponse({'file' : file})
+
