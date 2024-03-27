@@ -11,6 +11,6 @@ urlpatterns = [
     path('update/<int:pk>/', TaskUpdateView.as_view(), name='update_task'),
     path('delete/<int:pk>/', TaskDeleteView.as_view(), name='delete_task'),
     path('task/<int:task_pk>/<int:checklist_pk>', add_subtasks, name='add_subtasks'),
-    path('task/<int:task_pk>/file/', FileAddView.as_view(), name='add_file'),
+    path('task/<int:task_pk>/file/add/', FileAddView.as_view(), name='add_file'),
     path('task/<int:task_pk>/file/<int:file_pk>/delete/', delete_file, name='delete_file')
 ]

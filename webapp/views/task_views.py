@@ -201,16 +201,6 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
         }
         return JsonResponse(task_data)
 
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        self.object = None
-        form = TaskForm(data)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-
 
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
@@ -240,19 +230,6 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
             'type': self.object.type.name
         }
         return JsonResponse(task_data)
-
-    def post(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        self.object = self.get_object()
-        form = TaskForm(data, instance=self.object)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-
-
-
 
 
 class TaskDeleteView(DeleteView):
@@ -302,7 +279,6 @@ class FileAddView(CreateView):
     template_name = 'file_add.html'
 
     def form_valid(self, form):
-        print(self.object)
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
@@ -310,6 +286,5 @@ class FileAddView(CreateView):
         file = {
             'file': self.object.file.name,
         }
-        print(self.object.file.name)
         return JsonResponse({'file' : file})
 

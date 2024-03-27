@@ -1,6 +1,5 @@
 async function makeRequest(url, method = 'GET', data = null, token = null) {
     let headers = {
-        // "Content-Type": "application/json"
     };
     if (token) {
         headers['Authorization'] = 'Token ' + token;
@@ -11,19 +10,11 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     let options;
 
     if (method !== "GET") {
-        if (data instanceof FormData) {
-            options = { method, headers, body: data };
-        } else {
-            options = { method, headers, body: JSON.stringify(data) };
-        }
+        options = { method, headers, body: data };
     } else {
         options = { method, headers };
     }
-    console.log(url)
-    console.log(options)
     let response = await fetch(url, options);
-    console.log(response)
-    console.log(response.headers.get('content-type'))
 
     if (response.ok) {
         let contentType = response.headers.get("content-type");
@@ -44,7 +35,6 @@ async function onClick(e) {
     e.preventDefault()
     let element = e.currentTarget;
     let data_attribute = element.dataset['action_task']
-    console.log(data_attribute)
     let response = await makeRequest(data_attribute, "GET")
     let datar = await response.text();
     let modal = document.getElementById('action-task-modal_window')
@@ -63,35 +53,9 @@ async function onClick(e) {
 async function onSubmitData(e) {
     e.preventDefault();
     let form = e.target.closest('form');
-    let title = form.elements['title'].value;
-    console.log(title)
-    let type = form.elements['type'].value
-    let description = form.elements['description'].value;
-    let start_date = form.elements['start_date'].value
-    let done_at = form.elements['done_at'].value
-    let deadline = form.elements['deadline'].value
-    let status = form.elements['status'].value
-    let priority = form.elements['priority'].value
-    let destination_to_department = form.elements['destination_to_department'].value
-    let destination_to_user = form.elements['destination_to_user'].value
-
-    let data = {
-        'title': title,
-        'description': description,
-        'type': type,
-        'start_date': start_date,
-        'done_at': done_at,
-        'deadline': deadline,
-        'status': status,
-        'priority': priority,
-        'destination_to_department': destination_to_department,
-        'destination_to_user': destination_to_user
-    }
-
+    let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
-    console.log(form.action)
-    let response = await makeRequest(form.action, "POST", data, token);
-    console.log(response)
+    let response = await makeRequest(form.action, "POST", formData, token);
     if (form.action.includes('create')) {
         console.log(response.id)
         await addTask(
@@ -109,6 +73,8 @@ async function onSubmitData(e) {
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
             formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
 
+    } else if (form.action.includes('file/add')) {
+        await onPostFile(form.action, formData, token)
     }
 
 }
@@ -214,7 +180,7 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
 }
 
 function formatDate(dateTimeString) {
-    if (!dateTimeString) return ''; // Возвращаем пустую строку, если строка пуста или undefined
+    if (!dateTimeString) return '';
     const dateTime = new Date(dateTimeString);
     const year = dateTime.getFullYear();
     const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
@@ -232,14 +198,13 @@ async function onGetInfo(e) {
     let task_detail_info_element = document.getElementById('task-detail-info')
     task_detail_info_element.style.display = 'block'
     let response = await makeRequest(detail_attribute, "GET")
-    console.log(response.task)
     let response_data = response.task
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
 
     let task_add_file = document.getElementById('add_file')
-    task_add_file.dataset.add_file = `task/${response_data.id}/file/`
+    task_add_file.dataset.action_task = `task/${response_data.id}/file/add/`
 
     let task_title = document.getElementById('task_title')
     task_title.innerHTML = `#${response_data.id} ${response_data.title}`
@@ -281,77 +246,15 @@ async function onGetInfo(e) {
 
 }
 
-async function onAddFile(e) {
-    e.preventDefault()
-    let element = e.currentTarget
-    let data_attribute = element.dataset['add_file']
-    let response = await makeRequest(data_attribute, "GET")
-    let datar = await response.text();
-    let modal = document.getElementById('action-task-modal_window')
-    modal.innerHTML = datar
-    modal.style.display = 'block'
-    let form = document.getElementById('test_form');
-    form.action = data_attribute
-    let send_file = document.getElementById('send_data')
-    send_file.addEventListener('click', onPostFile)
+async function onPostFile(url, data) {
+
 }
-
-// async function onPostFile(e) {
-//     e.preventDefault()
-//     console.log(e)
-//     let element = e.currentTarget
-//     console.log(element)
-//     let data_attribute = element.dataset['add_file']
-//     console.log(data_attribute)
-//     let form = document.getElementById('test_form');
-//     form.action = data_attribute
-//     let file = form.elements['file'].value
-//     console.log(file)
-//     let data = {
-//         'file': file
-//     }
-//     let response = await makeRequest(data_attribute, "POST", data)
-//     console.log(response)
-//
-// }
-
-// async function onPostFile(e) {
-//     e.preventDefault();
-//     let form = document.getElementById('test_form');
-//     console.log(form)
-//     let formData = new FormData(form);
-//     console.log(form.elements['file'].files[0])
-//     let response1 = await fetch(form.action, {
-//         method:"POST",
-//         body: formData
-//     })
-//     console.log(response1)
-//     let task_file = {'task_file': form.elements['file'].files[0]}
-//
-//     let data_attribute = form.action;
-//     // let response = await makeRequest(data_attribute, "POST", task_file);
-//     // console.log(response);
-// }
-
-async function onPostFile(e) {
-    e.preventDefault();
-    let form = document.getElementById('test_form');
-    console.log(form)
-    let formData = new FormData(form);
-    let data_attribute = form.action;
-    let response = await makeRequest(data_attribute, "POST", formData);
-    console.log(response);
-}
-
-
-
-
-
 
 
 function onLoad() {
     let action_buttons = document.getElementsByClassName('action-btn_task')
     for (let action_button of action_buttons) {
+        console.log(action_button)
         action_button.addEventListener('click', onClick)
     }
     let detail_buttons = document.getElementsByClassName('detail-btn_task')
