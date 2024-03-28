@@ -13,5 +13,6 @@ urlpatterns = [
     path('task/<int:task_pk>/<int:checklist_pk>', add_subtasks, name='add_subtasks'),
     path('task/<int:task_pk>/file/add/', FileAddView.as_view(), name='add_file'),
     path('task/<int:task_pk>/file/<int:pk>/delete/', FileDeleteView.as_view(), name='delete_file'),
-    path('task/<int:task_pk>/files/', get_task_files, name='task_file_list')
+    path('task/<int:task_pk>/files/', get_task_files, name='task_file_list'),
+    path('task/<int:task_pk>/create_subtask/', TaskCreateView.as_view(), name='create_subtask')
 ]

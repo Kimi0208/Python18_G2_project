@@ -207,6 +207,9 @@ async function onGetDetailTask(e) {
     let task_files = document.getElementById('task_files')
     task_files.dataset.get_info_task = `task/${response_data.id}/files/`
 
+    let create_subtask = document.getElementById('add_subtask')
+    create_subtask.dataset.action_task = `task/${response_data.id}/create_subtask/`
+
     let task_title = document.getElementById('task_title')
     task_title.innerHTML = `#${response_data.id} ${response_data.title}`
     task_title.classList.add(`detail_task_${response_data.id}_title`)

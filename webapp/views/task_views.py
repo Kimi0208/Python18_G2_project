@@ -195,6 +195,8 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
+        if self.kwargs['task_pk']:
+            self.object.parent_task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
         if self.object.destination_to_user:
             subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
