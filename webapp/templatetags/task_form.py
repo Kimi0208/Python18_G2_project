@@ -1,6 +1,6 @@
 from django import template
 from webapp.models import Task
-from webapp.forms import TaskForm, FileForm
+from webapp.forms import TaskForm
 
 
 register = template.Library()

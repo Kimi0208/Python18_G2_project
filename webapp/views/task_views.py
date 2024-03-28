@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse
-from webapp.forms import TaskForm, FileForm
-from webapp.models import Task, Status, Priority, Type, File, Checklist
+from webapp.forms import TaskForm
+from webapp.models import Task, Status, Priority, Type, Checklist, File
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from docxtpl import DocxTemplate
@@ -9,7 +9,6 @@ from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
 import json
-
 
 
 class TaskListView(ListView):
@@ -24,6 +23,7 @@ def get_object_from_model(model, value):
         return model.objects.get(pk=value)
     except model.DoesNotExist:
         return None
+
 
 def check_is_foreign_key(field, old_value, new_value):
     if isinstance(field, ForeignKey):
@@ -84,13 +84,13 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл"
+            action = "Добавлен файл"
         elif file_history.history_type == "-":
             action = "Удален файл"
-        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user, file_history.file)]
+        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user,
+                         file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
-
 
 
 def record_history(task_pk):
@@ -103,7 +103,7 @@ def record_history(task_pk):
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
         change_user = current_record.history_user
-        #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
+        # Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
         changes = []
         for change in delta.changes:
@@ -128,7 +128,6 @@ def delete_file(request, task_pk, file_pk):
     file = File.objects.get(pk=file_pk)
     file.delete()
     return redirect('webapp:detail_task', pk=task_pk)
-
 
 
 smtp_server = "mail.elcat.kg"
@@ -167,7 +166,7 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name
         }
-        return JsonResponse({'task':task_data})
+        return JsonResponse({'task': task_data})
 
 
 class TaskCreateView(PermissionRequiredMixin, CreateView):
@@ -212,7 +211,6 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
             return self.form_invalid(form)
 
 
-
 class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
@@ -250,10 +248,6 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-
-
-
-
 
 
 class TaskDeleteView(DeleteView):
@@ -296,15 +290,14 @@ def add_subtasks(request, checklist_pk, task_pk):
     File.objects.create(user=request.user, task=main_task, file=new_file_path)
     return redirect('webapp:detail_task', pk=task_pk)
 
-
-class FileAddView(CreateView):
-    model = File
-    form_class = FileForm
-    template_name = 'file_add.html'
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.user = self.request.user
-        self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
-        self.object.save()
-        return redirect('webapp:detail_task', pk=self.object.task.pk)
+# class FileAddView(CreateView):
+#     model = File
+#     form_class = UploadFileForm
+#     template_name = 'file_add.html'
+#
+#     def form_valid(self, form):
+#         self.object = form.save(commit=False)
+#         self.object.user = self.request.user
+#         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
+#         self.object.save()
+#         return redirect('webapp:detail_task', pk=self.object.task.pk)

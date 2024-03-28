@@ -81,7 +81,7 @@ async function onSubmitData(e) {
         'status': status,
         'priority': priority,
         'destination_to_department': destination_to_department,
-        'destination_to_user': destination_to_user
+        'destination_to_user': destination_to_user,
     }
 
     let token = localStorage.getItem('apiToken');

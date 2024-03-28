@@ -22,6 +22,8 @@ class Task(models.Model):
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип')
+    attachment = models.FileField(upload_to='tasks', verbose_name='Вложение', default=None, blank=True,
+                                  null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -64,7 +66,6 @@ class File(models.Model):
     file = models.FileField(verbose_name="Файлы", upload_to='uploads/', null=True, blank=True)
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
     history = HistoricalRecords()
 
 
@@ -84,17 +85,11 @@ class InOutMailsType(models.Model):
     type = models.CharField(max_length=50, verbose_name='Тип')
 
 
-def upload_path_for_mails(instance, filename):
-    if instance.type.type == 'входящее письмо':
-        return 'uploads/mails/input_mails/{0}'.format(filename)
-    elif instance.type.type == 'исходящее письмо':
-        return 'uploads/mails/output_mails/{0}'.format(filename)
-
-
 class InOutMails(models.Model):
     mail_number = models.CharField(auto_created=True, max_length=250, verbose_name='Порядковый номер документа',
                                    null=True, blank=True)
-    registration_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата/Время регистрации документа')
+    registration_date = models.DateTimeField(auto_now=True, verbose_name='Дата/Время регистрации документа',
+                                             null=True, blank=True)
     input_mail_number = models.CharField(max_length=250, verbose_name='Номер исходящего письма отправителя',
                                          null=True, blank=True)
     sender_name = models.CharField(max_length=250, verbose_name='Наименование отправителя', null=True, blank=True)
@@ -104,35 +99,22 @@ class InOutMails(models.Model):
                                                verbose_name='Ответственный отдел', null=True, blank=True)
     responsible_employee = models.ForeignKey('accounts.Position', on_delete=models.CASCADE,
                                              verbose_name='Ответственный сотрудник', null=True, blank=True)
-    file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name='Вложение', null=True, blank=True)
+    attachment = models.FileField(upload_to='mails/%InOutMails.type', null=True, blank=True)
     initiator_of_mail = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE,
                                           verbose_name='Инициатор исходящего письма')
     status = models.ForeignKey('InOutMailsStatus', on_delete=models.CASCADE, verbose_name='Статус письма')
     type = models.ForeignKey('InOutMailsType', on_delete=models.CASCADE, verbose_name='Тип письма')
 
 
-def upload_path_for_companies_list(instance, filename):
-    if instance.company_code:
-        return 'uploads/companies_list/{}/{}'.format(instance.company_code, filename)
-
-
 class CompaniesList(models.Model):
     company_code = models.CharField(max_length=250, verbose_name='Код компании')
     company_name = models.CharField(max_length=250, verbose_name='Назыание компании')
-    contract_with_company = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Договор с компанией',
-                                              null=True, blank=True)
+    contract_with_company = models.FileField(upload_to='companies/%CompaniesList.company_code', null=True, blank=True)
     company_inn = models.CharField(max_length=250, verbose_name='ИНН Компании', null=True, blank=True)
 
 
 class ContractLocation(models.Model):
     location_name = models.CharField(max_length=250, verbose_name='Физическое расположение договора')
-
-
-def upload_path_for_contracts(instance, filename):
-    if instance.company:
-        return 'uploads/contracts/{}/{}'.format(instance.company.company_code, filename)
-    else:
-        return 'uploads/contracts/unknown/{}'.format(filename)
 
 
 class ContractRegistry(models.Model):
@@ -146,7 +128,6 @@ class ContractRegistry(models.Model):
     responsible_employee = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE,
                                              verbose_name='Ответственный сотрудник', null=True, blank=True)
     scan_copy = models.BooleanField(default=False, verbose_name='Наличие отсканированной копии')
-    file = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Вложение', null=True,
-                             blank=True)
+    attachment = models.FileField(upload_to='contracts/%ContractRegistry.company', null=True, blank=True)
     contract_location = models.ForeignKey('ContractLocation', on_delete=models.CASCADE,
                                           verbose_name='Физическое расположение договора')
