@@ -1,6 +1,5 @@
 async function makeRequest(url, method = 'GET', data = null, token = null) {
     let headers = {
-        "Content-Type": "application/json"
     };
     if (token) {
         headers['Authorization'] = 'Token ' + token;
@@ -11,15 +10,11 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     let options;
 
     if (method !== "GET") {
-        options = {method, headers, body: JSON.stringify(data),};
+        options = { method, headers, body: data };
     } else {
-        options = {method, headers};
+        options = { method, headers };
     }
-    console.log(url)
-    console.log(options)
     let response = await fetch(url, options);
-    console.log(response)
-    console.log(response.headers.get('content-type'))
 
     if (response.ok) {
         let contentType = response.headers.get("content-type");
@@ -40,7 +35,6 @@ async function onClick(e) {
     e.preventDefault()
     let element = e.currentTarget;
     let data_attribute = element.dataset['action_task']
-    console.log(data_attribute)
     let response = await makeRequest(data_attribute, "GET")
     let datar = await response.text();
     let modal = document.getElementById('action-task-modal_window')
@@ -59,35 +53,9 @@ async function onClick(e) {
 async function onSubmitData(e) {
     e.preventDefault();
     let form = e.target.closest('form');
-    let title = form.elements['title'].value;
-    console.log(title)
-    let type = form.elements['type'].value
-    let description = form.elements['description'].value;
-    let start_date = form.elements['start_date'].value
-    let done_at = form.elements['done_at'].value
-    let deadline = form.elements['deadline'].value
-    let status = form.elements['status'].value
-    let priority = form.elements['priority'].value
-    let destination_to_department = form.elements['destination_to_department'].value
-    let destination_to_user = form.elements['destination_to_user'].value
-
-    let data = {
-        'title': title,
-        'description': description,
-        'type': type,
-        'start_date': start_date,
-        'done_at': done_at,
-        'deadline': deadline,
-        'status': status,
-        'priority': priority,
-        'destination_to_department': destination_to_department,
-        'destination_to_user': destination_to_user
-    }
-
+    let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
-    console.log(form.action)
-    let response = await makeRequest(form.action, "POST", data, token);
-    console.log(response)
+    let response = await makeRequest(form.action, "POST", formData, token);
     if (form.action.includes('create')) {
         console.log(response.id)
         await addTask(
@@ -166,7 +134,7 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
     newTask.dataset.detail_task = url;
     newTask.style.cursor = 'pointer'
     newTask.id=`task_id_${id}`
-    newTask.addEventListener('click', onGetInfo)
+    newTask.addEventListener('click', onGetDetailTask)
 
     let taskTitle = document.createElement('td');
     taskTitle.textContent = title;
@@ -210,7 +178,7 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
 }
 
 function formatDate(dateTimeString) {
-    if (!dateTimeString) return ''; // Возвращаем пустую строку, если строка пуста или undefined
+    if (!dateTimeString) return '';
     const dateTime = new Date(dateTimeString);
     const year = dateTime.getFullYear();
     const month = ('0' + (dateTime.getMonth() + 1)).slice(-2);
@@ -221,18 +189,23 @@ function formatDate(dateTimeString) {
 }
 
 
-async function onGetInfo(e) {
+async function onGetDetailTask(e) {
     e.preventDefault()
     let element = e.currentTarget
     let detail_attribute = element.dataset['detail_task']
     let task_detail_info_element = document.getElementById('task-detail-info')
     task_detail_info_element.style.display = 'block'
     let response = await makeRequest(detail_attribute, "GET")
-    console.log(response.task)
     let response_data = response.task
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
+
+    let task_add_file = document.getElementById('add_file')
+    task_add_file.dataset.action_task = `task/${response_data.id}/file/add/`
+
+    let task_files = document.getElementById('task_files')
+    task_files.dataset.get_info_task = `task/${response_data.id}/files/`
 
     let task_title = document.getElementById('task_title')
     task_title.innerHTML = `#${response_data.id} ${response_data.title}`
@@ -274,16 +247,98 @@ async function onGetInfo(e) {
 
 }
 
+async function onGetInfo(e) {
+    e.preventDefault();
+    let element = e.currentTarget;
+    let data_attribute = element.dataset['get_info_task'];
+    let response = await makeRequest(data_attribute, "GET");
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'block';
+    modal.innerHTML = '';
+    let files = response.files
+    modal.innerHTML = `
+            <div class="modal-content action_task_modal-content">
+                <div>
+                    <div class="form-modal-header action_task_form-modal-header">
+                        <h4>Файлы </h4>
+                        <button id="close_modal" style="background: white; border: none">Закрыть</button>
+                    </div>
+                    <div class="card" style="width: 18rem;">
+                        <ul class="list-group list-group-flush">
+                                
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    `
+    let ul_element = document.getElementsByClassName('list-group-flush')[0]
+    files.forEach(file => {
+        ul_element.innerHTML += `
+           <li class="list-group-item" id="file_${file.id}">
+                <p>${file.name.replace("uploads/user_docs/", "")}</p>
+                <a href="${file.url}" target="_blank" download="">Скачать</a>
+                <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a><br>
+                
+                <div class="confirmation_file_delete" id="confirmation_file-${file.id}_delete" style="display: none; margin-top: 5px"></div>
+           </li>`;
+    });
+    let closeBtn = document.getElementById("close_modal");
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+        modal.innerHTML = ''
+    }
+    let file_delete_buttons = document.getElementsByClassName('file_delete')
+    for (let file_delete_button of file_delete_buttons) {
+        file_delete_button.addEventListener('click', onConfirmDeletion)
+    }
+
+}
+
+async function onConfirmDeletion(e){
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.getAttribute('href')
+    let response = await makeRequest(data_attribute, "GET")
+    let data = await response.text()
+    let listItem = element.closest('li'); // Найти родительский элемент списка
+    let fileId = listItem.id.split('_')[1]; // Получить идентификатор файла из атрибута id
+    let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
+    for (confirmation_file_delete_element of confirmation_file_delete_elements){
+        if (confirmation_file_delete_element.style.display = 'block') {
+                confirmation_file_delete_element.style.display = 'none'
+                confirmation_file_delete_element.innerHTML=''
+        }
+    }
+    let div_element = document.getElementById(`confirmation_file-${fileId}_delete`)
+    div_element.innerHTML = data
+    div_element.style.display='block'
+    let confirm_delete_button = document.getElementById('confirm_delete')
+    let cancel_delete_button = document.getElementById('cancel_delete')
+    confirm_delete_button.addEventListener('click', async function(){
+        let post_response = await makeRequest(data_attribute, "POST")
+        listItem.remove()
+    })
+    cancel_delete_button.addEventListener('click', async function(){
+        div_element.innerHTML = ''
+        div_element.style.display='none'
+    })
+
+}
+
 
 function onLoad() {
     let action_buttons = document.getElementsByClassName('action-btn_task')
-    console.log(action_buttons)
     for (let action_button of action_buttons) {
+        console.log(action_button)
         action_button.addEventListener('click', onClick)
     }
     let detail_buttons = document.getElementsByClassName('detail-btn_task')
     for (let detail_button of detail_buttons) {
-        detail_button.addEventListener('click', onGetInfo)
+        detail_button.addEventListener('click', onGetDetailTask)
+    }
+    let get_info_buttons = document.getElementsByClassName('get-info-btn_task')
+    for (let get_info_button of get_info_buttons) {
+        get_info_button.addEventListener('click', onGetInfo)
     }
 }
 
