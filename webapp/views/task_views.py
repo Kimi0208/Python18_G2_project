@@ -154,16 +154,18 @@ def sign_checklist(request, file_id):
     doc = Document(checklist_file.file)
 
     current_user = request.user
-    current_user_position = str(current_user.position)
+    current_user_id = str(current_user.id)
 
     if current_user.signature:
         signature_path = current_user.signature.path
 
-    for paragraph in doc.paragraphs:
-        if current_user_position in paragraph.text:
-            run = paragraph.add_run()
-            run.add_picture(signature_path, width=Inches(2))
-            break
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                if current_user_id in cell.text:
+                    paragraph = cell.paragraphs[0]
+                    run = paragraph.add_run()
+                    run.add_picture(signature_path, width=Inches(2))
 
     doc.save(checklist_file.file.path)
 
