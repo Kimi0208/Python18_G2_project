@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect, reverse, render
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -123,12 +123,29 @@ def record_history(task_pk):
     else:
         return history_list
 
+def get_task_files(request, task_pk):
+    files = File.objects.filter(task=task_pk)
+    file_list = []
+    for file in files:
+        file_data = {
+            'id': file.id,
+            'name': file.file.name,
+            'task_id': file.task.id,
+            'url': file.file.url
+        }
+        file_list.append(file_data)
+    print(file_list)
+    return JsonResponse({'files': file_list})
 
-def delete_file(request, task_pk, file_pk):
-    file = File.objects.get(pk=file_pk)
-    file.delete()
-    return redirect('webapp:detail_task', pk=task_pk)
 
+class FileDeleteView(DeleteView):
+    model = File
+    template_name = 'partial/file_delete.html'
+
+    def form_valid(self, form):
+        file_id = self.object.id
+        self.object.delete()
+        return JsonResponse({'file_id': file_id})
 
 
 smtp_server = "mail.elcat.kg"
