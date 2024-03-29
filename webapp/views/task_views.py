@@ -18,6 +18,16 @@ class TaskListView(ListView):
     context_object_name = 'tasks'
     ordering = ['-type']
 
+    def get_queryset(self):
+        # Получаем текущего пользователя
+        # Если передан id пользователя в запросе, фильтруем задачи только для этого пользователя
+        user_id = self.kwargs.get('user_pk')
+        if user_id:
+            return Task.objects.filter(author_id=user_id)
+        else:
+            # Возвращаем задачи текущего пользователя
+            return Task.objects.filter(destination_to_user=self.request.user.pk)
+
 
 def get_object_from_model(model, value):
     try:
@@ -137,6 +147,17 @@ def get_task_files(request, task_pk):
     print(file_list)
     return JsonResponse({'files': file_list})
 
+def get_subtasks(object):
+    subtasks = Task.objects.filter(parent_task=object)
+    subtasks_list = []
+    for subtask in subtasks:
+        subtask_data = {
+            'id': subtask.id,
+            'title': subtask.title,
+        }
+        subtasks_list.append(subtask_data)
+    return subtasks_list
+
 
 class FileDeleteView(DeleteView):
     model = File
@@ -152,7 +173,7 @@ smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
-class TaskView(PermissionRequiredMixin, DetailView):
+class TaskView(DetailView):
     model = Task
     permission_required = 'webapp.view_task'
 
@@ -169,6 +190,7 @@ class TaskView(PermissionRequiredMixin, DetailView):
         return context
 
     def render_to_response(self, context, **response_kwargs):
+        subtasks_list = get_subtasks(self.object)
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -181,12 +203,13 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'status': self.object.status.name,
             'priority': self.object.priority.name,
             'author': self.object.author.username,
-            'type': self.object.type.name
+            'type': self.object.type.name,
+            'subtasks': subtasks_list
         }
         return JsonResponse({'task':task_data})
 
 
-class TaskCreateView(PermissionRequiredMixin, CreateView):
+class TaskCreateView(CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_create.html'
@@ -195,14 +218,14 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
-        if self.kwargs['task_pk']:
+        if 'task_pk' in self.kwargs:
             self.object.parent_task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
-        if self.object.destination_to_user:
-            subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
-            message = self.object.description
-            send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
-                                    smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
+        # if self.object.destination_to_user:
+        #     subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
+        #     message = self.object.description
+        #     send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
+        #                             smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
 
         task_data = {
             'id': self.object.pk,
@@ -216,12 +239,14 @@ class TaskCreateView(PermissionRequiredMixin, CreateView):
             'status': self.object.status.name,
             'priority': self.object.priority.name,
             'author': self.object.author.username,
-            'type': self.object.type.name
+            'type': self.object.type.name,
+            'destination_to_user': self.object.destination_to_user.username,
+            'subtasks': get_subtasks(self.object.parent_task)
         }
         return JsonResponse(task_data)
 
 
-class TaskUpdateView(PermissionRequiredMixin, UpdateView):
+class TaskUpdateView(UpdateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_edit.html'
@@ -246,7 +271,8 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
             'deadline': self.object.deadline,
             'status': self.object.status.name,
             'priority': self.object.priority.name,
-            'type': self.object.type.name
+            'type': self.object.type.name,
+            'subtasks': get_subtasks(self.object)
         }
         return JsonResponse(task_data)
 

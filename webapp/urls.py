@@ -6,6 +6,7 @@ app_name = 'webapp'
 
 urlpatterns = [
     path('', TaskListView.as_view(), name='index'),
+    path('tasks/<int:user_pk>/', TaskListView.as_view(), name='user_tasks'),
     path('create/', TaskCreateView.as_view(), name='create_task'),
     path('task/<int:pk>/', TaskView.as_view(), name="task_proposal_view"),
     path('update/<int:pk>/', TaskUpdateView.as_view(), name='update_task'),

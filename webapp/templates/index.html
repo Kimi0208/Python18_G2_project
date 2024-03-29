@@ -22,7 +22,7 @@
     <div id="main_area">
          {% include 'partial/tables.html' %}
     </div>
-    <div class="card-body" id="task-detail-info">
+    <div class="card-body" id="task-detail-info" style="border-left: solid 1px black">
         <button class="action-btn_task btn btn-primary" data-action_task="" id="task_edit">Редактировать</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_subtask">Создать подзадачу</button>
@@ -37,7 +37,13 @@
         <p class="card-text" id="task_done_at"></p>
         <p class="card-text" id="task_deadline"></p>
         <p class="card-text" id="task_author"></p>
+        <div>
+            <h4>Подзадачи</h4>
+            <div id="subtasks_field"></div>
+        </div>
     </div>
+    
+    <div id="detail-task-modal_window" class="modal action_task_modal"></div>
 
     
 

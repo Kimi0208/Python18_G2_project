@@ -56,6 +56,25 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
+    if (form.action.includes('create_subtask')) {
+        let task_subtasks = response.subtasks
+        let subtasks_field = document.getElementById('subtasks_field')
+        if (task_subtasks.length > 0) {
+        subtasks_field.innerHTML = '';
+
+        task_subtasks.forEach(task_subtask => {
+            let subtaskLink = document.createElement('a');
+            subtaskLink.href = `task/${task_subtask.id}/`;
+            subtaskLink.classList.add('subtask');
+            subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
+            subtaskLink.addEventListener('click', onSubtaskClick);
+            subtasks_field.appendChild(subtaskLink);
+        });
+    } else {
+        subtasks_field.innerHTML = 'Подзадач нет';
+    }
+
+    }
     if (form.action.includes('create')) {
         console.log(response.id)
         await addTask(
@@ -67,6 +86,7 @@ async function onSubmitData(e) {
         response.priority,
         formatDate(response.deadline),
         response.author,
+        response.destination_to_user,
         `/task/${response.id}/`);
     } else if (form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
@@ -126,55 +146,57 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
         deadline_element.innerHTML = `Дедлайн: ${deadline}`
     }
 }
-async function addTask(id, title, type, created_at, status, priority, deadline, author, url) {
-    let tableBody = document.getElementById('table_body')
+async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to_user, url) {
+    if (destination_to_user === author){
+        let tableBody = document.getElementById('table_body')
 
-    let newTask = document.createElement('tr');
-    newTask.classList.add('detail-btn_task');
-    newTask.dataset.detail_task = url;
-    newTask.style.cursor = 'pointer'
-    newTask.id=`task_id_${id}`
-    newTask.addEventListener('click', onGetDetailTask)
+        let newTask = document.createElement('tr');
+        newTask.classList.add('detail-btn_task');
+        newTask.dataset.detail_task = url;
+        newTask.style.cursor = 'pointer'
+        newTask.id=`task_id_${id}`
+        newTask.addEventListener('click', onGetDetailTask)
 
-    let taskTitle = document.createElement('td');
-    taskTitle.textContent = title;
-    taskTitle.id = `task_${id}_title`
+        let taskTitle = document.createElement('td');
+        taskTitle.textContent = title;
+        taskTitle.id = `task_${id}_title`
 
 
-    let taskType = document.createElement('td');
-    taskType.textContent = type;
-    taskType.id = `task_${id}_type`
-    taskType.setAttribute('style', 'cursor: pointer');
+        let taskType = document.createElement('td');
+        taskType.textContent = type;
+        taskType.id = `task_${id}_type`
+        taskType.setAttribute('style', 'cursor: pointer');
 
-    let taskStatus = document.createElement('td');
-    taskStatus.textContent = status;
-    taskStatus.id = `task_${id}_status`
+        let taskStatus = document.createElement('td');
+        taskStatus.textContent = status;
+        taskStatus.id = `task_${id}_status`
 
-    let taskPriority = document.createElement('td');
-    taskPriority.textContent = priority;
-    taskPriority.id = `task_${id}_priority`
+        let taskPriority = document.createElement('td');
+        taskPriority.textContent = priority;
+        taskPriority.id = `task_${id}_priority`
 
-    let taskCreatedAt = document.createElement('td');
-    taskCreatedAt.textContent = created_at;
-    taskCreatedAt.id = `task_${id}_created_at`
+        let taskCreatedAt = document.createElement('td');
+        taskCreatedAt.textContent = created_at;
+        taskCreatedAt.id = `task_${id}_created_at`
 
-    let taskDeadline = document.createElement('td');
-    taskDeadline.textContent = deadline;
-    taskDeadline.id = `task_${id}_deadline`
+        let taskDeadline = document.createElement('td');
+        taskDeadline.textContent = deadline;
+        taskDeadline.id = `task_${id}_deadline`
 
-    let taskAuthor = document.createElement('td');
-    taskAuthor.textContent = author;
-    taskAuthor.id = `task_${id}_author`
+        let taskAuthor = document.createElement('td');
+        taskAuthor.textContent = author;
+        taskAuthor.id = `task_${id}_author`
 
-    newTask.appendChild(taskTitle);
-    newTask.appendChild(taskType);
-    newTask.appendChild(taskStatus);
-    newTask.appendChild(taskPriority);
-    newTask.appendChild(taskCreatedAt)
-    newTask.appendChild(taskDeadline);
-    newTask.appendChild(taskAuthor);
+        newTask.appendChild(taskTitle);
+        newTask.appendChild(taskType);
+        newTask.appendChild(taskStatus);
+        newTask.appendChild(taskPriority);
+        newTask.appendChild(taskCreatedAt)
+        newTask.appendChild(taskDeadline);
+        newTask.appendChild(taskAuthor);
 
-    tableBody.appendChild(newTask);
+        tableBody.appendChild(newTask);
+    }
 }
 
 function formatDate(dateTimeString) {
@@ -248,7 +270,39 @@ async function onGetDetailTask(e) {
     task_type.innerHTML = `Тип: ${response_data.type}`
     task_type.classList.add(`detail_task_${response_data.id}_type`)
 
+    let task_subtasks = response_data.subtasks
+    let subtasks_field = document.getElementById('subtasks_field')
+
+    if (task_subtasks.length > 0) {
+        subtasks_field.innerHTML = '';
+
+        task_subtasks.forEach(task_subtask => {
+            let subtaskLink = document.createElement('a');
+            subtaskLink.href = `task/${task_subtask.id}/`;
+            subtaskLink.classList.add('subtask');
+            subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
+            subtaskLink.addEventListener('click', onSubtaskClick);
+            subtasks_field.appendChild(subtaskLink);
+        });
+    } else {
+        subtasks_field.innerHTML = 'Подзадач нет';
+    }
 }
+
+async function onSubtaskClick(e) {
+    e.preventDefault();
+    let subtaskLink = e.currentTarget;
+    let subtaskUrl = subtaskLink.href;
+    let response = await makeRequest(subtaskUrl, "GET");
+    let subtaskData = response.task;
+    console.log(subtaskData)
+}
+
+
+
+
+
+
 
 async function onGetInfo(e) {
     e.preventDefault();
@@ -307,7 +361,7 @@ async function onConfirmDeletion(e){
     let fileId = listItem.id.split('_')[1]; // Получить идентификатор файла из атрибута id
     let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
     for (confirmation_file_delete_element of confirmation_file_delete_elements){
-        if (confirmation_file_delete_element.style.display = 'block') {
+        if (confirmation_file_delete_element.style.display === 'block') {
                 confirmation_file_delete_element.style.display = 'none'
                 confirmation_file_delete_element.innerHTML=''
         }
@@ -319,7 +373,7 @@ async function onConfirmDeletion(e){
     let cancel_delete_button = document.getElementById('cancel_delete')
     confirm_delete_button.addEventListener('click', async function(){
         let post_response = await makeRequest(data_attribute, "POST")
-        listItem.remove()
+        listItem.remove();
     })
     cancel_delete_button.addEventListener('click', async function(){
         div_element.innerHTML = ''
@@ -372,4 +426,3 @@ window.addEventListener('load', onLoad);
 // function showCreateModal() {
 //     $('#taskCreateModal').modal('show')
 // }
-

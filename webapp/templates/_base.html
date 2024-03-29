@@ -226,7 +226,7 @@
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
                                 {% if request.user %}
-                                    <span class="badge badge-danger badge-counter">{% new_task_count request.user %}  </span>
+{#                                    <span class="badge badge-danger badge-counter">{% new_task_count request.user %}  </span>#}
                                 {% endif %}
                                 
                             </a>
@@ -238,22 +238,22 @@
                                 </h6>
                                     <div class="mr-3">
                                     </div>
-                                    <div>
-                                    {% notifications request.user as notifications_list %}
-                                        {% for notification in notifications_list %}
-                                            <a class="dropdown-item d-flex align-items-center" href="{% url 'webapp:index' %}">
-                                                <div class="mr-3">
-                                                    <div class="icon-circle bg-primary">
-                                                        <i class="fas fa-tasks text-white"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="small text-gray-500">{{ notification.start_date }}</div>
-                                                    {{ notification.title }}
-                                                </div>
-                                            </a>
-                                          {% endfor %}
-                                    </div>
+{#                                    <div>#}
+{#                                    {% notifications request.user as notifications_list %}#}
+{#                                        {% for notification in notifications_list %}#}
+{#                                            <a class="dropdown-item d-flex align-items-center" href="{% url 'webapp:index' %}">#}
+{#                                                <div class="mr-3">#}
+{#                                                    <div class="icon-circle bg-primary">#}
+{#                                                        <i class="fas fa-tasks text-white"></i>#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                                <div>#}
+{#                                                    <div class="small text-gray-500">{{ notification.start_date }}</div>#}
+{#                                                    {{ notification.title }}#}
+{#                                                </div>#}
+{#                                            </a>#}
+{#                                          {% endfor %}#}
+{#                                    </div>#}
                                 </a>
 
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
