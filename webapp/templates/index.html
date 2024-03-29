@@ -1,14 +1,16 @@
 {% extends '_base.html' %}
 {% load static %}
+{% load task_form %}
 
-{% block title %}
-    Мои задачи
-{% endblock %}
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
-            <a href="{% url 'webapp:create_task' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Создать задачу </a>
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task" 
+                    data-action_task="{% url 'webapp:create_task' %}">
+                <i class="fas fa-download fa-sm text-white-50"></i> Создать задачу
+            </button>
+<!--             <a href="#" onclick="showCreateModal()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i>  Создать задачу </a> -->
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -16,23 +18,74 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-{#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
-{#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
-    </div>
-{#    <div id="main_area">#}
-{#         {% include 'partial/task_list.html' %}#}
-{#    </div>#}
+   
     <div id="main_area">
          {% include 'partial/tables.html' %}
-{#        <div class="container">#}
-{#            {% include 'partial/cards.html' %}#}
-{#        </div>#}
     </div>
+    <div class="card-body" id="task-detail-info">
+        <button class="action-btn_task btn btn-primary" data-action_task="" id="task_edit">Редактировать</button>
+        <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>
+        <button class="get-info-btn_task btn btn-primary" data-get_info_task="" id="task_files">Файлы</button>
+        <h5 class="card-title" id="task_title"></h5>
+        <p class="card-text" id="task_type"></p>
+        <p class="card-text" id="task_created_at"></p>
+        <p class="card-text" id="task_start_date"></p>
+        <p class="card-text" id="task_status"></p>
+        <p class="card-text" id="task_priority"></p>
+        <p class="card-text" id="task_updated_at"></p>
+        <p class="card-text" id="task_done_at"></p>
+        <p class="card-text" id="task_deadline"></p>
+        <p class="card-text" id="task_author"></p>
+    </div>
+
+    
+
+    <div id="action-task-modal_window" class="modal action_task_modal"></div>
+<!--     </div>
 
     <div id="action-task-modal_window" class="modal">
-
     </div>
+
+    <div class="modal" id="taskModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Modal body text goes here.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Save changes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="taskCreateModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-title">Create Task</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+            <form class="custom_form" action="{% url "webapp:create_task" %}" method="POST">
+              <div class="modal-body">{% task_form as form %}
+                {% include 'partial/form.html' with form=form fields_only=True %}
+              </div>
+              <div class="modal-footer">
+                <input value="Создать" type="submit" class="btn btn-primary">
+              </div>
+            </form>
+        </div>
+      </div>
+    </div> -->
 
 {% endblock %}
 {% block scripts %}

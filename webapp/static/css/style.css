@@ -3,8 +3,8 @@
   margin-bottom: 20px;
 }
 
-.modal {
-  display: none;
+.action_task_modal {
+   display: none;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -15,12 +15,12 @@
   background-color: rgba(0,0,0,0.4);
 }
 
-.modal-content {
+.action_task_modal-content {
   background-color: #fefefe;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 41%;
 }
 
 .close {
@@ -35,4 +35,14 @@
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.action_task_form-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+#task-detail-info {
+  display: none;
 }
