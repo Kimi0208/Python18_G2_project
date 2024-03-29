@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+{% block title %}{{ task.name }}{% endblock %}
+{% block menu %}
+    <a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>
+{% endblock %}
+{% block links %}
+    {% if request.user.is_authenticated %}
+        {% if perms.webapp.add_task %}
+            {#            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task" #}
+            {#                    data-action_task="{% url 'webapp:company_create_view' %}">#}
+            {#                <i class="fas fa-download fa-sm text-white-50"></i> Добавить компанию#}
+            {#            </button>#}
+            <a href="{% url 'webapp:mails_create_view' %}">добавить письмо</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div>
+        <h1>список входящих писем</h1>
+            {% include 'partial/in_mails_table.html' %}
+
+    </div>
+{% endblock %}

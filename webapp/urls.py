@@ -1,6 +1,7 @@
 from django.urls import path
 from webapp.views import (TaskListView, TaskCreateView, TaskUpdateView, TaskDeleteView, TaskView, add_subtasks,
-                          delete_file, CompanyCreateView, CompaniesListView)
+                          delete_file, CompanyCreateView, CompaniesListView, InOutMailsCreateView, InMailsListView,
+                          OutMailsListView)
 
 app_name = 'webapp'
 
@@ -15,4 +16,7 @@ urlpatterns = [
     path('task/<int:task_pk>/file/<int:file_pk>/delete/', delete_file, name='delete_file'),
     path('companies/', CompaniesListView.as_view(), name='companies_list_view'),
     path('companies/create/', CompanyCreateView.as_view(), name='company_create_view'),
+    path('in_mails/', InMailsListView.as_view(), name='in_mails_list_view'),
+    path('out_mails/', OutMailsListView.as_view(), name='out_mails_list_view'),
+    path('mails/create/', InOutMailsCreateView.as_view(), name='mails_create_view')
 ]

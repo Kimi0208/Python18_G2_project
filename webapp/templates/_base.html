@@ -71,8 +71,8 @@
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Делопроизводство:</h6>
                     <a class="collapse-item" href="{% url 'webapp:companies_list_view' %}">Список компаний</a>
-                    <a class="collapse-item" href="#">Входящие письма</a>
-                    <a class="collapse-item" href="#">Исходящие письма</a>
+                    <a class="collapse-item" href="{% url 'webapp:in_mails_list_view' %}">Входящие письма</a>
+                    <a class="collapse-item" href="{% url 'webapp:out_mails_list_view' %}">Исходящие письма</a>
                     <a class="collapse-item" href="#">Контракты</a>
                 </div>
             </div>

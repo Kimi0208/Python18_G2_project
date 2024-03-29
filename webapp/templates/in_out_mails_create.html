@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="modal-content">
+    <div>
+        <div class="form-modal-header">
+            <h4>Добавить письмо</h4>
+            <button id="close_modal" style="background: white; border: none">Закрыть</button>
+        </div>
+        <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
+            {% include 'partial/form.html' with button_text='Добавить' %}
+        </form>
 
-</body>
-</html>
+    </div>
+</div>

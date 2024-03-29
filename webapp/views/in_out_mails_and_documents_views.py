@@ -29,8 +29,25 @@ class CompaniesListView(ListView):
     template_name = 'companies_list.html'
 
 
-
 class InOutMailsCreateView(CreateView):
     model = InOutMails
     form_class = InOutMailsForm
-    template_name = ''
+    template_name = 'in_out_mails_create.html'
+
+    def form_valid(self, form):
+        mail = form.save(commit=False)
+        mail.save()
+        return redirect(reverse_lazy('webapp:mails_list_view'))
+
+
+class InMailsListView(ListView):
+    model = InOutMails
+    context_object_name = 'mails'
+    template_name = 'in_mails_list.html'
+
+
+class OutMailsListView(ListView):
+    model = InOutMails
+    context_object_name = 'mails'
+    template_name = 'out_mails_list.html'
+

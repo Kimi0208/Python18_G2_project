@@ -1,0 +1,36 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Входящий № документа</th>
+                <th>Дата регистрации</th>
+                <th>№ поступившего документа</th>
+                <th>Отправитель документа</th>
+                <th>Краткое содержание</th>
+                <th>Кол-во листов</th>
+                <th>Кому направлено</th>
+                <th>Инициатор</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for mail in mails %}
+                {% if mail.type_id == 1 %}
+                    <tr>
+                        <td>{{ mail.mail_number }}</td>
+                        <td>{{ mail.registration_date }}</td>
+                        <td>{{ mail.contract_with_company }}</td>
+                        <td>{{ mail.company_inn }}</td>
+                        <td>{{ mail.mail_description }}</td>
+                        <td>{{ mail.company_inn }}</td>
+                        <td>{{ mail.company_inn }}</td>
+                        <td>{{ mail.company_inn }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
