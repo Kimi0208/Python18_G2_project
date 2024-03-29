@@ -1,5 +1,5 @@
 from django import forms
-from webapp.models import Task, Comment, CompaniesList, InOutMails
+from webapp.models import Task, Comment, CompaniesList, InOutMails, ContractRegistry
 
 
 class TaskForm(forms.ModelForm):
@@ -50,4 +50,11 @@ class InOutMailsForm(forms.ModelForm):
         model = InOutMails
         fields = ['mail_number', 'input_mail_number', 'sender_name', 'mail_description',
                   'pages_count', 'responsible_department', 'responsible_employee', 'attachment', 'status', 'type']
+
+
+class ContractsForm(forms.ModelForm):
+    class Meta:
+        model = ContractRegistry
+        fields = ['company', 'input_contract_number', 'description', 'consultion_date', 'responsible_employee',
+                  'scan_copy', 'attachment', 'contract_location']
 

@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
-from webapp.forms import CompaniesListForm, InOutMailsForm
+from simple_history.tests.models import Contact
+
+from webapp.forms import CompaniesListForm, InOutMailsForm, ContractsForm
 from webapp.models import InOutMails, CompaniesList, ContractRegistry
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -51,3 +53,19 @@ class OutMailsListView(ListView):
     context_object_name = 'mails'
     template_name = 'out_mails_list.html'
 
+
+class ContractsCreateView(CreateView):
+    model = ContractRegistry
+    form_class = ContractsForm
+    template_name = 'contracts_create.html'
+
+    def form_valid(self, form):
+        contract = form.save(commit=False)
+        contract.save()
+        return redirect(reverse_lazy('webapp:contracts_list_view'))
+
+
+class ContractsListView(ListView):
+    model = ContractRegistry
+    context_object_name = 'contracts'
+    template_name = 'contracts_list.html'
