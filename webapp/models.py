@@ -80,9 +80,15 @@ class Checklist(models.Model):
 class InOutMailsStatus(models.Model):
     name = models.CharField(max_length=50, verbose_name='Статус')
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class InOutMailsType(models.Model):
     type = models.CharField(max_length=50, verbose_name='Тип')
+
+    def __str__(self):
+        return f'{self.type}'
 
 
 class InOutMails(models.Model):
@@ -111,6 +117,9 @@ class CompaniesList(models.Model):
     company_name = models.CharField(max_length=250, verbose_name='Назыание компании')
     contract_with_company = models.FileField(upload_to='companies/%CompaniesList.company_code', null=True, blank=True)
     company_inn = models.CharField(max_length=250, verbose_name='ИНН Компании', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.company_name}' f'({self.company_code})' f'{self.company_inn})'
 
 
 class ContractLocation(models.Model):

@@ -1,8 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
-from simple_history.tests.models import Contact
-
 from webapp.forms import CompaniesListForm, InOutMailsForm, ContractsForm
 from webapp.models import InOutMails, CompaniesList, ContractRegistry
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -30,6 +28,10 @@ class CompaniesListView(ListView):
     context_object_name = 'companies'
     template_name = 'companies_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
 
 class InOutMailsCreateView(CreateView):
     model = InOutMails
@@ -47,11 +49,19 @@ class InMailsListView(ListView):
     context_object_name = 'mails'
     template_name = 'in_mails_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
 
 class OutMailsListView(ListView):
     model = InOutMails
     context_object_name = 'mails'
     template_name = 'out_mails_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 class ContractsCreateView(CreateView):
@@ -69,3 +79,7 @@ class ContractsListView(ListView):
     model = ContractRegistry
     context_object_name = 'contracts'
     template_name = 'contracts_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

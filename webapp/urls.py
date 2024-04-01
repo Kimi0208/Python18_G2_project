@@ -1,7 +1,7 @@
 from django.urls import path
 from webapp.views import (TaskListView, TaskCreateView, TaskUpdateView, TaskDeleteView, TaskView, add_subtasks,
                           delete_file, CompanyCreateView, CompaniesListView, InOutMailsCreateView, InMailsListView,
-                          OutMailsListView)
+                          OutMailsListView, ContractsListView, ContractsCreateView)
 
 app_name = 'webapp'
 
@@ -18,5 +18,7 @@ urlpatterns = [
     path('companies/create/', CompanyCreateView.as_view(), name='company_create_view'),
     path('in_mails/', InMailsListView.as_view(), name='in_mails_list_view'),
     path('out_mails/', OutMailsListView.as_view(), name='out_mails_list_view'),
-    path('mails/create/', InOutMailsCreateView.as_view(), name='mails_create_view')
+    path('mails/create/', InOutMailsCreateView.as_view(), name='mails_create_view'),
+    path('contracts/', ContractsListView.as_view(), name='contracts_list_view'),
+    path('contracts/create/', ContractsCreateView.as_view(), name='contracts_create_view')
 ]
