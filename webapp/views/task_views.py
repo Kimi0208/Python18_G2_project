@@ -151,9 +151,14 @@ def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object)
     subtasks_list = []
     for subtask in subtasks:
+        if subtask.parent_task:
+            parent_task_id = subtask.parent_task.id
+        else:
+            parent_task_id = None
         subtask_data = {
             'id': subtask.id,
             'title': subtask.title,
+            'parent_task_id' : parent_task_id
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
@@ -191,6 +196,10 @@ class TaskView(DetailView):
 
     def render_to_response(self, context, **response_kwargs):
         subtasks_list = get_subtasks(self.object)
+        if self.object.parent_task:
+            parent_task_id = self.object.parent_task.id
+        else:
+            parent_task_id = None
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -204,6 +213,7 @@ class TaskView(DetailView):
             'priority': self.object.priority.name,
             'author': self.object.author.username,
             'type': self.object.type.name,
+            'parent_task_id': parent_task_id,
             'subtasks': subtasks_list
         }
         return JsonResponse({'task':task_data})

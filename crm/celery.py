@@ -1,4 +1,6 @@
 import os
+from datetime import timedelta
+
 from celery import Celery
 from celery.schedules import crontab
 
@@ -10,6 +12,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "deadline_task_notification": {
         "task": "webapp.tasks.deadline_task_notification",
-        "schedule": crontab(hour=8, minute=0)
+        "schedule": timedelta(seconds=30)
     }
 }

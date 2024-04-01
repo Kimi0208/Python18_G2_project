@@ -64,10 +64,12 @@ async function onSubmitData(e) {
 
         task_subtasks.forEach(task_subtask => {
             let subtaskLink = document.createElement('a');
-            subtaskLink.href = `task/${task_subtask.id}/`;
+            subtaskLink.href = `task/${task_subtask.id}/`
             subtaskLink.classList.add('subtask');
+            subtaskLink.dataset.detail_task = subtaskLink.href
+            subtaskLink.dataset.prev_task = `task/${task_subtask.parent_task_id}/`
             subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
-            subtaskLink.addEventListener('click', onSubtaskClick);
+            subtaskLink.addEventListener('click', onGetDetailTask);
             subtasks_field.appendChild(subtaskLink);
         });
     } else {
@@ -76,7 +78,6 @@ async function onSubmitData(e) {
 
     }
     if (form.action.includes('create')) {
-        console.log(response.id)
         await addTask(
         response.id,
         response.title,
@@ -212,13 +213,30 @@ function formatDate(dateTimeString) {
 
 
 async function onGetDetailTask(e) {
-    e.preventDefault()
-    let element = e.currentTarget
-    let detail_attribute = element.dataset['detail_task']
-    let task_detail_info_element = document.getElementById('task-detail-info')
-    task_detail_info_element.style.display = 'block'
-    let response = await makeRequest(detail_attribute, "GET")
-    let response_data = response.task
+    e.preventDefault();
+    let element = e.currentTarget;
+    let detail_attribute = element.dataset['detail_task'];
+    let task_detail_info_element = document.getElementById('task-detail-info');
+    task_detail_info_element.style.display = 'block';
+    let response = await makeRequest(detail_attribute, "GET");
+    let response_data = response.task;
+
+    let prevTaskLink = element.dataset['prev_task'];
+    console.log(prevTaskLink)
+    if (prevTaskLink && response_data.parent_task_id !== null) {
+        let backButton = document.getElementById('prev_task');
+        backButton.textContent = 'Назад';
+        backButton.dataset.detail_task = `task/${response_data.parent_task_id}/`;
+        // backButton.dataset.prev_task = `task/${response_data.parent_task_id}/`
+        backButton.dataset.prev_task = response_data.parent_task_id
+        // backButton.dataset.prev_task = prevTaskLink
+        backButton.style.display='block'
+        backButton.addEventListener('click', onGetDetailTask);
+    } else {
+        let backButton = document.getElementById('prev_task');
+        backButton.style.display='none'
+    }
+
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
@@ -278,10 +296,15 @@ async function onGetDetailTask(e) {
 
         task_subtasks.forEach(task_subtask => {
             let subtaskLink = document.createElement('a');
-            subtaskLink.href = `task/${task_subtask.id}/`;
+            subtaskLink.href = `task/${task_subtask.id}/`
             subtaskLink.classList.add('subtask');
+            subtaskLink.dataset.detail_task = subtaskLink.href
+            if (task_subtask.parent_task_id) {
+                // subtaskLink.dataset.prev_task = `task/${task_subtask.parent_task_id}/`
+                subtaskLink.dataset.prev_task = task_subtask.parent_task_id
+            }
             subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
-            subtaskLink.addEventListener('click', onSubtaskClick);
+            subtaskLink.addEventListener('click', onGetDetailTask);
             subtasks_field.appendChild(subtaskLink);
         });
     } else {
@@ -289,14 +312,14 @@ async function onGetDetailTask(e) {
     }
 }
 
-async function onSubtaskClick(e) {
-    e.preventDefault();
-    let subtaskLink = e.currentTarget;
-    let subtaskUrl = subtaskLink.href;
-    let response = await makeRequest(subtaskUrl, "GET");
-    let subtaskData = response.task;
-    console.log(subtaskData)
-}
+// async function onSubtaskClick(e) {
+//     e.preventDefault();
+//     let subtaskLink = e.currentTarget;
+//     let subtaskUrl = subtaskLink.href;
+//     let response = await makeRequest(subtaskUrl, "GET");
+//     let subtaskData = response.task;
+//     console.log(subtaskData)
+// }
 
 
 
