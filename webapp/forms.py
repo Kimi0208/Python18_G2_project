@@ -6,7 +6,7 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['title', 'type', 'description', 'start_date', 'done_at', 'deadline',
-                  'status', 'priority', 'parent_task', 'destination_to_department', 'destination_to_user',
+                  'status', 'priority', 'destination_to_department', 'destination_to_user',
                   ]
 
         widgets = {
