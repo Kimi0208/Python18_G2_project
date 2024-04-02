@@ -150,15 +150,20 @@ def get_task_files(request, task_pk):
 def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object)
     subtasks_list = []
+    destination_to = ''
     for subtask in subtasks:
-        if subtask.parent_task:
-            parent_task_id = subtask.parent_task.id
-        else:
-            parent_task_id = None
+        if subtask.destination_to_department:
+            destination_to = subtask.destination_to_department.name
+        elif subtask.destination_to_user:
+            destination_to = subtask.destination_to_user.username
         subtask_data = {
             'id': subtask.id,
             'title': subtask.title,
-            'parent_task_id' : parent_task_id
+            'destination_to': destination_to,
+            'author': subtask.author.username,
+            'created_at': subtask.created_at,
+            'type': subtask.type.name,
+            'updated_at': subtask.updated_at
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
@@ -196,10 +201,18 @@ class TaskView(DetailView):
 
     def render_to_response(self, context, **response_kwargs):
         subtasks_list = get_subtasks(self.object)
+        destination_to = ''
         if self.object.parent_task:
-            parent_task_id = self.object.parent_task.id
+            if self.object.parent_task.destination_to_department:
+                destination_to = self.object.parent_task.destination_to_department.name
+            elif self.object.parent_task.destination_to_user:
+                destination_to = self.object.parent_task.destination_to_user.username
+            parent_task = {'id': self.object.parent_task.id, 'title': self.object.parent_task.title,
+                           'author': self.object.parent_task.author.username,
+                           'created_at': self.object.parent_task.created_at, 'destination_to': destination_to,
+                           'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at}
         else:
-            parent_task_id = None
+            parent_task = None
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -213,7 +226,7 @@ class TaskView(DetailView):
             'priority': self.object.priority.name,
             'author': self.object.author.username,
             'type': self.object.type.name,
-            'parent_task_id': parent_task_id,
+            'parent_task': parent_task,
             'subtasks': subtasks_list
         }
         return JsonResponse({'task':task_data})

@@ -58,22 +58,12 @@ async function onSubmitData(e) {
     let response = await makeRequest(form.action, "POST", formData, token);
     if (form.action.includes('create_subtask')) {
         let task_subtasks = response.subtasks
-        let subtasks_field = document.getElementById('subtasks_field')
+        let subtasks_info = document.getElementById('subtasks_info')
         if (task_subtasks.length > 0) {
-        subtasks_field.innerHTML = '';
-
-        task_subtasks.forEach(task_subtask => {
-            let subtaskLink = document.createElement('a');
-            subtaskLink.href = `task/${task_subtask.id}/`
-            subtaskLink.classList.add('subtask');
-            subtaskLink.dataset.detail_task = subtaskLink.href
-            subtaskLink.dataset.prev_task = `task/${task_subtask.parent_task_id}/`
-            subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
-            subtaskLink.addEventListener('click', onGetDetailTask);
-            subtasks_field.appendChild(subtaskLink);
-        });
+        subtasks_info.innerHTML = '';
+        await createTaskTable(task_subtasks, subtasks_info);
     } else {
-        subtasks_field.innerHTML = 'Подзадач нет';
+        subtasks_info.innerHTML = 'Подзадач нет';
     }
 
     }
@@ -221,21 +211,21 @@ async function onGetDetailTask(e) {
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
 
-    let prevTaskLink = element.dataset['prev_task'];
-    console.log(prevTaskLink)
-    if (prevTaskLink && response_data.parent_task_id !== null) {
-        let backButton = document.getElementById('prev_task');
-        backButton.textContent = 'Назад';
-        backButton.dataset.detail_task = `task/${response_data.parent_task_id}/`;
-        // backButton.dataset.prev_task = `task/${response_data.parent_task_id}/`
-        backButton.dataset.prev_task = response_data.parent_task_id
-        // backButton.dataset.prev_task = prevTaskLink
-        backButton.style.display='block'
-        backButton.addEventListener('click', onGetDetailTask);
-    } else {
-        let backButton = document.getElementById('prev_task');
-        backButton.style.display='none'
-    }
+    // let prevTaskLink = element.dataset['prev_task'];
+    // console.log(prevTaskLink)
+    // if (prevTaskLink && response_data.parent_task_id !== null) {
+    //     let backButton = document.getElementById('prev_task');
+    //     backButton.textContent = 'Назад';
+    //     backButton.dataset.detail_task = `task/${response_data.parent_task_id}/`;
+    //     // backButton.dataset.prev_task = `task/${response_data.parent_task_id}/`
+    //     backButton.dataset.prev_task = response_data.parent_task_id
+    //     // backButton.dataset.prev_task = prevTaskLink
+    //     backButton.style.display='block'
+    //     backButton.addEventListener('click', onGetDetailTask);
+    // } else {
+    //     let backButton = document.getElementById('prev_task');
+    //     backButton.style.display='none'
+    // }
 
 
     let task_edit = document.getElementById('task_edit')
@@ -289,41 +279,81 @@ async function onGetDetailTask(e) {
     task_type.classList.add(`detail_task_${response_data.id}_type`)
 
     let task_subtasks = response_data.subtasks
-    let subtasks_field = document.getElementById('subtasks_field')
+    let subtasks_info = document.getElementById('subtasks_info')
+
+    let parent_info_element = document.getElementById('parent_info')
+    console.log(response_data.parent_taks)
+    if (response_data.parent_task) {
+        create_subtask.style.display = 'none'
+        parent_info_element.innerHTML = '';
+        await createTaskTable([response_data.parent_task], parent_info_element);
+    } else {
+        parent_info_element.innerHTML = 'Вышестоящих задач нет';
+        create_subtask.style.display = 'block'
+    }
 
     if (task_subtasks.length > 0) {
-        subtasks_field.innerHTML = '';
-
-        task_subtasks.forEach(task_subtask => {
-            let subtaskLink = document.createElement('a');
-            subtaskLink.href = `task/${task_subtask.id}/`
-            subtaskLink.classList.add('subtask');
-            subtaskLink.dataset.detail_task = subtaskLink.href
-            if (task_subtask.parent_task_id) {
-                // subtaskLink.dataset.prev_task = `task/${task_subtask.parent_task_id}/`
-                subtaskLink.dataset.prev_task = task_subtask.parent_task_id
-            }
-            subtaskLink.textContent = `#${task_subtask.id} ${task_subtask.title}`;
-            subtaskLink.addEventListener('click', onGetDetailTask);
-            subtasks_field.appendChild(subtaskLink);
-        });
+    subtasks_info.innerHTML = '';
+    await createTaskTable(task_subtasks, subtasks_info);
     } else {
-        subtasks_field.innerHTML = 'Подзадач нет';
+        subtasks_info.innerHTML = 'Подзадач нет';
     }
+
 }
 
-// async function onSubtaskClick(e) {
-//     e.preventDefault();
-//     let subtaskLink = e.currentTarget;
-//     let subtaskUrl = subtaskLink.href;
-//     let response = await makeRequest(subtaskUrl, "GET");
-//     let subtaskData = response.task;
-//     console.log(subtaskData)
-// }
+async function createTaskTable(taskData, infoElement) {
+    if (!taskData || !infoElement) {
+        return;
+    }
 
+    infoElement.innerHTML = '';
 
+    let table = document.createElement('table');
+    table.style.width = '100%';
 
+    let tr1 = document.createElement('tr');
+    let nameTh = document.createElement('th');
+    nameTh.innerHTML = 'Имя';
+    nameTh.style.width = '60%'
 
+    let typeTh = document.createElement('th');
+    typeTh.innerHTML = 'Тип';
+
+    let updateTh = document.createElement('th');
+    updateTh.innerHTML = 'Изменен в';
+
+    tr1.appendChild(nameTh);
+    tr1.appendChild(typeTh);
+    tr1.appendChild(updateTh);
+    table.appendChild(tr1);
+
+    taskData.forEach(task => {
+        let tr = document.createElement('tr');
+
+        let nameTd = document.createElement('td');
+        let taskLink = document.createElement('a');
+        taskLink.href = `task/${task.id}/`;
+        taskLink.dataset.detail_task = taskLink.href;
+        taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to}`;
+        taskLink.addEventListener('click', onGetDetailTask);
+
+        nameTd.appendChild(taskLink);
+
+        let typeTd = document.createElement('td');
+        typeTd.innerHTML = task.type;
+
+        let updateTd = document.createElement('td');
+        updateTd.innerHTML = formatDate(task.updated_at);
+
+        tr.appendChild(nameTd);
+        tr.appendChild(typeTd);
+        tr.appendChild(updateTd);
+
+        table.appendChild(tr);
+    });
+
+    infoElement.appendChild(table);
+}
 
 
 
