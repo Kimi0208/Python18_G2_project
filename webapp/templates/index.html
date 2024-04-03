@@ -22,13 +22,14 @@
     <div id="main_area">
          {% include 'partial/tables.html' %}
     </div>
-    <div class="card-body" id="task-detail-info" style="border-left: solid 1px black">
+    <div class="card-body" id="task-detail-info" style="border-left: solid 1px black;  font-size: 14px; overflow-y: unset">
         <button class="action-btn_task btn btn-primary" data-action_task="" id="task_edit">Редактировать</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_subtask">Создать подзадачу</button>
         <button class="get-info-btn_task btn btn-primary" data-get_info_task="" id="task_files">Файлы</button>
+        <button class="btn btn-primary" data-get_history_task="" id="task_history">История</button>
         <button class="btn btn-primary" style="display: none" id="prev_task">Назад</button>
-        <h5 class="card-title" id="task_title"></h5>
+    <h5 class="card-title" id="task_title"></h5>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
         <p class="card-text" id="task_start_date"></p>
@@ -38,10 +39,17 @@
         <p class="card-text" id="task_done_at"></p>
         <p class="card-text" id="task_deadline"></p>
         <p class="card-text" id="task_author"></p>
-        <div>
-            <h4>Подзадачи</h4>
-            <div id="subtasks_field"></div>
+        <div id="parent_field">
+            <h4 id="parent_field_header" style="background: antiquewhite">Относится к</h4>
+            <div id="parent_info">
+            </div>
         </div>
+        <div id="subtasks_field">
+            <h4 id="subtasks_field_header" style="background: antiquewhite">Подзадачи</h4>
+            <div id="subtasks_info">
+            </div>
+        </div>
+        
     </div>
     
     <div id="detail-task-modal_window" class="modal action_task_modal"></div>
