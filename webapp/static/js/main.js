@@ -211,23 +211,6 @@ async function onGetDetailTask(e) {
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
 
-    // let prevTaskLink = element.dataset['prev_task'];
-    // console.log(prevTaskLink)
-    // if (prevTaskLink && response_data.parent_task_id !== null) {
-    //     let backButton = document.getElementById('prev_task');
-    //     backButton.textContent = 'Назад';
-    //     backButton.dataset.detail_task = `task/${response_data.parent_task_id}/`;
-    //     // backButton.dataset.prev_task = `task/${response_data.parent_task_id}/`
-    //     backButton.dataset.prev_task = response_data.parent_task_id
-    //     // backButton.dataset.prev_task = prevTaskLink
-    //     backButton.style.display='block'
-    //     backButton.addEventListener('click', onGetDetailTask);
-    // } else {
-    //     let backButton = document.getElementById('prev_task');
-    //     backButton.style.display='none'
-    // }
-
-
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
 
@@ -287,7 +270,6 @@ async function onGetDetailTask(e) {
     let subtasks_info = document.getElementById('subtasks_info')
 
     let parent_info_element = document.getElementById('parent_info')
-    console.log(response_data.parent_taks)
     if (response_data.parent_task) {
         create_subtask.style.display = 'none'
         parent_info_element.innerHTML = '';
@@ -309,14 +291,10 @@ async function onGetDetailTask(e) {
 
 async function onGetTaskHistory(e){
     e.preventDefault()
-    console.log(e)
     let element = e.currentTarget
-    console.log(element)
     let data_atribute = element.dataset['get_history_task']
-    console.log(data_atribute)
     let response = await makeRequest(data_atribute, "GET")
     let history = response.history
-    console.log(history)
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'block';
     let modal_content = document.createElement('div')
@@ -343,11 +321,13 @@ async function onGetTaskHistory(e){
         for (let change of changes) {
 
             if (change[0].includes('файл')){
-                li_element.innerHTML = `${change[0]} ${change[3].replace("uploads/user_docs/", "")} <br>Дата: ${change[1]} Автор: ${change[2]}`
+                li_element.innerHTML = `${change[0]} ${change[3].replace("uploads/user_docs/", "")} 
+                    <br>Дата: ${change[1]} Автор: ${change[2]}`
             } else if (change[0].includes('Создана задача')){
                 li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
             } else {
-                li_element.innerHTML += `Поле ${change[0]} изменено с ${change[3]} на ${change[4]} <br>Дата изменения: ${change[1]} Кто изменил: ${change[2]}<br>`
+                li_element.innerHTML += `Поле ${change[0]} изменено с ${change[3]} на ${change[4]} 
+                    <br>Дата изменения: ${change[1]} Кто изменил: ${change[2]}<br>`
             }
 
         }
@@ -356,25 +336,6 @@ async function onGetTaskHistory(e){
     }
     modal_content.appendChild(card_element)
 
-
-
-
-    // modal.innerHTML = `
-    //         <div class="modal-content action_task_modal-content">
-    //             <div>
-    //                 <div class="form-modal-header action_task_form-modal-header">
-    //                     <h4>История </h4>
-    //                     <button id="close_modal" style="background: white; border: none">Закрыть</button>
-    //                 </div>
-    //                 <div class="card" style="width: 18rem;">
-    //                     <ul class="list-group list-group-flush">
-    //                        <li></li>
-    //                     </ul>
-    //                 </div>
-    //             </div>
-    //         </div>
-    // `
-    // let closeBtn = document.getElementById("close_modal");
     closeBtn.onclick = function () {
         modal.style.display = "none";
         modal.innerHTML = ''
@@ -400,7 +361,7 @@ async function createTaskTable(taskData, infoElement) {
     typeTh.innerHTML = 'Тип';
 
     let updateTh = document.createElement('th');
-    updateTh.innerHTML = 'Изменен в';
+    updateTh.innerHTML = 'Изменена в';
 
     tr1.appendChild(nameTh);
     tr1.appendChild(typeTh);
@@ -519,7 +480,6 @@ async function onConfirmDeletion(e){
 function onLoad() {
     let action_buttons = document.getElementsByClassName('action-btn_task')
     for (let action_button of action_buttons) {
-        console.log(action_button)
         action_button.addEventListener('click', onClick)
     }
     let detail_buttons = document.getElementsByClassName('detail-btn_task')
