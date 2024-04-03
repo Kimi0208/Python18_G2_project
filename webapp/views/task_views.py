@@ -97,13 +97,13 @@ def get_files_history(task_pk):
              action = "Добавлен файл"
         elif file_history.history_type == "-":
             action = "Удален файл"
-        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user, file_history.file)]
+        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"), file_history.history_user.username, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
 
 
 
-def record_history(task_pk):
+def get_history_task(request, task_pk):
     history_list = []
     task = Task.objects.get(pk=task_pk)
     task_history = list(task.history.all().order_by('history_date'))
@@ -111,7 +111,7 @@ def record_history(task_pk):
         current_record = task_history[i]
         previous_record = task_history[i - 1]
         delta = current_record.diff_against(previous_record)
-        change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
+        change_date = current_record.history_date.strftime("%d-%m-%Y %H:%M")
         change_user = current_record.history_user
         #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
@@ -120,18 +120,20 @@ def record_history(task_pk):
             verbose_name = current_record._meta.get_field(change.field).verbose_name
             ttt = current_record._meta.get_field(change.field)
             old, new = check_is_foreign_key(ttt, change.old, change.new)
-            change_info = (verbose_name, change_date, change_user, old, new)
+            change_info = (verbose_name, change_date, change_user.username, old, new)
             changes.append(change_info)
         # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
         # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
         # print(f'Изменения {changes}\n')
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
+    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
+    history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
-        return sorted_history
+        return JsonResponse({'history': sorted_history})
     else:
-        return history_list
+        return JsonResponse({'history': history_list})
 
 def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
@@ -191,10 +193,7 @@ class TaskView(DetailView):
         context = super().get_context_data(**kwargs)
         checklists = Checklist.objects.all()
         context['checklists'] = checklists
-        subtasks = Task.objects.filter(parent_task=self.object)
-        context['subtasks'] = subtasks
-        files = File.objects.filter(task=self.object)
-        context['files'] = files
+
         # history_list = record_history(self.object.pk)
         # context['history'] = history_list
         return context
@@ -227,7 +226,7 @@ class TaskView(DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name,
             'parent_task': parent_task,
-            'subtasks': subtasks_list
+            'subtasks': subtasks_list,
         }
         return JsonResponse({'task':task_data})
 

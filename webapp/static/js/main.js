@@ -240,6 +240,11 @@ async function onGetDetailTask(e) {
     let create_subtask = document.getElementById('add_subtask')
     create_subtask.dataset.action_task = `task/${response_data.id}/create_subtask/`
 
+    let task_history = document.getElementById('task_history')
+    task_history.dataset.get_history_task = `task/${response_data.id}/history/`
+
+    task_history.addEventListener('click', onGetTaskHistory)
+
     let task_title = document.getElementById('task_title')
     task_title.innerHTML = `#${response_data.id} ${response_data.title}`
     task_title.classList.add(`detail_task_${response_data.id}_title`)
@@ -299,6 +304,81 @@ async function onGetDetailTask(e) {
         subtasks_info.innerHTML = 'Подзадач нет';
     }
 
+}
+
+
+async function onGetTaskHistory(e){
+    e.preventDefault()
+    console.log(e)
+    let element = e.currentTarget
+    console.log(element)
+    let data_atribute = element.dataset['get_history_task']
+    console.log(data_atribute)
+    let response = await makeRequest(data_atribute, "GET")
+    let history = response.history
+    console.log(history)
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'block';
+    let modal_content = document.createElement('div')
+    modal_content.classList.add('modal-content', 'action_task_modal-content')
+    let div_header = document.createElement('div')
+    div_header.classList.add('form-modal-header', 'action_task_form-modal-header')
+    let h4_header = document.createElement('h4')
+    h4_header.innerHTML = 'История'
+    let closeBtn = document.createElement('button')
+    closeBtn.id = 'close_modal'
+    closeBtn.style.background = 'white'
+    closeBtn.style.border = 'none'
+    closeBtn.innerHTML = 'Закрыть'
+    div_header.appendChild(h4_header)
+    div_header.appendChild(closeBtn)
+    modal_content.appendChild(div_header)
+    modal.appendChild(modal_content)
+
+    let card_element = document.createElement('div')
+    card_element.classList.add('card')
+    for (let changes of history){
+        let ul_element = document.createElement('ul')
+        let li_element = document.createElement('li')
+        for (let change of changes) {
+
+            if (change[0].includes('файл')){
+                li_element.innerHTML = `${change[0]} ${change[3].replace("uploads/user_docs/", "")} <br>Дата: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Создана задача')){
+                li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else {
+                li_element.innerHTML += `Поле ${change[0]} изменено с ${change[3]} на ${change[4]} <br>Дата изменения: ${change[1]} Кто изменил: ${change[2]}<br>`
+            }
+
+        }
+        ul_element.appendChild(li_element)
+        card_element.appendChild(ul_element)
+    }
+    modal_content.appendChild(card_element)
+
+
+
+
+    // modal.innerHTML = `
+    //         <div class="modal-content action_task_modal-content">
+    //             <div>
+    //                 <div class="form-modal-header action_task_form-modal-header">
+    //                     <h4>История </h4>
+    //                     <button id="close_modal" style="background: white; border: none">Закрыть</button>
+    //                 </div>
+    //                 <div class="card" style="width: 18rem;">
+    //                     <ul class="list-group list-group-flush">
+    //                        <li></li>
+    //                     </ul>
+    //                 </div>
+    //             </div>
+    //         </div>
+    // `
+    // let closeBtn = document.getElementById("close_modal");
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+        modal.innerHTML = ''
+    }
 }
 
 async function createTaskTable(taskData, infoElement) {
