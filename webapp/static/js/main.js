@@ -56,6 +56,8 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
+    console.log(response)
+    console.log(form.action)
     if (form.action.includes('create_subtask')) {
         let task_subtasks = response.subtasks
         let subtasks_info = document.getElementById('subtasks_info')
@@ -67,7 +69,7 @@ async function onSubmitData(e) {
     }
 
     }
-    if (form.action.includes('create')) {
+    if (form.action === '/create') {
         await addTask(
         response.id,
         response.title,
@@ -84,9 +86,52 @@ async function onSubmitData(e) {
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
             formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
 
+    } else if (form.action.includes('comment/create/')) {
+        let comment = response.comment
+        await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+            comment.created_at, comment.updated_at, comment.description)
+
+    }
+
+
+}
+
+
+async function addComment(id, first_name, last_name, task, created_at, updated_at, description){
+    let comments_info_block = document.getElementById('comments_info')
+    let comment_card = document.createElement('div')
+    comment_card.style.borderBottom = 'solid 1px black'
+    comment_card.style.marginBottom = '2px'
+    comment_card.id = `comment_card_${id}`
+    let comment_card_body = document.createElement('div')
+
+    let username_info = document.createElement('span')
+    username_info.innerHTML = `${first_name} ${last_name}`
+    let create_info = document.createElement('p')
+    create_info.innerHTML = formatDate(created_at)
+    let comment_info = document.createElement('span')
+    comment_info.innerHTML = description
+    comment_info.id = `comment_data_${id}`
+    let comment_header = document.createElement('div')
+    comment_header.style.display = 'flex'
+    comment_header.style.justifyContent = 'space-between'
+    comment_card_body.appendChild(comment_info)
+
+    comment_header.appendChild(username_info)
+    comment_header.appendChild(create_info)
+
+    comment_card.appendChild(comment_header)
+    comment_card.appendChild(comment_card_body)
+    let firstComment = comments_info_block.firstChild;
+
+    if (firstComment) {
+        comments_info_block.insertBefore(comment_card, firstComment);
+    } else {
+        comments_info_block.appendChild(comment_card);
     }
 
 }
+
 async function updateTableTask(id, title, type, status, priority, deadline) {
     let task_title = document.getElementById(`task_${id}_title`)
     let task_type = document.getElementById(`task_${id}_type`)
@@ -210,6 +255,7 @@ async function onGetDetailTask(e) {
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
+    console.log(response_data)
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
@@ -225,6 +271,9 @@ async function onGetDetailTask(e) {
 
     let task_history = document.getElementById('task_history')
     task_history.dataset.get_history_task = `task/${response_data.id}/history/`
+
+    let comment_create = document.getElementById('comment_add')
+    comment_create.dataset.action_task = `task/${response_data.id}/comment/create/`
 
     task_history.addEventListener('click', onGetTaskHistory)
 
@@ -284,6 +333,17 @@ async function onGetDetailTask(e) {
     await createTaskTable(task_subtasks, subtasks_info);
     } else {
         subtasks_info.innerHTML = 'Подзадач нет';
+    }
+
+    if (response_data.comments) {
+        let comments = response_data.comments
+        for (let comment of comments) {
+            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
+                comment.updated_at, comment.description)
+        }
+    } else {
+        let comments_info = document.getElementById('comments_info')
+        comments_info.innerHTML = 'Комментариев нет'
     }
 
 }
@@ -451,8 +511,8 @@ async function onConfirmDeletion(e){
     let data_attribute = element.getAttribute('href')
     let response = await makeRequest(data_attribute, "GET")
     let data = await response.text()
-    let listItem = element.closest('li'); // Найти родительский элемент списка
-    let fileId = listItem.id.split('_')[1]; // Получить идентификатор файла из атрибута id
+    let listItem = element.closest('li');
+    let fileId = listItem.id.split('_')[1];
     let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
     for (confirmation_file_delete_element of confirmation_file_delete_elements){
         if (confirmation_file_delete_element.style.display === 'block') {

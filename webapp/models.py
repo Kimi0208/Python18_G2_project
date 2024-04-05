@@ -37,9 +37,11 @@ class Type(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор комментария')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Коммент к задаче', related_name='comments',
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Комментарий к задаче', related_name='comments',
                              null=True, blank=True)
     description = models.TextField(max_length=2500, verbose_name='Текст комментария')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения', blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):

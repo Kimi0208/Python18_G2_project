@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render
 from webapp.forms import TaskForm, FileForm
-from webapp.models import Task, Status, Priority, Type, File, Checklist
+from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from docxtpl import DocxTemplate
@@ -185,6 +185,24 @@ smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
+def get_comments(task_pk):
+    comments = Comment.objects.filter(task=task_pk)
+    comments_list = []
+    for comment in comments:
+        comment_data = {
+            'id': comment.id,
+            'author_first_name': comment.author.first_name,
+            'author_last_name': comment.author.last_name,
+            'task': comment.task.id,
+            'created_at': comment.created_at,
+            'updated_at': comment.updated_at,
+            'description': comment.description
+        }
+        comments_list.append(comment_data)
+    return comments_list
+
+
+
 class TaskView(DetailView):
     model = Task
     permission_required = 'webapp.view_task'
@@ -227,6 +245,7 @@ class TaskView(DetailView):
             'type': self.object.type.name,
             'parent_task': parent_task,
             'subtasks': subtasks_list,
+            'comments': get_comments(self.object.pk)
         }
         return JsonResponse({'task':task_data})
 
@@ -354,4 +373,6 @@ class FileAddView(CreateView):
             'file': self.object.file.name,
         }
         return JsonResponse({'file' : file})
+
+
 
