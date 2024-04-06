@@ -167,6 +167,9 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
 
     comment_card.appendChild(comment_header)
     comment_card.appendChild(comment_card_body)
+    if (comments_info_block.innerHTML === 'Комментариев нет') {
+        comments_info_block.innerHTML = ''
+    }
     let firstComment = comments_info_block.firstChild;
 
     if (firstComment) {
@@ -203,6 +206,10 @@ async function onSubmitCommentDelete(e) {
         let post_response = await makeRequest(data_attribute, "POST")
         let comment_card = document.getElementById(`comment_card_${post_response.comment_id}`)
         comment_card.remove()
+        let comments_info_field = document.getElementById('comments_info')
+        if (comments_info_field.innerHTML === '') {
+            comments_info_field.innerHTML = 'Комментариев нет'
+        }
     })
     cancel_delete_button.addEventListener('click', async function() {
         confirmation_comment_delete_field.innerHTML = ''
@@ -399,6 +406,9 @@ async function onGetDetailTask(e) {
     let subtasks_info = document.getElementById('subtasks_info')
 
     let parent_info_element = document.getElementById('parent_info')
+
+    let comments_info = document.getElementById('comments_info')
+
     if (response_data.parent_task) {
         create_subtask.style.display = 'none'
         parent_info_element.innerHTML = '';
@@ -415,14 +425,14 @@ async function onGetDetailTask(e) {
         subtasks_info.innerHTML = 'Подзадач нет';
     }
 
-    if (response_data.comments) {
+    if (response_data.comments.length > 0) {
+        comments_info.innerHTML = ''
         let comments = response_data.comments
         for (let comment of comments) {
             await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
                 comment.updated_at, comment.description, comment.author_id, comment.user_id)
         }
     } else {
-        let comments_info = document.getElementById('comments_info')
         comments_info.innerHTML = 'Комментариев нет'
     }
 
