@@ -94,12 +94,29 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл"
+             action = "Добавлен файл:"
         elif file_history.history_type == "-":
-            action = "Удален файл"
+            action = "Удален файл:"
         history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"), file_history.history_user.username, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
+
+def get_comments_history(task_pk):
+    comments_history_list = []
+    comments_history = Comment.history.filter(task_id=task_pk)
+    for comment_history in comments_history:
+        if comment_history.history_type == "~":
+            old_description = comment_history.prev_record.description
+            new_description = comment_history.description
+            action = f"Изменен комментарий с {old_description} на {new_description}"
+        elif comment_history.history_type == "+":
+            action = f"Добавлен комментарий: {comment_history.description}"
+        elif comment_history.history_type == "-":
+            action = f"Удален комментарий: {comment_history.description}"
+        history_info = [(action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
+        comments_history_list.append(history_info)
+    return comments_history_list
+
 
 
 
@@ -127,6 +144,8 @@ def get_history_task(request, task_pk):
         # print(f'Изменения {changes}\n')
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
+    history_list.extend(get_comments_history(task_pk))
+
     create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
     history_list.extend([(create_record)])
     if history_list:
@@ -146,7 +165,6 @@ def get_task_files(request, task_pk):
             'url': file.file.url
         }
         file_list.append(file_data)
-    print(file_list)
     return JsonResponse({'files': file_list})
 
 def get_subtasks(object):

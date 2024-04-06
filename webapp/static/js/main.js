@@ -100,6 +100,7 @@ async function editComment(id, first_name, last_name, task, created_at, updated_
     comment_data.innerHTML = description
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'none'
+    modal.innerHTML = ''
 }
 
 
@@ -464,6 +465,12 @@ async function onGetTaskHistory(e){
                     <br>Дата: ${change[1]} Автор: ${change[2]}`
             } else if (change[0].includes('Создана задача')){
                 li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Изменен комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Добавлен комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Удален комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата удаления: ${change[1]} Автор: ${change[2]}`
             } else {
                 li_element.innerHTML += `Поле ${change[0]} изменено с ${change[3]} на ${change[4]} 
                     <br>Дата изменения: ${change[1]} Кто изменил: ${change[2]}<br>`
