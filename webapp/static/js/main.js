@@ -197,6 +197,14 @@ async function onGetDetailTask(e) {
     task_detail_info_element.style.display = 'block'
     let response = await makeRequest(detail_attribute, "GET")
     let response_data = response.task
+    let checklistDrop = document.getElementById("checklist_dropdown")
+
+    if (response_data.type !== 'Заявка') {
+        checklistDrop.style.display = 'none'
+    }
+    else {
+        checklistDrop.style.display = 'block'
+    }
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
@@ -369,4 +377,5 @@ window.addEventListener('load', onLoad);
 // function showCreateModal() {
 //     $('#taskCreateModal').modal('show')
 // }
+
 

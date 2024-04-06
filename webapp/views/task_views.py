@@ -22,12 +22,18 @@ class TaskListView(ListView):
     context_object_name = 'tasks'
     ordering = ['-type']
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['checklists'] = Checklist.objects.all()
+        return context
+
 
 def get_object_from_model(model, value):
     try:
         return model.objects.get(pk=value)
     except model.DoesNotExist:
         return None
+
 
 def check_is_foreign_key(field, old_value, new_value):
     if isinstance(field, ForeignKey):
@@ -88,13 +94,13 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл"
+            action = "Добавлен файл"
         elif file_history.history_type == "-":
             action = "Удален файл"
-        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user, file_history.file)]
+        history_info = [(action, file_history.history_date.strftime("%Y-%m-%d %H:%M:%S"), file_history.history_user,
+                         file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
-
 
 
 def record_history(task_pk):
@@ -107,7 +113,7 @@ def record_history(task_pk):
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%Y-%m-%d %H:%M:%S")
         change_user = current_record.history_user
-        #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
+        # Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
         changes = []
         for change in delta.changes:
@@ -126,6 +132,7 @@ def record_history(task_pk):
         return sorted_history
     else:
         return history_list
+
 
 def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
@@ -147,6 +154,9 @@ class FileDeleteView(DeleteView):
     template_name = 'partial/file_delete.html'
 
     def form_valid(self, form):
+        doc_name = self.object.file.path.split('/')[-1].split('.')[0]
+        Task.objects.filter(description__icontains=doc_name).delete()
+
         file_id = self.object.id
         self.object.delete()
         return JsonResponse({'file_id': file_id})
@@ -194,7 +204,7 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name
         }
-        return JsonResponse({'task':task_data})
+        return JsonResponse({'task': task_data})
 
 
 class TaskCreateView(PermissionRequiredMixin, CreateView):
@@ -272,8 +282,14 @@ def add_subtasks(request, checklist_pk, task_pk):
     main_task = Task.objects.get(pk=task_pk)
     checklist = Checklist.objects.get(pk=checklist_pk)
     users = checklist.users.all()
+
+    file_count = File.objects.count()
+    doc_name = f'Задача{task_pk}_{file_count + 1}'
+    base_file_path = 'uploads/user_docs/Шаблон.docx'
+    new_file_path = f'uploads/user_docs/{doc_name}.docx'
+
     title = 'Подпись'
-    description = f'Необходима подпись документа в задаче #{task_pk}'
+    description = f'Необходима подпись документа {doc_name} в задаче #{task_pk}'
     status = Status.objects.get(pk=1)
     priority = Priority.objects.get(pk=1)
     type = Type.objects.get(pk=1)
@@ -283,22 +299,19 @@ def add_subtasks(request, checklist_pk, task_pk):
                                    type=type, destination_to_user=user)
         task.parent_task = main_task
         task.save()
-        subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
-        message = task.description
-        send_email_notification(subject, message, task.author.email, user.email,
-                                smtp_server, smtp_port, task.author.email, task.author.email_password)
+        # subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
+        # message = task.description
+        # send_email_notification(subject, message, task.author.email, user.email,
+        #                         smtp_server, smtp_port, task.author.email, task.author.email_password)
 
-    file_count = File.objects.count()
-    doc_name = f'Задача{task_pk}_{file_count}'
-    base_file_path = 'uploads/user_docs/Шаблон.docx'
-    new_file_path = f'uploads/user_docs/{doc_name}.docx'
+
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
     context = {'title': task.title, 'description': task.description, 'users': users}
     doc.render(context)
     doc.save(new_file_path)
     File.objects.create(user=request.user, task=main_task, file=new_file_path)
-    return redirect('webapp:detail_task', pk=task_pk)
+    return HttpResponse(status=200)
 
 
 class FileAddView(CreateView):
@@ -314,7 +327,7 @@ class FileAddView(CreateView):
         file = {
             'file': self.object.file.name,
         }
-        return JsonResponse({'file' : file})
+        return JsonResponse({'file': file})
 
 
 

@@ -5,12 +5,12 @@
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
-            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task" 
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task"
                     data-action_task="{% url 'webapp:create_task' %}">
                 <i class="fas fa-download fa-sm text-white-50"></i> Создать задачу
             </button>
-<!--             <a href="#" onclick="showCreateModal()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                <i class="fas fa-download fa-sm text-white-50"></i>  Создать задачу </a> -->
+            <!--             <a href="#" onclick="showCreateModal()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                            <i class="fas fa-download fa-sm text-white-50"></i>  Создать задачу </a> -->
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -18,14 +18,32 @@
 {% endblock %}
 
 {% block content %}
-   
+
     <div id="main_area">
-         {% include 'partial/tables.html' %}
+        {% include 'partial/tables.html' %}
     </div>
+
     <div class="card-body" id="task-detail-info">
         <button class="action-btn_task btn btn-primary" data-action_task="" id="task_edit">Редактировать</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>
         <button class="get-info-btn_task btn btn-primary" data-get_info_task="" id="task_files">Файлы</button>
+
+        <div class="dropdown my-2" id="checklist_dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                Добавить чеклист
+            </button>
+
+            <ul class="dropdown-menu">
+                {% for checklist in checklists %}
+                    <li class="dropdown-item" id="checklist_{{ checklist.id }}">{{ checklist.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button class="get-info-btn_task btn btn-primary my-2" data-action_task="" id="sign_files">Подписать файл
+        </button>
+
         <h5 class="card-title" id="task_title"></h5>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
@@ -38,10 +56,10 @@
         <p class="card-text" id="task_author"></p>
     </div>
 
-    
+
 
     <div id="action-task-modal_window" class="modal action_task_modal"></div>
-<!--     </div>
+    <!--     </div>
 
     <div id="action-task-modal_window" class="modal">
     </div>
@@ -90,8 +108,60 @@
 {% endblock %}
 {% block scripts %}
     <script>
-        $(document).ready(function() {
-          $('#DataTable').DataTable();
+        $(document).ready(function () {
+            $('#DataTable').DataTable();
         });
     </script>
+
+    <script>
+        let checklist_id = NaN
+        let task_id = NaN
+
+        let checklistElements = Array.from(document.querySelectorAll('[id*="checklist"]'))
+        let taskElements = Array.from(document.querySelectorAll('[id*="task_id"]'))
+
+        taskElements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                let element_id = element.id.split('_');
+                task_id = element_id[element_id.length - 1];
+            });
+        });
+
+        checklistElements.forEach(function (element) {
+            element.addEventListener('click', function () {
+                let element_id = element.id.split('_');
+                checklilst_id = element_id[element_id.length - 1];
+                let endpointUrl = window.location.origin + '/task/' + task_id + '/' + checklilst_id + '/';
+                fetch(endpointUrl, {
+                    method: 'GET',
+                });
+            });
+        });
+
+    </script>
+
+
+    <script>
+        document.getElementById('sign_files').addEventListener('click', function () {
+            let file_id = this.dataset.file_id;
+            let endpointUrl = window.location.origin + '/sign_checklist/' + file_id + '/';
+
+            fetch(endpointUrl, {
+                method: 'GET',
+            }).then(response => {
+                if (response.ok) {
+                    // В случае успешного ответа можно выполнить какие-то дополнительные действия, например, обновить страницу
+                    location.reload();
+                } else {
+                    // В случае ошибки можно обработать её здесь
+                    console.error('Ошибка при подписи файла');
+                }
+            }).catch(error => {
+                console.error('Ошибка при выполнении запроса:', error);
+            });
+        });
+
+        console.log(respone.task)
+    </script>
+
 {% endblock %}
