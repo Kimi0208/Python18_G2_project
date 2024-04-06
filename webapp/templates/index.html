@@ -22,27 +22,30 @@
     <div id="main_area">
         {% include 'partial/tables.html' %}
     </div>
-
+    {% if request.user.is_authenticated %}
     <div class="card-body" id="task-detail-info">
         <button class="action-btn_task btn btn-primary" data-action_task="" id="task_edit">Редактировать</button>
         <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>
         <button class="get-info-btn_task btn btn-primary" data-get_info_task="" id="task_files">Файлы</button>
 
-        <div class="dropdown my-2" id="checklist_dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                Добавить чеклист
+        <div id="checklist_dropdown">
+            <div class="dropdown my-2">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    Добавить чеклист
+                </button>
+
+                <ul class="dropdown-menu">
+                    {% for checklist in checklists %}
+                        <li class="dropdown-item" id="checklist_{{ checklist.id }}">{{ checklist.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button class="get-info-btn_task btn btn-primary my-2" data-action_task="" id="sign_files">Подписать файл
             </button>
-
-            <ul class="dropdown-menu">
-                {% for checklist in checklists %}
-                    <li class="dropdown-item" id="checklist_{{ checklist.id }}">{{ checklist.name }}</li>
-                {% endfor %}
-            </ul>
         </div>
+    {% endif %}
 
-        <button class="get-info-btn_task btn btn-primary my-2" data-action_task="" id="sign_files">Подписать файл
-        </button>
 
         <h5 class="card-title" id="task_title"></h5>
         <p class="card-text" id="task_type"></p>

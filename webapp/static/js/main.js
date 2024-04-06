@@ -198,12 +198,20 @@ async function onGetDetailTask(e) {
     let response = await makeRequest(detail_attribute, "GET")
     let response_data = response.task
     let checklistDrop = document.getElementById("checklist_dropdown")
+    let signButton = document.getElementById("sign_files")
 
     if (response_data.type !== 'Заявка') {
         checklistDrop.style.display = 'none'
     }
     else {
         checklistDrop.style.display = 'block'
+    }
+
+    if (!response_data.files || response_data.signing_user == false) {
+        signButton.style.display = 'none'
+    }
+    else {
+        signButton.style.display = ''
     }
 
     let task_edit = document.getElementById('task_edit')

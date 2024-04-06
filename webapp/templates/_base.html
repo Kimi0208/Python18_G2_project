@@ -226,7 +226,7 @@
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-bell fa-fw"></i>
                             <!-- Counter - Alerts -->
-                            {% if request.user %}
+                            {% if request.user and request.user.is_authenticated%}
                                 <span class="badge badge-danger badge-counter">{% new_task_count request.user %}  </span>
                             {% endif %}
 
@@ -240,6 +240,7 @@
                             <div class="mr-3">
                             </div>
                             <div>
+                            {% if request.user.is_authenticated %}
                                 {% notifications request.user as notifications_list %}
                                 {% for notification in notifications_list %}
                                     <a class="dropdown-item d-flex align-items-center" href="{% url 'webapp:index' %}">
@@ -254,6 +255,7 @@
                                         </div>
                                     </a>
                                 {% endfor %}
+                            {% endif %}
                             </div>
                             </a>
 

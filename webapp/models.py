@@ -64,7 +64,10 @@ class File(models.Model):
     file = models.FileField(verbose_name="Файлы", upload_to='uploads/user_docs', null=True, blank=True)
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='files', verbose_name='Задача', null=True,
+                             blank=True)
+    checklist = models.ForeignKey('CheckList', on_delete=models.RESTRICT, related_name='files', verbose_name='Чеклист',
+                                  null=True, blank=True)
     history = HistoricalRecords()
 
 

@@ -204,6 +204,10 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'author': self.object.author.username,
             'type': self.object.type.name
         }
+        if len(self.object.files.all()):
+            task_data['files'] = True
+            for i in self.object.files.all():
+                task_data['signing_user'] = True if self.request.user in i.checklist.users.all() else False
         return JsonResponse({'task': task_data})
 
 
@@ -310,7 +314,7 @@ def add_subtasks(request, checklist_pk, task_pk):
     context = {'title': task.title, 'description': task.description, 'users': users}
     doc.render(context)
     doc.save(new_file_path)
-    File.objects.create(user=request.user, task=main_task, file=new_file_path)
+    File.objects.create(user=request.user, task=main_task, file=new_file_path, checklist=checklist_pk)
     return HttpResponse(status=200)
 
 
