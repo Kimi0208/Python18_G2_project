@@ -56,20 +56,17 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
-    console.log(response)
-    console.log(form.action)
     if (form.action.includes('create_subtask')) {
         let task_subtasks = response.subtasks
         let subtasks_info = document.getElementById('subtasks_info')
         if (task_subtasks.length > 0) {
-        subtasks_info.innerHTML = '';
-        await createTaskTable(task_subtasks, subtasks_info);
-    } else {
-        subtasks_info.innerHTML = 'Подзадач нет';
+            subtasks_info.innerHTML = '';
+            await createTaskTable(task_subtasks, subtasks_info);
+        } else {
+            subtasks_info.innerHTML = 'Подзадач нет';
+        }
     }
-
-    }
-    if (form.action === '/create') {
+    if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
         await addTask(
         response.id,
         response.title,
@@ -81,7 +78,7 @@ async function onSubmitData(e) {
         response.author,
         response.destination_to_user,
         `/task/${response.id}/`);
-    } else if (form.action.includes('update')) {
+    } else if (form.action.includes('task') && form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
             formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
@@ -89,20 +86,67 @@ async function onSubmitData(e) {
     } else if (form.action.includes('comment/create/')) {
         let comment = response.comment
         await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-            comment.created_at, comment.updated_at, comment.description)
-
+            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+    } else if (form.action.includes('comment') && form.action.includes('update')){
+        let comment = response.comment
+        await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
     }
-
 
 }
 
+async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
+    let comment_data = document.getElementById(`comment_data_${id}`)
+    comment_data.innerHTML = description
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'none'
+}
 
-async function addComment(id, first_name, last_name, task, created_at, updated_at, description){
+
+async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id){
     let comments_info_block = document.getElementById('comments_info')
     let comment_card = document.createElement('div')
     comment_card.style.borderBottom = 'solid 1px black'
-    comment_card.style.marginBottom = '2px'
+    comment_card.style.marginBottom = '10px'
     comment_card.id = `comment_card_${id}`
+    if (user_id === author_id) {
+        let action_comment_block = document.createElement('div')
+        action_comment_block.style.display = 'flex'
+        action_comment_block.style.justifyContent = 'flex-end'
+        let edit_comment_button = document.createElement('button')
+        edit_comment_button.type = 'button'
+        edit_comment_button.style.border = 'none'
+        edit_comment_button.style.padding = '0px'
+        edit_comment_button.style.background = 'none'
+        let edit_comment_icon = document.createElement('i')
+        edit_comment_icon.classList.add('fas', 'fa-fw', 'fa-edit')
+        edit_comment_button.dataset.action_task = `comment/${id}/update/`
+        edit_comment_button.addEventListener('click', onClick)
+        edit_comment_button.appendChild(edit_comment_icon)
+
+        let delete_comment_button = document.createElement('button')
+        delete_comment_button.type = 'button'
+        delete_comment_button.style.border = 'none'
+        delete_comment_button.style.padding = '0px'
+        delete_comment_button.style.background = 'none'
+        let delete_comment_icon = document.createElement('i')
+        delete_comment_icon.classList.add('fas', 'fa-fw', 'fa-trash-alt')
+        delete_comment_button.dataset.delete_comment = `comment/${id}/delete/`
+        delete_comment_button.dataset.comment_id = `${id}`
+        delete_comment_button.addEventListener('click', onSubmitCommentDelete)
+        delete_comment_button.appendChild(delete_comment_icon)
+
+        let confirm_comment_delete_field = document.createElement('div')
+        confirm_comment_delete_field.classList.add('confirmation_comment_delete')
+        confirm_comment_delete_field.id = `confirmation_comment_${id}_delete`
+        confirm_comment_delete_field.style.display = 'none'
+
+        action_comment_block.appendChild(edit_comment_button)
+        action_comment_block.appendChild(delete_comment_button)
+        comment_card.appendChild(action_comment_block)
+        comment_card.appendChild(confirm_comment_delete_field)
+
+    }
     let comment_card_body = document.createElement('div')
 
     let username_info = document.createElement('span')
@@ -129,6 +173,41 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
     } else {
         comments_info_block.appendChild(comment_card);
     }
+
+}
+
+
+async function onSubmitCommentDelete(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.dataset['delete_comment']
+    let response = await makeRequest(data_attribute, "GET")
+    let data = await response.text()
+    let comment_id = element.dataset['comment_id']
+
+    let confirmation_comment_delete_elements = document.getElementsByClassName('confirmation_comment_delete')
+    for (confirmation_comment_delete_element of confirmation_comment_delete_elements) {
+        if (confirmation_comment_delete_element.style.display === 'block') {
+            confirmation_comment_delete_element.style.display = 'none'
+            confirmation_comment_delete_element.innerHTML = ''
+        }
+    }
+    let confirmation_comment_delete_field = document.getElementById(`confirmation_comment_${comment_id}_delete`)
+    confirmation_comment_delete_field.innerHTML = data
+    confirmation_comment_delete_field.style.display = 'block'
+    confirmation_comment_delete_field.style.marginBottom = '10px'
+    let confirm_delete_button = document.getElementById('confirm_delete')
+    let cancel_delete_button = document.getElementById('cancel_delete')
+    confirm_delete_button.addEventListener('click', async function() {
+        let post_response = await makeRequest(data_attribute, "POST")
+        let comment_card = document.getElementById(`comment_card_${post_response.comment_id}`)
+        comment_card.remove()
+    })
+    cancel_delete_button.addEventListener('click', async function() {
+        confirmation_comment_delete_field.innerHTML = ''
+        confirmation_comment_delete_field.style.display = 'none'
+    })
+
 
 }
 
@@ -258,7 +337,7 @@ async function onGetDetailTask(e) {
     console.log(response_data)
 
     let task_edit = document.getElementById('task_edit')
-    task_edit.dataset.action_task = `update/${response_data.id}/`
+    task_edit.dataset.action_task = `task/${response_data.id}/update/`
 
     let task_add_file = document.getElementById('add_file')
     task_add_file.dataset.action_task = `task/${response_data.id}/file/add/`
@@ -339,7 +418,7 @@ async function onGetDetailTask(e) {
         let comments = response_data.comments
         for (let comment of comments) {
             await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
-                comment.updated_at, comment.description)
+                comment.updated_at, comment.description, comment.author_id, comment.user_id)
         }
     } else {
         let comments_info = document.getElementById('comments_info')

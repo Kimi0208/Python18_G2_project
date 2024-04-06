@@ -170,22 +170,11 @@ def get_subtasks(object):
         subtasks_list.append(subtask_data)
     return subtasks_list
 
-
-class FileDeleteView(DeleteView):
-    model = File
-    template_name = 'partial/file_delete.html'
-
-    def form_valid(self, form):
-        file_id = self.object.id
-        self.object.delete()
-        return JsonResponse({'file_id': file_id})
-
-
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
 
-def get_comments(task_pk):
+def get_comments(task_pk, user_id):
     comments = Comment.objects.filter(task=task_pk)
     comments_list = []
     for comment in comments:
@@ -196,7 +185,9 @@ def get_comments(task_pk):
             'task': comment.task.id,
             'created_at': comment.created_at,
             'updated_at': comment.updated_at,
-            'description': comment.description
+            'description': comment.description,
+            'author_id': comment.author.id,
+            'user_id': user_id
         }
         comments_list.append(comment_data)
     return comments_list
@@ -245,7 +236,7 @@ class TaskView(DetailView):
             'type': self.object.type.name,
             'parent_task': parent_task,
             'subtasks': subtasks_list,
-            'comments': get_comments(self.object.pk)
+            'comments': get_comments(self.object.pk, self.request.user.pk)
         }
         return JsonResponse({'task':task_data})
 
@@ -375,4 +366,11 @@ class FileAddView(CreateView):
         return JsonResponse({'file' : file})
 
 
+class FileDeleteView(DeleteView):
+    model = File
+    template_name = 'partial/file_delete.html'
 
+    def form_valid(self, form):
+        file_id = self.object.id
+        self.object.delete()
+        return JsonResponse({'file_id': file_id})
