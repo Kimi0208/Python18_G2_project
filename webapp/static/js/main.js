@@ -81,7 +81,8 @@ async function onSubmitData(e) {
     } else if (form.action.includes('task') && form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
-            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
+            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
+            formatDate(response.done_at), response.description)
 
     } else if (form.action.includes('comment/create/')) {
         let comment = response.comment
@@ -233,7 +234,7 @@ async function updateTableTask(id, title, type, status, priority, deadline) {
 
 }
 
-async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at){
+async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
     let detail_task_title = document.getElementsByClassName(`detail_task_${id}_title`)
     let detail_task_type = document.getElementsByClassName(`detail_task_${id}_type`)
     let detail_task_start_date = document.getElementsByClassName(`detail_task_${id}_start_date`)
@@ -242,6 +243,7 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     let detail_task_deadline = document.getElementsByClassName(`detail_task_${id}_deadline`)
     let detail_task_updated_at = document.getElementsByClassName(`detail_task_${id}_updated_at`)
     let detail_task_done_at = document.getElementsByClassName(`detail_task_${id}_done_at`)
+    let detail_task_description = document.getElementsByClassName(`detail_task_${id}_description`)
 
 
     for (title_element of detail_task_title){
@@ -267,6 +269,9 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     }
     for (deadline_element of detail_task_deadline){
         deadline_element.innerHTML = `Дедлайн: ${deadline}`
+    }
+    for (description_element of detail_task_description){
+        description_element.innerHTML = description
     }
 }
 async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to_user, url) {
@@ -401,6 +406,10 @@ async function onGetDetailTask(e) {
     let task_type = document.getElementById('task_type')
     task_type.innerHTML = `Тип: ${response_data.type}`
     task_type.classList.add(`detail_task_${response_data.id}_type`)
+
+    let task_description = document.getElementById('task_description')
+    task_description.innerHTML = response_data.description
+    task_description.classList.add(`detail_task_${response_data.id}_description`)
 
     let task_subtasks = response_data.subtasks
     let subtasks_info = document.getElementById('subtasks_info')
