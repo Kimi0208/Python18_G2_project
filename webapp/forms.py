@@ -1,5 +1,5 @@
 from django import forms
-from webapp.models import Task, File
+from webapp.models import Task, File, Comment
 
 
 class TaskForm(forms.ModelForm):
@@ -30,4 +30,10 @@ class FileForm(forms.ModelForm):
     class Meta:
         model = File
         fields = ['id', 'file']
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['id', 'description']
 

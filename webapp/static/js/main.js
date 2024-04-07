@@ -60,14 +60,13 @@ async function onSubmitData(e) {
         let task_subtasks = response.subtasks
         let subtasks_info = document.getElementById('subtasks_info')
         if (task_subtasks.length > 0) {
-        subtasks_info.innerHTML = '';
-        await createTaskTable(task_subtasks, subtasks_info);
-    } else {
-        subtasks_info.innerHTML = 'Подзадач нет';
+            subtasks_info.innerHTML = '';
+            await createTaskTable(task_subtasks, subtasks_info);
+        } else {
+            subtasks_info.innerHTML = 'Подзадач нет';
+        }
     }
-
-    }
-    if (form.action.includes('create')) {
+    if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
         await addTask(
         response.id,
         response.title,
@@ -79,14 +78,148 @@ async function onSubmitData(e) {
         response.author,
         response.destination_to_user,
         `/task/${response.id}/`);
-    } else if (form.action.includes('update')) {
+    } else if (form.action.includes('task') && form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
-            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at), formatDate(response.done_at))
+            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
+            formatDate(response.done_at), response.description)
 
+    } else if (form.action.includes('comment/create/')) {
+        let comment = response.comment
+        await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+    } else if (form.action.includes('comment') && form.action.includes('update')){
+        let comment = response.comment
+        await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
     }
 
 }
+
+async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
+    let comment_data = document.getElementById(`comment_data_${id}`)
+    comment_data.innerHTML = description
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'none'
+    modal.innerHTML = ''
+}
+
+
+async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id){
+    let comments_info_block = document.getElementById('comments_info')
+    let comment_card = document.createElement('div')
+    comment_card.style.borderBottom = 'solid 1px black'
+    comment_card.style.marginBottom = '10px'
+    comment_card.id = `comment_card_${id}`
+    if (user_id === author_id) {
+        let action_comment_block = document.createElement('div')
+        action_comment_block.style.display = 'flex'
+        action_comment_block.style.justifyContent = 'flex-end'
+        let edit_comment_button = document.createElement('button')
+        edit_comment_button.type = 'button'
+        edit_comment_button.style.border = 'none'
+        edit_comment_button.style.padding = '0px'
+        edit_comment_button.style.background = 'none'
+        let edit_comment_icon = document.createElement('i')
+        edit_comment_icon.classList.add('fas', 'fa-fw', 'fa-edit')
+        edit_comment_button.dataset.action_task = `comment/${id}/update/`
+        edit_comment_button.addEventListener('click', onClick)
+        edit_comment_button.appendChild(edit_comment_icon)
+
+        let delete_comment_button = document.createElement('button')
+        delete_comment_button.type = 'button'
+        delete_comment_button.style.border = 'none'
+        delete_comment_button.style.padding = '0px'
+        delete_comment_button.style.background = 'none'
+        let delete_comment_icon = document.createElement('i')
+        delete_comment_icon.classList.add('fas', 'fa-fw', 'fa-trash-alt')
+        delete_comment_button.dataset.delete_comment = `comment/${id}/delete/`
+        delete_comment_button.dataset.comment_id = `${id}`
+        delete_comment_button.addEventListener('click', onSubmitCommentDelete)
+        delete_comment_button.appendChild(delete_comment_icon)
+
+        let confirm_comment_delete_field = document.createElement('div')
+        confirm_comment_delete_field.classList.add('confirmation_comment_delete')
+        confirm_comment_delete_field.id = `confirmation_comment_${id}_delete`
+        confirm_comment_delete_field.style.display = 'none'
+
+        action_comment_block.appendChild(edit_comment_button)
+        action_comment_block.appendChild(delete_comment_button)
+        comment_card.appendChild(action_comment_block)
+        comment_card.appendChild(confirm_comment_delete_field)
+
+    }
+    let comment_card_body = document.createElement('div')
+
+    let username_info = document.createElement('span')
+    username_info.innerHTML = `${first_name} ${last_name}`
+    let create_info = document.createElement('p')
+    create_info.innerHTML = formatDate(created_at)
+    let comment_info = document.createElement('span')
+    comment_info.innerHTML = description
+    comment_info.id = `comment_data_${id}`
+    let comment_header = document.createElement('div')
+    comment_header.style.display = 'flex'
+    comment_header.style.justifyContent = 'space-between'
+    comment_card_body.appendChild(comment_info)
+
+    comment_header.appendChild(username_info)
+    comment_header.appendChild(create_info)
+
+    comment_card.appendChild(comment_header)
+    comment_card.appendChild(comment_card_body)
+    if (comments_info_block.innerHTML === 'Комментариев нет') {
+        comments_info_block.innerHTML = ''
+    }
+    let firstComment = comments_info_block.firstChild;
+
+    if (firstComment) {
+        comments_info_block.insertBefore(comment_card, firstComment);
+    } else {
+        comments_info_block.appendChild(comment_card);
+    }
+
+}
+
+
+async function onSubmitCommentDelete(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.dataset['delete_comment']
+    let response = await makeRequest(data_attribute, "GET")
+    let data = await response.text()
+    let comment_id = element.dataset['comment_id']
+
+    let confirmation_comment_delete_elements = document.getElementsByClassName('confirmation_comment_delete')
+    for (confirmation_comment_delete_element of confirmation_comment_delete_elements) {
+        if (confirmation_comment_delete_element.style.display === 'block') {
+            confirmation_comment_delete_element.style.display = 'none'
+            confirmation_comment_delete_element.innerHTML = ''
+        }
+    }
+    let confirmation_comment_delete_field = document.getElementById(`confirmation_comment_${comment_id}_delete`)
+    confirmation_comment_delete_field.innerHTML = data
+    confirmation_comment_delete_field.style.display = 'block'
+    confirmation_comment_delete_field.style.marginBottom = '10px'
+    let confirm_delete_button = document.getElementById('confirm_delete')
+    let cancel_delete_button = document.getElementById('cancel_delete')
+    confirm_delete_button.addEventListener('click', async function() {
+        let post_response = await makeRequest(data_attribute, "POST")
+        let comment_card = document.getElementById(`comment_card_${post_response.comment_id}`)
+        comment_card.remove()
+        let comments_info_field = document.getElementById('comments_info')
+        if (comments_info_field.innerHTML === '') {
+            comments_info_field.innerHTML = 'Комментариев нет'
+        }
+    })
+    cancel_delete_button.addEventListener('click', async function() {
+        confirmation_comment_delete_field.innerHTML = ''
+        confirmation_comment_delete_field.style.display = 'none'
+    })
+
+
+}
+
 async function updateTableTask(id, title, type, status, priority, deadline) {
     let task_title = document.getElementById(`task_${id}_title`)
     let task_type = document.getElementById(`task_${id}_type`)
@@ -101,7 +234,7 @@ async function updateTableTask(id, title, type, status, priority, deadline) {
 
 }
 
-async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at){
+async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
     let detail_task_title = document.getElementsByClassName(`detail_task_${id}_title`)
     let detail_task_type = document.getElementsByClassName(`detail_task_${id}_type`)
     let detail_task_start_date = document.getElementsByClassName(`detail_task_${id}_start_date`)
@@ -110,6 +243,7 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     let detail_task_deadline = document.getElementsByClassName(`detail_task_${id}_deadline`)
     let detail_task_updated_at = document.getElementsByClassName(`detail_task_${id}_updated_at`)
     let detail_task_done_at = document.getElementsByClassName(`detail_task_${id}_done_at`)
+    let detail_task_description = document.getElementsByClassName(`detail_task_${id}_description`)
 
 
     for (title_element of detail_task_title){
@@ -135,6 +269,9 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     }
     for (deadline_element of detail_task_deadline){
         deadline_element.innerHTML = `Дедлайн: ${deadline}`
+    }
+    for (description_element of detail_task_description){
+        description_element.innerHTML = description
     }
 }
 async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to_user, url) {
@@ -210,9 +347,10 @@ async function onGetDetailTask(e) {
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
+    console.log(response_data)
 
     let task_edit = document.getElementById('task_edit')
-    task_edit.dataset.action_task = `update/${response_data.id}/`
+    task_edit.dataset.action_task = `task/${response_data.id}/update/`
 
     let task_add_file = document.getElementById('add_file')
     task_add_file.dataset.action_task = `task/${response_data.id}/file/add/`
@@ -225,6 +363,9 @@ async function onGetDetailTask(e) {
 
     let task_history = document.getElementById('task_history')
     task_history.dataset.get_history_task = `task/${response_data.id}/history/`
+
+    let comment_create = document.getElementById('comment_add')
+    comment_create.dataset.action_task = `task/${response_data.id}/comment/create/`
 
     task_history.addEventListener('click', onGetTaskHistory)
 
@@ -266,10 +407,17 @@ async function onGetDetailTask(e) {
     task_type.innerHTML = `Тип: ${response_data.type}`
     task_type.classList.add(`detail_task_${response_data.id}_type`)
 
+    let task_description = document.getElementById('task_description')
+    task_description.innerHTML = response_data.description
+    task_description.classList.add(`detail_task_${response_data.id}_description`)
+
     let task_subtasks = response_data.subtasks
     let subtasks_info = document.getElementById('subtasks_info')
 
     let parent_info_element = document.getElementById('parent_info')
+
+    let comments_info = document.getElementById('comments_info')
+
     if (response_data.parent_task) {
         create_subtask.style.display = 'none'
         parent_info_element.innerHTML = '';
@@ -284,6 +432,17 @@ async function onGetDetailTask(e) {
     await createTaskTable(task_subtasks, subtasks_info);
     } else {
         subtasks_info.innerHTML = 'Подзадач нет';
+    }
+
+    if (response_data.comments.length > 0) {
+        comments_info.innerHTML = ''
+        let comments = response_data.comments
+        for (let comment of comments) {
+            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
+                comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        }
+    } else {
+        comments_info.innerHTML = 'Комментариев нет'
     }
 
 }
@@ -325,6 +484,12 @@ async function onGetTaskHistory(e){
                     <br>Дата: ${change[1]} Автор: ${change[2]}`
             } else if (change[0].includes('Создана задача')){
                 li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Изменен комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Добавлен комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
+            } else if (change[0].includes('Удален комментарий')) {
+                li_element.innerHTML = `${change[0]} <br>Дата удаления: ${change[1]} Автор: ${change[2]}`
             } else {
                 li_element.innerHTML += `Поле ${change[0]} изменено с ${change[3]} на ${change[4]} 
                     <br>Дата изменения: ${change[1]} Кто изменил: ${change[2]}<br>`
@@ -451,8 +616,8 @@ async function onConfirmDeletion(e){
     let data_attribute = element.getAttribute('href')
     let response = await makeRequest(data_attribute, "GET")
     let data = await response.text()
-    let listItem = element.closest('li'); // Найти родительский элемент списка
-    let fileId = listItem.id.split('_')[1]; // Получить идентификатор файла из атрибута id
+    let listItem = element.closest('li');
+    let fileId = listItem.id.split('_')[1];
     let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
     for (confirmation_file_delete_element of confirmation_file_delete_elements){
         if (confirmation_file_delete_element.style.display === 'block') {
