@@ -1,7 +1,7 @@
 from django.urls import path
 from webapp.views import (TaskListView, TaskCreateView, TaskUpdateView, TaskDeleteView, TaskView, add_subtasks,
                           FileAddView, FileDeleteView, get_task_files)
-from webapp.views.task_views import sign_checklist
+from webapp.views.task_views import sign_file
 
 app_name = 'webapp'
 
@@ -15,6 +15,6 @@ urlpatterns = [
     path('task/<int:task_pk>/file/add/', FileAddView.as_view(), name='add_file'),
     path('task/<int:task_pk>/file/<int:pk>/delete/', FileDeleteView.as_view(), name='delete_file'),
     path('task/<int:task_pk>/files/', get_task_files, name='task_file_list'),
-    path('sign_checklist/<int:file_id>/', sign_checklist, name='sign_checklist'),
+    path('sign_file/<int:file_id>/', sign_file, name='sign_file'),
     # path('task/checklist/<int:task_pk>/<int:checklist_pk>/', create_file_from_checlist, name='create_file_from_checlist'),
 ]

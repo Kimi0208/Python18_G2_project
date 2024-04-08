@@ -1,6 +1,5 @@
 async function makeRequest(url, method = 'GET', data = null, token = null) {
-    let headers = {
-    };
+    let headers = {};
     if (token) {
         headers['Authorization'] = 'Token ' + token;
 
@@ -10,9 +9,9 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     let options;
 
     if (method !== "GET") {
-        options = { method, headers, body: data };
+        options = {method, headers, body: data};
     } else {
-        options = { method, headers };
+        options = {method, headers};
     }
     let response = await fetch(url, options);
 
@@ -59,15 +58,15 @@ async function onSubmitData(e) {
     if (form.action.includes('create')) {
         console.log(response.id)
         await addTask(
-        response.id,
-        response.title,
-        response.type,
-        formatDate(response.created_at),
-        response.status,
-        response.priority,
-        formatDate(response.deadline),
-        response.author,
-        `/task/${response.id}/`);
+            response.id,
+            response.title,
+            response.type,
+            formatDate(response.created_at),
+            response.status,
+            response.priority,
+            formatDate(response.deadline),
+            response.author,
+            `/task/${response.id}/`);
     } else if (form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
@@ -76,6 +75,7 @@ async function onSubmitData(e) {
     }
 
 }
+
 async function updateTableTask(id, title, type, status, priority, deadline) {
     let task_title = document.getElementById(`task_${id}_title`)
     let task_type = document.getElementById(`task_${id}_type`)
@@ -90,7 +90,7 @@ async function updateTableTask(id, title, type, status, priority, deadline) {
 
 }
 
-async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at){
+async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at) {
     let detail_task_title = document.getElementsByClassName(`detail_task_${id}_title`)
     let detail_task_type = document.getElementsByClassName(`detail_task_${id}_type`)
     let detail_task_start_date = document.getElementsByClassName(`detail_task_${id}_start_date`)
@@ -101,31 +101,32 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     let detail_task_done_at = document.getElementsByClassName(`detail_task_${id}_done_at`)
 
 
-    for (title_element of detail_task_title){
+    for (title_element of detail_task_title) {
         title_element.innerHTML = `#${id} ${title}`
     }
-    for (type_element of detail_task_type){
+    for (type_element of detail_task_type) {
         type_element.innerHTML = `Тип: ${type}`
     }
-    for (start_date_element of detail_task_start_date){
+    for (start_date_element of detail_task_start_date) {
         start_date_element.innerHTML = `Начать: ${start_date}`
     }
-    for (status_element of detail_task_status){
+    for (status_element of detail_task_status) {
         status_element.innerHTML = `Статус: ${status}`
     }
-    for (priority_element of detail_task_priority){
+    for (priority_element of detail_task_priority) {
         priority_element.innerHTML = `Приоритет: ${priority}`
     }
-    for (updated_at_element of detail_task_updated_at){
+    for (updated_at_element of detail_task_updated_at) {
         updated_at_element.innerHTML = `Изменена: ${updated_at}`
     }
-    for (done_at_element of detail_task_done_at){
+    for (done_at_element of detail_task_done_at) {
         done_at_element.innerHTML = `Выполнена: ${done_at}`
     }
-    for (deadline_element of detail_task_deadline){
+    for (deadline_element of detail_task_deadline) {
         deadline_element.innerHTML = `Дедлайн: ${deadline}`
     }
 }
+
 async function addTask(id, title, type, created_at, status, priority, deadline, author, url) {
     let tableBody = document.getElementById('table_body')
 
@@ -133,7 +134,7 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
     newTask.classList.add('detail-btn_task');
     newTask.dataset.detail_task = url;
     newTask.style.cursor = 'pointer'
-    newTask.id=`task_id_${id}`
+    newTask.id = `task_id_${id}`
     newTask.addEventListener('click', onGetDetailTask)
 
     let taskTitle = document.createElement('td');
@@ -193,6 +194,7 @@ async function onGetDetailTask(e) {
     e.preventDefault()
     let element = e.currentTarget
     let detail_attribute = element.dataset['detail_task']
+    console.log(detail_attribute)
     let task_detail_info_element = document.getElementById('task-detail-info')
     task_detail_info_element.style.display = 'block'
     let response = await makeRequest(detail_attribute, "GET")
@@ -200,19 +202,24 @@ async function onGetDetailTask(e) {
     let checklistDrop = document.getElementById("checklist_dropdown")
     let signButton = document.getElementById("sign_files")
 
-    if (response_data.type !== 'Заявка') {
+    if (response_data.type !== 'Заявка' || response_data.author != response_data.current_user) {
         checklistDrop.style.display = 'none'
-    }
-    else {
+    } else {
         checklistDrop.style.display = 'block'
     }
 
     if (!response_data.files || response_data.signing_user == false) {
         signButton.style.display = 'none'
-    }
-    else {
+    } else {
         signButton.style.display = ''
     }
+
+    signButton.addEventListener('click', function () {
+        let endpointUrl = window.location.origin + '/sign_file/' + response_data.file_to_sign + '/';
+        fetch(endpointUrl, {
+            method: 'GET',
+        });
+    })
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `update/${response_data.id}/`
@@ -310,7 +317,7 @@ async function onGetInfo(e) {
 
 }
 
-async function onConfirmDeletion(e){
+async function onConfirmDeletion(e) {
     e.preventDefault()
     let element = e.currentTarget
     let data_attribute = element.getAttribute('href')
@@ -319,24 +326,24 @@ async function onConfirmDeletion(e){
     let listItem = element.closest('li'); // Найти родительский элемент списка
     let fileId = listItem.id.split('_')[1]; // Получить идентификатор файла из атрибута id
     let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
-    for (confirmation_file_delete_element of confirmation_file_delete_elements){
+    for (confirmation_file_delete_element of confirmation_file_delete_elements) {
         if (confirmation_file_delete_element.style.display = 'block') {
-                confirmation_file_delete_element.style.display = 'none'
-                confirmation_file_delete_element.innerHTML=''
+            confirmation_file_delete_element.style.display = 'none'
+            confirmation_file_delete_element.innerHTML = ''
         }
     }
     let div_element = document.getElementById(`confirmation_file-${fileId}_delete`)
     div_element.innerHTML = data
-    div_element.style.display='block'
+    div_element.style.display = 'block'
     let confirm_delete_button = document.getElementById('confirm_delete')
     let cancel_delete_button = document.getElementById('cancel_delete')
-    confirm_delete_button.addEventListener('click', async function(){
+    confirm_delete_button.addEventListener('click', async function () {
         let post_response = await makeRequest(data_attribute, "POST")
         listItem.remove()
     })
-    cancel_delete_button.addEventListener('click', async function(){
+    cancel_delete_button.addEventListener('click', async function () {
         div_element.innerHTML = ''
-        div_element.style.display='none'
+        div_element.style.display = 'none'
     })
 
 }
@@ -357,8 +364,6 @@ function onLoad() {
         get_info_button.addEventListener('click', onGetInfo)
     }
 }
-
-
 
 
 window.addEventListener('load', onLoad);
@@ -387,3 +392,25 @@ window.addEventListener('load', onLoad);
 // }
 
 
+let checklist_id = NaN
+let task_id = NaN
+let checklistElements = Array.from(document.querySelectorAll('[class="dropdown-item"]'))
+let taskElements = Array.from(document.querySelectorAll('[id*="task_id"]'))
+
+taskElements.forEach(function (element) {
+    element.addEventListener('click', function () {
+        let element_id = element.id.split('_');
+        task_id = element_id[element_id.length - 1];
+    });
+});
+
+checklistElements.forEach(function (element) {
+    element.addEventListener('click', function () {
+        let element_id = element.id.split('_');
+        checklilst_id = element_id[element_id.length - 1];
+        let endpointUrl = window.location.origin + '/task/' + task_id + '/' + checklilst_id + '/';
+        fetch(endpointUrl, {
+            method: 'GET',
+        })
+    });
+});

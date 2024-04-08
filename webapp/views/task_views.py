@@ -202,12 +202,15 @@ class TaskView(PermissionRequiredMixin, DetailView):
             'status': self.object.status.name,
             'priority': self.object.priority.name,
             'author': self.object.author.username,
-            'type': self.object.type.name
+            'type': self.object.type.name,
+            'current_user': self.request.user.username
         }
-        if len(self.object.files.all()):
+        if len(self.object.files.all()) > 0:
             task_data['files'] = True
             for i in self.object.files.all():
                 task_data['signing_user'] = True if self.request.user in i.checklist.users.all() else False
+                if self.object.file_to_sign == i:
+                    task_data['file_to_sign'] = i.id
         return JsonResponse({'task': task_data})
 
 
@@ -308,13 +311,14 @@ def add_subtasks(request, checklist_pk, task_pk):
         # send_email_notification(subject, message, task.author.email, user.email,
         #                         smtp_server, smtp_port, task.author.email, task.author.email_password)
 
-
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
     context = {'title': task.title, 'description': task.description, 'users': users}
     doc.render(context)
     doc.save(new_file_path)
-    File.objects.create(user=request.user, task=main_task, file=new_file_path, checklist=checklist_pk)
+    main_task.file_to_sign = File.objects.create(user=request.user, task=main_task, file=new_file_path,
+                                                 checklist=Checklist.objects.get(id=checklist_pk))
+    main_task.save()
     return HttpResponse(status=200)
 
 
@@ -334,13 +338,12 @@ class FileAddView(CreateView):
         return JsonResponse({'file': file})
 
 
-
-def sign_checklist(request, file_id):
-    checklist_file = get_object_or_404(File, pk=file_id)
+def sign_file(request, file_id):
+    doc_to_sign = get_object_or_404(File, pk=file_id)
 
     signature_path = 'uploads/signature/test.png'
 
-    doc = Document(checklist_file.file)
+    doc = Document(doc_to_sign.file)
 
     current_user = request.user
     current_user_id = str(current_user.id)
@@ -350,14 +353,12 @@ def sign_checklist(request, file_id):
 
     for table in doc.tables:
         for row in table.rows:
-            for cell in row.cells:
-                if current_user_id in cell.text:
-                    paragraph = cell.paragraphs[0]
-                    run = paragraph.add_run()
-                    run.add_picture(signature_path, width=Inches(2))
+            if current_user_id in row.cells[1].text:
+                row.cells[1].text = ''
+                paragraph = row.cells[1].paragraphs[0]
+                run = paragraph.add_run()
+                run.add_picture(signature_path, width=Inches(2))
 
-    doc.save(checklist_file.file.path)
+    doc.save(doc_to_sign.file.path)
 
-    task_id = checklist_file.task_id
-
-    return HttpResponseRedirect(reverse('webapp:detail_task', kwargs={'pk': task_id}))
+    return HttpResponseRedirect(reverse('webapp:index'))

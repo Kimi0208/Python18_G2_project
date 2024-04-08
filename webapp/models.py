@@ -22,7 +22,10 @@ class Task(models.Model):
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип')
+    file_to_sign = models.ForeignKey('File', related_name='sign_task', on_delete=models.SET_NULL,
+                                     verbose_name='Файл для подписи', null=True, blank=True)
     history = HistoricalRecords()
+
 
     def __str__(self):
         return f'{self.id}){self.title}'
