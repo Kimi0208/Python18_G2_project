@@ -8,6 +8,7 @@ from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
+from accounts.models import DefUser, Department
 import json
 
 
@@ -16,17 +17,41 @@ class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'tasks'
-    ordering = ['-type']
 
     def get_queryset(self):
-        # Получаем текущего пользователя
-        # Если передан id пользователя в запросе, фильтруем задачи только для этого пользователя
-        user_id = self.kwargs.get('user_pk')
-        if user_id:
-            return Task.objects.filter(author_id=user_id)
-        else:
-            # Возвращаем задачи текущего пользователя
-            return Task.objects.filter(destination_to_user=self.request.user.pk)
+        return Task.objects.filter(destination_to_user=self.request.user.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        users = DefUser.objects.all()
+        departments = Department.objects.all()
+        context['users'] = users
+        context['departments'] = departments
+        return context
+
+
+def get_tasks_from_id(request, pk):
+    tasks = ''
+    if 'tasks/user' in request.path:
+        tasks = Task.objects.filter(destination_to_user=pk)
+    elif 'tasks/department' in request.path:
+        tasks = Task.objects.filter(destination_to_department=pk)
+    tasks_list = []
+    for task in tasks:
+        task_data = {
+            'id': task.pk,
+            'title': task.title,
+            'created_at': task.created_at,
+            'deadline': task.deadline,
+            'status': task.status.name,
+            'priority': task.priority.name,
+            'type': task.type.name,
+            'author': task.author.username
+        }
+        tasks_list.append(task_data)
+    return JsonResponse({'tasks': tasks_list})
+
+
 
 
 def get_object_from_model(model, value):
@@ -154,6 +179,7 @@ def get_history_task(request, task_pk):
     else:
         return JsonResponse({'history': history_list})
 
+
 def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
     file_list = []
@@ -166,6 +192,7 @@ def get_task_files(request, task_pk):
         }
         file_list.append(file_data)
     return JsonResponse({'files': file_list})
+
 
 def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object)
@@ -209,7 +236,6 @@ def get_comments(task_pk, user_id):
         }
         comments_list.append(comment_data)
     return comments_list
-
 
 
 class TaskView(DetailView):
@@ -268,6 +294,11 @@ class TaskCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
+        destination_to = ''
+        if self.object.destination_to_user:
+            destination_to = self.object.destination_to_user.username
+        elif self.object.destination_to_department:
+            destination_to = self.object.destination_to_department.name
         if 'task_pk' in self.kwargs:
             self.object.parent_task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
@@ -290,7 +321,7 @@ class TaskCreateView(CreateView):
             'priority': self.object.priority.name,
             'author': self.object.author.username,
             'type': self.object.type.name,
-            'destination_to_user': self.object.destination_to_user.username,
+            'destination_to': destination_to,
             'subtasks': get_subtasks(self.object.parent_task)
         }
         return JsonResponse(task_data)

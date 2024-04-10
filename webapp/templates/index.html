@@ -18,11 +18,34 @@
 {% endblock %}
 
 {% block content %}
+    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px" class="list-group";>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for department in departments %}
+                <tr>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}" data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk%}">{{ department.name }}</td>
+                </tr>
+            {% endfor %}
+            {% for user in users %}
+                <tr>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}" data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
+                </tr>
+            {% endfor %}
+            
+          </tbody>
+        </table>
+    </div>
    
     <div id="main_area">
+    
          {% include 'partial/tables.html' %}
     </div>
-    <div class="card-body" id="task-detail-info" style="border-left: solid 1px black;  font-size: 14px; width: 30%">
+    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 32%">
         <div style="display: flex; justify-content: space-between;" class="bg-primary" >
             <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать</button>
     {#        <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>#}

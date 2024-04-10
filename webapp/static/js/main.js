@@ -67,17 +67,21 @@ async function onSubmitData(e) {
         }
     }
     if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
-        await addTask(
-        response.id,
-        response.title,
-        response.type,
-        formatDate(response.created_at),
-        response.status,
-        response.priority,
-        formatDate(response.deadline),
-        response.author,
-        response.destination_to_user,
-        `/task/${response.id}/`);
+        let tableBody = document.getElementById('table_body')
+        let whose_table = tableBody.dataset['whose_table']
+        if (whose_table === response.destination_to) {
+            await addTask(
+            response.id,
+            response.title,
+            response.type,
+            formatDate(response.created_at),
+            response.status,
+            response.priority,
+            formatDate(response.deadline),
+            response.author,
+            response.destination_to,
+            `/task/${response.id}/`);
+        }
     } else if (form.action.includes('task') && form.action.includes('update')) {
         await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
         await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
@@ -274,8 +278,34 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
         description_element.innerHTML = description
     }
 }
-async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to_user, url) {
-    if (destination_to_user === author){
+
+
+async function onGetTasks(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let get_tasks_buttons = document.getElementsByClassName('get-tasks_btn')
+    for (let button of get_tasks_buttons) {
+        if (button.style.background === 'lightgrey') {
+            button.style.background = ''
+        }
+    }
+    element.style.background = 'lightgrey'
+    let data_attribute = element.dataset['get_tasks']
+    let response = await makeRequest(data_attribute, "GET")
+    let whose_table = element.dataset['whose_table']
+    let tasks = response.tasks
+    let tableBody = document.getElementById('table_body')
+    tableBody.dataset.whose_table = whose_table
+    tableBody.innerHTML = ''
+    for (let task of tasks) {
+        let url = `/task/${task.id}/`
+        await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
+    }
+}
+
+
+async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to, url) {
+    // if (destination_to === author){
         let tableBody = document.getElementById('table_body')
 
         let newTask = document.createElement('tr');
@@ -324,7 +354,7 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
         newTask.appendChild(taskAuthor);
 
         tableBody.appendChild(newTask);
-    }
+    // }
 }
 
 function formatDate(dateTimeString) {
@@ -654,6 +684,10 @@ function onLoad() {
     let get_info_buttons = document.getElementsByClassName('get-info-btn_task')
     for (let get_info_button of get_info_buttons) {
         get_info_button.addEventListener('click', onGetInfo)
+    }
+    let get_tasks_buttons = document.getElementsByClassName('get-tasks_btn')
+    for (let get_tasks_button of get_tasks_buttons) {
+        get_tasks_button.addEventListener('click', onGetTasks)
     }
 }
 

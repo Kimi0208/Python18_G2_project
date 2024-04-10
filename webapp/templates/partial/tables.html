@@ -12,7 +12,7 @@
                 <th>От кого</th>
             </tr>
             </thead>
-            <tbody id="table_body">
+            <tbody id="table_body" data-whose_table="{{ request.user.username }}">
                 {% for task in tasks %}
                     <tr style="cursor: pointer" class="detail-btn_task" data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}" id="task_id_{{ task.pk }}">
                         <td id="task_{{ task.pk }}_title">{{ task.title }}</td>
