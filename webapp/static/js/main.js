@@ -56,48 +56,54 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
-    if (form.action.includes('create_subtask')) {
-        let task_subtasks = response.subtasks
-        let subtasks_info = document.getElementById('subtasks_info')
-        if (task_subtasks.length > 0) {
-            subtasks_info.innerHTML = '';
-            await createTaskTable(task_subtasks, subtasks_info);
-        } else {
-            subtasks_info.innerHTML = 'Подзадач нет';
+    if ('errors' in response){
+        for (let error of response.errors.__all__) {
+            alert(error)
         }
-    }
-    if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
-        let tableBody = document.getElementById('table_body')
-        let whose_table = tableBody.dataset['whose_table']
-        if (whose_table === response.destination_to) {
-            await addTask(
-            response.id,
-            response.title,
-            response.type,
-            formatDate(response.created_at),
-            response.status,
-            response.priority,
-            formatDate(response.deadline),
-            response.author,
-            response.destination_to,
-            `/task/${response.id}/`);
+    } else {
+        if (form.action.includes('create_subtask')) {
+            let task_subtasks = response.subtasks
+            let subtasks_info = document.getElementById('subtasks_info')
+            if (task_subtasks.length > 0) {
+                subtasks_info.innerHTML = '';
+                await createTaskTable(task_subtasks, subtasks_info);
+            } else {
+                subtasks_info.innerHTML = 'Подзадач нет';
+            }
         }
-    } else if (form.action.includes('task') && form.action.includes('update')) {
-        await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
-        await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
-            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
-            formatDate(response.done_at), response.description)
+        if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
+            let tableBody = document.getElementById('table_body')
+            let whose_table = tableBody.dataset['whose_table']
+            if (whose_table === response.destination_to) {
+                await addTask(
+                response.id,
+                response.title,
+                response.type,
+                formatDate(response.created_at),
+                response.status,
+                response.priority,
+                formatDate(response.deadline),
+                response.author,
+                response.destination_to,
+                `/task/${response.id}/`);
+            }
+        } else if (form.action.includes('task') && form.action.includes('update')) {
+            await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
+            await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
+                formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
+                formatDate(response.done_at), response.description)
 
-    } else if (form.action.includes('comment/create/')) {
-        let comment = response.comment
-        await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
-    } else if (form.action.includes('comment') && form.action.includes('update')){
-        let comment = response.comment
-        await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        } else if (form.action.includes('comment/create/')) {
+            let comment = response.comment
+            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        } else if (form.action.includes('comment') && form.action.includes('update')){
+            let comment = response.comment
+            await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        }
+
     }
-
 }
 
 async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
@@ -157,8 +163,11 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
 
     let username_info = document.createElement('span')
     username_info.innerHTML = `${first_name} ${last_name}`
+    username_info.style.fontStyle='italic'
+    username_info.style.fontWeight='bold'
     let create_info = document.createElement('p')
     create_info.innerHTML = formatDate(created_at)
+    create_info.style.fontWeight='bold'
     let comment_info = document.createElement('span')
     comment_info.innerHTML = description
     comment_info.id = `comment_data_${id}`
@@ -373,6 +382,13 @@ async function onGetDetailTask(e) {
     e.preventDefault();
     let element = e.currentTarget;
     let detail_attribute = element.dataset['detail_task'];
+    let detail_tasks_buttons = document.getElementsByClassName('detail-btn_task')
+    for (let button of detail_tasks_buttons) {
+        if (button.style.background === 'lightgrey') {
+            button.style.background = ''
+        }
+    }
+    element.style.background = 'lightgrey'
     let task_detail_info_element = document.getElementById('task-detail-info');
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");

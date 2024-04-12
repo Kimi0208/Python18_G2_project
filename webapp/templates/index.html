@@ -5,7 +5,7 @@
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
-            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task" 
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task"
                     data-action_task="{% url 'webapp:create_task' %}">
                 <i class="fas fa-download fa-sm text-white-50"></i> Создать задачу
             </button>
@@ -22,7 +22,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th scope="col"></th>
+              <th scope="col">Отделы и сотрудники</th>
             </tr>
           </thead>
           <tbody>
@@ -36,16 +36,16 @@
                     <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}" data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
                 </tr>
             {% endfor %}
-            
+
           </tbody>
         </table>
     </div>
    
     <div id="main_area">
-    
+
          {% include 'partial/tables.html' %}
     </div>
-    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 32%">
+    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
         <div style="display: flex; justify-content: space-between;" class="bg-primary" >
             <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать</button>
     {#        <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>#}

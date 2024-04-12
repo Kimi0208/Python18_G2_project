@@ -3,14 +3,13 @@ from django.shortcuts import redirect, reverse, render
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
 from accounts.models import DefUser, Department
 import json
-
 
 
 class TaskListView(ListView):
@@ -23,8 +22,8 @@ class TaskListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        users = DefUser.objects.all()
-        departments = Department.objects.all()
+        users = DefUser.objects.all().order_by('username')
+        departments = Department.objects.all().order_by('name')
         context['users'] = users
         context['departments'] = departments
         return context
@@ -126,9 +125,11 @@ def get_files_history(task_pk):
         files_history_list.append(history_info)
     return files_history_list
 
+
 def get_comments_history(task_pk):
     comments_history_list = []
     comments_history = Comment.history.filter(task_id=task_pk)
+    action = ''
     for comment_history in comments_history:
         if comment_history.history_type == "~":
             old_description = comment_history.prev_record.description
@@ -141,8 +142,6 @@ def get_comments_history(task_pk):
         history_info = [(action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
         comments_history_list.append(history_info)
     return comments_history_list
-
-
 
 
 def get_history_task(request, task_pk):
@@ -291,6 +290,9 @@ class TaskCreateView(CreateView):
     template_name = 'task_proposal_create.html'
     permission_required = 'webapp.add_task'
 
+    def form_invalid(self, form):
+        return JsonResponse({'errors': form.errors})
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
@@ -302,11 +304,11 @@ class TaskCreateView(CreateView):
         if 'task_pk' in self.kwargs:
             self.object.parent_task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
-        # if self.object.destination_to_user:
-        #     subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
-        #     message = self.object.description
-        #     send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
-        #                             smtp_server, smtp_port, self.object.author.email, self.object.author.email_password)
+        if self.object.destination_to_user:
+            subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
+            message = self.object.description
+            send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
+                                    smtp_server, smtp_port, self.object.author.email, self.object.author.decrypt_email_password())
 
         task_data = {
             'id': self.object.pk,
@@ -333,6 +335,9 @@ class TaskUpdateView(UpdateView):
     template_name = 'task_proposal_edit.html'
     permission_required = 'webapp.change_task'
 
+    def form_invalid(self, form):
+        return JsonResponse({'errors': form.errors})
+
     def form_valid(self, form):
         self.object = form.save()
         if self.object.status.name == 'Выполнена':
@@ -341,7 +346,7 @@ class TaskUpdateView(UpdateView):
                 message = self.object.description
                 send_email_notification(subject, message, self.request.user.email, self.object.author.email,
                                         smtp_server, smtp_port, self.request.user.email,
-                                        self.request.user.email_password)
+                                        self.request.user.decrypt_email_password())
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -384,7 +389,7 @@ def add_subtasks(request, checklist_pk, task_pk):
         subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
         message = task.description
         send_email_notification(subject, message, task.author.email, user.email,
-                                smtp_server, smtp_port, task.author.email, task.author.email_password)
+                                smtp_server, smtp_port, task.author.email, task.author.decrypt_email_password())
 
     file_count = File.objects.count()
     doc_name = f'Задача{task_pk}_{file_count}'
