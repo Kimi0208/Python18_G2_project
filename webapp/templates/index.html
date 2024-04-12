@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px" class="list-group";>
+    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px" class="list-group"; id="user_dep_list_area">
         <table class="table table-hover">
           <thead>
             <tr>
@@ -41,7 +41,7 @@
         </table>
     </div>
    
-    <div id="main_area">
+    <div id="main_area" style="width:60%">
 
          {% include 'partial/tables.html' %}
     </div>
@@ -65,7 +65,7 @@
               </div>
             </div>
         </div>
-    <h4 class="card-title" id="task_title"></h4>
+    <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
         <p class="card-text" id="task_start_date"></p>
@@ -76,7 +76,7 @@
         <p class="card-text" id="task_deadline"></p>
         <p class="card-text" id="task_author"></p>
         <div id="description_field">
-            <h4 id="description_field_header" style="background: antiquewhite">Описание</h4>
+            <h4 id="description_field_header" style="background: antiquewhite; word-wrap: break-word">Описание</h4>
             <div id="description_info">
                 <span id="task_description"></span>
             </div>
@@ -152,7 +152,7 @@
 {% block scripts %}
     <script>
         $(document).ready(function() {
-          $('#DataTable').DataTable();
+            $('#DataTable').DataTable();
         });
     </script>
 {% endblock %}

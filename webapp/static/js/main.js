@@ -88,7 +88,8 @@ async function onSubmitData(e) {
                 `/task/${response.id}/`);
             }
         } else if (form.action.includes('task') && form.action.includes('update')) {
-            await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
+            await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
+                formatDate(response.deadline));
             await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
                 formatDate(response.done_at), response.description)
@@ -234,17 +235,19 @@ async function onSubmitCommentDelete(e) {
 }
 
 async function updateTableTask(id, title, type, status, priority, deadline) {
-    let task_title = document.getElementById(`task_${id}_title`)
-    let task_type = document.getElementById(`task_${id}_type`)
-    let task_status = document.getElementById(`task_${id}_status`)
-    let task_priority = document.getElementById(`task_${id}_priority`)
-    let task_deadline = document.getElementById(`task_${id}_deadline`)
-    task_title.innerHTML = title
-    task_type.innerHTML = type
-    task_status.innerHTML = status
-    task_priority.innerHTML = priority
-    task_deadline.innerHTML = deadline
 
+    let task = dataTable.row(`#task_id_${id}`)
+    let data = [
+        title,
+        type,
+        status,
+        priority,
+        task.data()[4],
+        deadline,
+        task.data()[6]
+    ];
+    task.data(data).draw()
+    dataTable.columns.adjust().draw()
 }
 
 async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
@@ -305,65 +308,81 @@ async function onGetTasks(e) {
     let tasks = response.tasks
     let tableBody = document.getElementById('table_body')
     tableBody.dataset.whose_table = whose_table
-    tableBody.innerHTML = ''
+    dataTable.clear()
     for (let task of tasks) {
         let url = `/task/${task.id}/`
         await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
     }
+    dataTable.draw()
 }
 
 
 async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to, url) {
-    // if (destination_to === author){
-        let tableBody = document.getElementById('table_body')
+    let data = [
+        title,
+        type,
+        status,
+        priority,
+        created_at,
+        deadline,
+        author
+    ];
+    let newTask = dataTable.row.add(data).draw().node();
+    newTask.classList.add('detail-btn_task');
+    newTask.dataset.detail_task = url;
+    newTask.style.cursor = 'pointer';
+    newTask.id = `task_id_${id}`;
+    newTask.addEventListener('click', onGetDetailTask)
 
-        let newTask = document.createElement('tr');
-        newTask.classList.add('detail-btn_task');
-        newTask.dataset.detail_task = url;
-        newTask.style.cursor = 'pointer'
-        newTask.id=`task_id_${id}`
-        newTask.addEventListener('click', onGetDetailTask)
 
-        let taskTitle = document.createElement('td');
-        taskTitle.textContent = title;
-        taskTitle.id = `task_${id}_title`
-
-
-        let taskType = document.createElement('td');
-        taskType.textContent = type;
-        taskType.id = `task_${id}_type`
-        taskType.setAttribute('style', 'cursor: pointer');
-
-        let taskStatus = document.createElement('td');
-        taskStatus.textContent = status;
-        taskStatus.id = `task_${id}_status`
-
-        let taskPriority = document.createElement('td');
-        taskPriority.textContent = priority;
-        taskPriority.id = `task_${id}_priority`
-
-        let taskCreatedAt = document.createElement('td');
-        taskCreatedAt.textContent = created_at;
-        taskCreatedAt.id = `task_${id}_created_at`
-
-        let taskDeadline = document.createElement('td');
-        taskDeadline.textContent = deadline;
-        taskDeadline.id = `task_${id}_deadline`
-
-        let taskAuthor = document.createElement('td');
-        taskAuthor.textContent = author;
-        taskAuthor.id = `task_${id}_author`
-
-        newTask.appendChild(taskTitle);
-        newTask.appendChild(taskType);
-        newTask.appendChild(taskStatus);
-        newTask.appendChild(taskPriority);
-        newTask.appendChild(taskCreatedAt)
-        newTask.appendChild(taskDeadline);
-        newTask.appendChild(taskAuthor);
-
-        tableBody.appendChild(newTask);
-    // }
+        // let tableBody = document.getElementById('table_body')
+        //
+        // let newTask = document.createElement('tr');
+        // newTask.classList.add('detail-btn_task');
+        // newTask.dataset.detail_task = url;
+        // newTask.style.cursor = 'pointer'
+        // newTask.id=`task_id_${id}`
+        // newTask.addEventListener('click', onGetDetailTask)
+        //
+        // let taskTitle = document.createElement('td');
+        // taskTitle.textContent = title;
+        // taskTitle.id = `task_${id}_title`
+        //
+        //
+        // let taskType = document.createElement('td');
+        // taskType.textContent = type;
+        // taskType.id = `task_${id}_type`
+        // taskType.setAttribute('style', 'cursor: pointer');
+        //
+        // let taskStatus = document.createElement('td');
+        // taskStatus.textContent = status;
+        // taskStatus.id = `task_${id}_status`
+        //
+        // let taskPriority = document.createElement('td');
+        // taskPriority.textContent = priority;
+        // taskPriority.id = `task_${id}_priority`
+        //
+        // let taskCreatedAt = document.createElement('td');
+        // taskCreatedAt.textContent = created_at;
+        // taskCreatedAt.id = `task_${id}_created_at`
+        //
+        // let taskDeadline = document.createElement('td');
+        // taskDeadline.textContent = deadline;
+        // taskDeadline.id = `task_${id}_deadline`
+        //
+        // let taskAuthor = document.createElement('td');
+        // taskAuthor.textContent = author;
+        // taskAuthor.id = `task_${id}_author`
+        //
+        // newTask.appendChild(taskTitle);
+        // newTask.appendChild(taskType);
+        // newTask.appendChild(taskStatus);
+        // newTask.appendChild(taskPriority);
+        // newTask.appendChild(taskCreatedAt)
+        // newTask.appendChild(taskDeadline);
+        // newTask.appendChild(taskAuthor);
+        //
+        // tableBody.appendChild(newTask);
 }
 
 function formatDate(dateTimeString) {
@@ -688,7 +707,12 @@ async function onConfirmDeletion(e){
 }
 
 
+
+let dataTable;
 function onLoad() {
+    $(document).ready(function() {
+          dataTable = $('#DataTable').DataTable();
+        });
     let action_buttons = document.getElementsByClassName('action-btn_task')
     for (let action_button of action_buttons) {
         action_button.addEventListener('click', onClick)
