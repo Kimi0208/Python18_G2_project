@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import redirect, reverse, render
+from django.shortcuts import redirect, reverse, render, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -9,7 +9,8 @@ from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
 from django.db.models import ForeignKey
 from accounts.models import DefUser, Department
-import json
+from docx import Document
+from docx.shared import Inches
 
 
 class TaskListView(ListView):
@@ -53,13 +54,12 @@ def get_tasks_from_id(request, pk):
     return JsonResponse({'tasks': tasks_list})
 
 
-
-
 def get_object_from_model(model, value):
     try:
         return model.objects.get(pk=value)
     except model.DoesNotExist:
         return None
+
 
 def check_is_foreign_key(field, old_value, new_value):
     if isinstance(field, ForeignKey):
@@ -185,14 +185,44 @@ def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
     file_list = []
     for file in files:
+        user_signature = ''
+        if file.checklist:
+            if file.checklist.users.filter(id=request.user.id).exists():
+                user_signature = f'sign_file/{file.pk}/'
+
         file_data = {
             'id': file.id,
             'name': file.file.name,
             'task_id': file.task.id,
-            'url': file.file.url
+            'url': file.file.url,
+            'signature': user_signature,
+            'current_user': request.user.id
         }
         file_list.append(file_data)
     return JsonResponse({'files': file_list})
+
+
+def sign_file(request, file_id):
+    doc_to_sign = get_object_or_404(File, pk=file_id)
+
+    doc = Document(doc_to_sign.file)
+
+    current_user = request.user
+    current_user_id = str(current_user.id)
+
+    if current_user.signature:
+        signature_path = current_user.signature.path
+
+    for table in doc.tables:
+        for row in table.rows:
+            if current_user_id in row.cells[1].text:
+                row.cells[1].text = ''
+                paragraph = row.cells[1].paragraphs[0]
+                run = paragraph.add_run()
+                run.add_picture(signature_path, width=Inches(2))
+
+    doc.save(doc_to_sign.file.path)
+    return JsonResponse({"success": True, "user_id": current_user_id, "file_id": file_id})
 
 
 def get_subtasks(object):
@@ -403,7 +433,7 @@ def add_subtasks(request, checklist_pk, task_pk):
     context = {'title': main_task.title, 'description': main_task.description, 'users': users}
     doc.render(context)
     doc.save(new_file_path)
-    File.objects.create(user=request.user, task=main_task, file=new_file_path)
+    File.objects.create(user=request.user, task=main_task, file=new_file_path, checklist_id=checklist_pk)
     subtasks = get_subtasks(main_task)
     return JsonResponse({'subtasks': subtasks})
 
@@ -421,6 +451,7 @@ class FileAddView(CreateView):
         file = {
             'file': self.object.file.name,
         }
+        print(file)
         return JsonResponse({'file' : file})
 
 

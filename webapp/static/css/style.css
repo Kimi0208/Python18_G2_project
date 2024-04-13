@@ -43,7 +43,7 @@ table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataT
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 41%;
+  width: 35%;
 }
 
 .close {
@@ -68,4 +68,12 @@ table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataT
 
 #task-detail-info {
   display: none;
+}
+
+.list-group-item {
+    margin-bottom: 20px;
+}
+.list-group-item a {
+
+    margin-right: 10px;
 }

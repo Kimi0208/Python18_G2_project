@@ -68,6 +68,8 @@ class File(models.Model):
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
+    checklist = models.ForeignKey('Checklist', on_delete=models.CASCADE, verbose_name='Чеклист', null=True,
+                                  blank=True, related_name='files')
     history = HistoricalRecords()
 
 

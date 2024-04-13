@@ -595,7 +595,6 @@ async function createTaskTable(taskData, infoElement) {
         return;
     }
 
-    // infoElement.innerHTML = '';
 
     let table = document.createElement('table');
     table.style.width = '100%';
@@ -661,7 +660,7 @@ async function onGetInfo(e) {
                         <h4>Файлы </h4>
                         <button id="close_modal" style="background: white; border: none">Закрыть</button>
                     </div>
-                    <div class="card" style="width: 18rem;">
+                    <div style="width: 18rem;">
                         <ul class="list-group list-group-flush">
                                 
                         </ul>
@@ -674,22 +673,65 @@ async function onGetInfo(e) {
         ul_element.innerHTML += `
            <li class="list-group-item" id="file_${file.id}">
                 <p>${file.name.replace("uploads/user_docs/", "")}</p>
-                <a href="${file.url}" target="_blank" download="">Скачать</a>
-                <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a><br>
+                <div id="action_field_file_${file.id}" style="display:flex; align-items: center;">
+                    <a href="${file.url}" target="_blank" download="">Скачать</a>
+                    <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a>
+                </div>
                 
                 <div class="confirmation_file_delete" id="confirmation_file-${file.id}_delete" style="display: none; margin-top: 5px"></div>
            </li>`;
+        let action_field = document.getElementById(`action_field_file_${file.id}`)
+        if (file.signature) {
+            let localStorageKey = `user_${file.current_user}_file_${file.id}`;
+            let localStorageValue = localStorage.getItem(localStorageKey);
+            if (localStorageValue === 'signed') {
+                action_field.innerHTML += `<span>Подписан</span>`
+            } else {
+                action_field.innerHTML += `
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
+                        Подпись
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item sign_file" href="${file.signature}">Подписать файл</a>
+                      </div>
+                    </div>`
+            }
+
+        }
     });
+
     let closeBtn = document.getElementById("close_modal");
     closeBtn.onclick = function () {
         modal.style.display = "none";
         modal.innerHTML = ''
     }
+    let sign_file_btns = document.getElementsByClassName('sign_file')
+    for (let sign_file_btn of sign_file_btns) {
+        sign_file_btn.addEventListener('click', onAddSign)
+    }
+
     let file_delete_buttons = document.getElementsByClassName('file_delete')
     for (let file_delete_button of file_delete_buttons) {
         file_delete_button.addEventListener('click', onConfirmDeletion)
     }
 
+}
+
+async  function onAddSign(e){
+    e.preventDefault()
+    let element = e.currentTarget
+    let href_attribute = element.href
+    let response = await makeRequest(href_attribute, "GET")
+    console.log(response)
+    if (response.success) {
+        let spanElement = document.createElement('span');
+        spanElement.innerHTML='Подписан'
+        let parent_div = element.parentNode.parentNode
+        parent_div.parentNode.replaceChild(spanElement, parent_div);
+        localStorage.setItem(`user_${response.user_id}_file_${response.file_id}`, 'signed');
+
+    }
 }
 
 async function onConfirmDeletion(e){
