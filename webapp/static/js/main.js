@@ -396,6 +396,17 @@ function formatDate(dateTimeString) {
     return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
 
+async function onAddChecklist(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.dataset['add_checklist']
+    let response = await makeRequest(data_attribute, "GET")
+    let subtasks = response.subtasks
+    let subtasks_info = document.getElementById('subtasks_info')
+    subtasks_info.innerHTML = ''
+    await createTaskTable(subtasks, subtasks_info)
+}
+
 
 async function onGetDetailTask(e) {
     e.preventDefault();
@@ -431,6 +442,13 @@ async function onGetDetailTask(e) {
 
     let comment_create = document.getElementById('comment_add')
     comment_create.dataset.action_task = `task/${response_data.id}/comment/create/`
+
+    let add_checklist_btns = document.getElementsByClassName('add_checklist_btn')
+    for (let add_checklist_btn of add_checklist_btns) {
+        let checklist_id = add_checklist_btn.dataset['checklist_id']
+        add_checklist_btn.dataset.add_checklist = `task/${response_data.id}/${checklist_id}/`
+        add_checklist_btn.addEventListener('click', onAddChecklist)
+    }
 
     task_history.addEventListener('click', onGetTaskHistory)
 
@@ -577,10 +595,11 @@ async function createTaskTable(taskData, infoElement) {
         return;
     }
 
-    infoElement.innerHTML = '';
+    // infoElement.innerHTML = '';
 
     let table = document.createElement('table');
     table.style.width = '100%';
+    table.id='subtask_table'
 
     let tr1 = document.createElement('tr');
     let nameTh = document.createElement('th');
@@ -592,7 +611,6 @@ async function createTaskTable(taskData, infoElement) {
 
     let updateTh = document.createElement('th');
     updateTh.innerHTML = 'Изменена в';
-
     tr1.appendChild(nameTh);
     tr1.appendChild(typeTh);
     tr1.appendChild(updateTh);
@@ -600,7 +618,6 @@ async function createTaskTable(taskData, infoElement) {
 
     taskData.forEach(task => {
         let tr = document.createElement('tr');
-
         let nameTd = document.createElement('td');
         let taskLink = document.createElement('a');
         taskLink.href = `task/${task.id}/`;

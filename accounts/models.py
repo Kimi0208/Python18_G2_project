@@ -15,6 +15,7 @@ class DefUser(AbstractUser):
 
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
+    signature = models.FileField(verbose_name="Подпись", upload_to='uploads/signature', null=True, blank=True)
 
     def __str__(self):
         return self.username

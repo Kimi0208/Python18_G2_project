@@ -62,6 +62,16 @@
                 <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу</button>
                 <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
                 <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий</button>
+                <div class="dropleft" id="checklist_dropdown">
+                    <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button" aria-haspopup="true" aria-expanded="false">
+                        Чеклист
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
+                        {% for checklist in checklists %}
+                            <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}" data-add_checklist="">{{ checklist.name }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
               </div>
             </div>
         </div>
@@ -153,6 +163,24 @@
     <script>
         $(document).ready(function() {
             $('#DataTable').DataTable();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        let checklistDropdown = document.getElementById('checklist_dropdown');
+        let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
+    
+        let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
+    
+        checklistDropdownButton.addEventListener('click', function(event) {
+            checklistDropdownMenu.classList.toggle('show');
+            event.stopPropagation();
+        });
+            document.addEventListener('click', function(event) {
+                if (!checklistDropdown.contains(event.target)) {
+                    checklistDropdownMenu.classList.remove('show');
+                }
+            });
         });
     </script>
 {% endblock %}

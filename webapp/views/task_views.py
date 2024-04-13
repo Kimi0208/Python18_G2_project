@@ -24,8 +24,10 @@ class TaskListView(ListView):
         context = super().get_context_data(**kwargs)
         users = DefUser.objects.all().order_by('username')
         departments = Department.objects.all().order_by('name')
+        checklists = Checklist.objects.all()
         context['users'] = users
         context['departments'] = departments
+        context['checklists'] = checklists
         return context
 
 
@@ -372,6 +374,7 @@ class TaskDeleteView(DeleteView):
 
 
 def add_subtasks(request, checklist_pk, task_pk):
+    print(1231231)
     main_task = Task.objects.get(pk=task_pk)
     checklist = Checklist.objects.get(pk=checklist_pk)
     users = checklist.users.all()
@@ -397,11 +400,12 @@ def add_subtasks(request, checklist_pk, task_pk):
     new_file_path = f'uploads/user_docs/{doc_name}.docx'
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
-    context = {'title': task.title, 'description': task.description, 'users': users}
+    context = {'title': main_task.title, 'description': main_task.description, 'users': users}
     doc.render(context)
     doc.save(new_file_path)
     File.objects.create(user=request.user, task=main_task, file=new_file_path)
-    return redirect('webapp:detail_task', pk=task_pk)
+    subtasks = get_subtasks(main_task)
+    return JsonResponse({'subtasks': subtasks})
 
 
 class FileAddView(CreateView):
