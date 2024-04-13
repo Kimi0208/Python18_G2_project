@@ -4,8 +4,9 @@
 {% block title %}Переименовать отдел{% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href="{% static 'css/form.css' %}">
-    
-    {% include 'partial/form.html' with value_submit='Сохранить'  form_method='post' %}
-    
+
+    <form id="test_form" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Изменить'%}
+    </form>
+
 {% endblock %}

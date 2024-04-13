@@ -5,6 +5,11 @@
     padding-top: 0px;
 }
 
+#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-end,
+#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start {
+    padding-top: 0px;
+}
+
 table.dataTable>tbody>tr>th,
 table.dataTable>tbody>tr>td {
     padding: 5px 7px;
