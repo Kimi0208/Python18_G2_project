@@ -231,7 +231,7 @@ def sign_file(request, file_id):
 
 
 def get_subtasks(object):
-    subtasks = Task.objects.filter(parent_task=object)
+    subtasks = Task.objects.filter(parent_task=object).order_by('-id')
     subtasks_list = []
     destination_to = ''
     for subtask in subtasks:
@@ -246,7 +246,8 @@ def get_subtasks(object):
             'author': subtask.author.username,
             'created_at': subtask.created_at,
             'type': subtask.type.name,
-            'updated_at': subtask.updated_at
+            'updated_at': subtask.updated_at,
+            'status': subtask.status.name
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
@@ -377,6 +378,11 @@ class TaskUpdateView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        destination_to = ''
+        if self.object.destination_to_user:
+            destination_to = self.object.destination_to_user.username
+        elif self.object.destination_to_department:
+            destination_to = self.object.destination_to_department.name
         if self.object.status.name == 'Выполнена':
             if self.object.destination_to_user:
                 subject = f'CRM: Задача #{self.object.id} выполнена {self.object.title}'
@@ -395,7 +401,8 @@ class TaskUpdateView(UpdateView):
             'status': self.object.status.name,
             'priority': self.object.priority.name,
             'type': self.object.type.name,
-            'subtasks': get_subtasks(self.object)
+            'subtasks': get_subtasks(self.object),
+            'destination_to': destination_to
         }
         return JsonResponse(task_data)
 

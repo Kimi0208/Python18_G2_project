@@ -88,8 +88,12 @@ async function onSubmitData(e) {
                 `/task/${response.id}/`);
             }
         } else if (form.action.includes('task') && form.action.includes('update')) {
-            await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
-                formatDate(response.deadline));
+            let tableBody = document.getElementById('table_body')
+            let whose_table = tableBody.dataset['whose_table']
+            if (whose_table === response.destination_to) {
+                await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
+                    formatDate(response.deadline), response.destination_to);
+            }
             await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
                 formatDate(response.done_at), response.description)
@@ -234,8 +238,7 @@ async function onSubmitCommentDelete(e) {
 
 }
 
-async function updateTableTask(id, title, type, status, priority, deadline) {
-
+async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
     let task = dataTable.row(`#task_id_${id}`)
     let data = [
         title,
@@ -619,6 +622,9 @@ async function createTaskTable(taskData, infoElement) {
         let tr = document.createElement('tr');
         let nameTd = document.createElement('td');
         let taskLink = document.createElement('a');
+        if (task.status === "Выполнена"){
+            taskLink.style.textDecoration='line-through'
+        }
         taskLink.href = `task/${task.id}/`;
         taskLink.dataset.detail_task = taskLink.href;
         taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to}`;
