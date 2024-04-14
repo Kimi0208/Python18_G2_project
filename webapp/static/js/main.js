@@ -568,7 +568,7 @@ async function onGetTaskHistory(e){
             if (change[0].includes('файл')){
                 li_element.innerHTML = `${change[0]} ${change[3].replace("uploads/user_docs/", "")} 
                     <br>Дата: ${change[1]} Автор: ${change[2]}`
-            } else if (change[0].includes('Создана задача')){
+            } else if (change[0].includes('Создана задача') || change[0].includes('Создана подзадача')){
                 li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
             } else if (change[0].includes('Изменен комментарий')) {
                 li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`

@@ -146,6 +146,15 @@ def get_comments_history(task_pk):
     return comments_history_list
 
 
+def get_subtask_history(task_pk):
+    subtask_history_list = []
+    subtasks = Task.objects.filter(parent_task_id=task_pk)
+    for subtask in subtasks:
+        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), subtask.author.username, subtask.title)]
+        subtask_history_list.append(history_info)
+    return subtask_history_list
+
+
 def get_history_task(request, task_pk):
     history_list = []
     task = Task.objects.get(pk=task_pk)
@@ -163,7 +172,8 @@ def get_history_task(request, task_pk):
             verbose_name = current_record._meta.get_field(change.field).verbose_name
             ttt = current_record._meta.get_field(change.field)
             old, new = check_is_foreign_key(ttt, change.old, change.new)
-            change_info = (verbose_name, change_date, change_user.username, old, new)
+            print(old, new)
+            change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
             changes.append(change_info)
         # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
         # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
@@ -171,11 +181,13 @@ def get_history_task(request, task_pk):
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
     history_list.extend(get_comments_history(task_pk))
+    history_list.extend(get_subtask_history(task_pk))
 
     create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
+        print(sorted_history)
         return JsonResponse({'history': sorted_history})
     else:
         return JsonResponse({'history': history_list})
@@ -416,7 +428,6 @@ class TaskDeleteView(DeleteView):
 
 
 def add_subtasks(request, checklist_pk, task_pk):
-    print(1231231)
     main_task = Task.objects.get(pk=task_pk)
     checklist = Checklist.objects.get(pk=checklist_pk)
     users = checklist.users.all()
@@ -428,9 +439,7 @@ def add_subtasks(request, checklist_pk, task_pk):
     for user in users:
         task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
                                    priority=priority,
-                                   type=type, destination_to_user=user)
-        task.parent_task = main_task
-        task.save()
+                                   type=type, destination_to_user=user, parent_task=main_task)
         subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
         message = task.description
         send_email_notification(subject, message, task.author.email, user.email,
