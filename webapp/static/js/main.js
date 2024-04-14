@@ -88,12 +88,9 @@ async function onSubmitData(e) {
                 `/task/${response.id}/`);
             }
         } else if (form.action.includes('task') && form.action.includes('update')) {
-            let tableBody = document.getElementById('table_body')
-            let whose_table = tableBody.dataset['whose_table']
-            if (whose_table === response.destination_to) {
-                await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
-                    formatDate(response.deadline), response.destination_to);
-            }
+            await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
+                formatDate(response.deadline), response.destination_to);
+
             await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
                 formatDate(response.done_at), response.description)
@@ -240,17 +237,26 @@ async function onSubmitCommentDelete(e) {
 
 async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
     let task = dataTable.row(`#task_id_${id}`)
-    let data = [
-        title,
-        type,
-        status,
-        priority,
-        task.data()[4],
-        deadline,
-        task.data()[6]
-    ];
-    task.data(data).draw()
-    dataTable.columns.adjust().draw()
+    let tableBody = document.getElementById('table_body')
+    let whose_table = tableBody.dataset['whose_table']
+
+    if (whose_table === destination_to) {
+        let data = [
+            title,
+            type,
+            status,
+            priority,
+            task.data()[4],
+            deadline,
+            task.data()[6]
+        ];
+        task.data(data).draw()
+        dataTable.columns.adjust().draw()
+
+    } else if (whose_table !== destination_to) {
+        task.remove().draw()
+    }
+
 }
 
 async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
