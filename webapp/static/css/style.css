@@ -1,3 +1,21 @@
+.blink {
+  animation: blink 2s infinite;
+  color: green;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
 #main_area {
     font-size: 14px;
 }

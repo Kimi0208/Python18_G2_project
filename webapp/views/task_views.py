@@ -484,3 +484,11 @@ class FileDeleteView(DeleteView):
         file_id = self.object.id
         self.object.delete()
         return JsonResponse({'file_id': file_id})
+
+
+def check_new_task(request):
+    tasks = Task.objects.filter(destination_to_user=request.user, status_id=1)
+    if len(tasks) == 0:
+        return JsonResponse({'task_count': 0})
+    else:
+        return JsonResponse({'task_count': len(tasks)})

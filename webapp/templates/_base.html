@@ -89,6 +89,11 @@
                                 </form>
                             </div>
                         </li>
+                        <li class="nav-item dropdown no-arrow mx-1" style="display:flex; align-items: center">
+                            <div id="blink_notification" class="blink" style="border: 1px solid greenyellow; width: 15px; height: 15px; background: greenyellow; border-radius: 50%; display: none">
+                            </div>
+                        </li>
+                        
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
@@ -96,8 +101,8 @@
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 <!-- Counter - Alerts -->
-                                {% if request.user %}
-{#                                    <span class="badge badge-danger badge-counter">{% new_task_count request.user %}  </span>#}
+                                {% if user.is_authenticated %}
+                                    <span class="badge badge-danger badge-counter">{% new_task_count request.user %}  </span>
                                 {% endif %}
                                 
                             </a>
@@ -109,22 +114,24 @@
                                 </h6>
                                     <div class="mr-3">
                                     </div>
-{#                                    <div>#}
-{#                                    {% notifications request.user as notifications_list %}#}
-{#                                        {% for notification in notifications_list %}#}
-{#                                            <a class="dropdown-item d-flex align-items-center" href="{% url 'webapp:index' %}">#}
-{#                                                <div class="mr-3">#}
-{#                                                    <div class="icon-circle bg-primary">#}
-{#                                                        <i class="fas fa-tasks text-white"></i>#}
-{#                                                    </div>#}
-{#                                                </div>#}
-{#                                                <div>#}
-{#                                                    <div class="small text-gray-500">{{ notification.start_date }}</div>#}
-{#                                                    {{ notification.title }}#}
-{#                                                </div>#}
-{#                                            </a>#}
-{#                                          {% endfor %}#}
-{#                                    </div>#}
+                                    <div>
+                                    {% if user.is_authenticated %}
+                                        {% notifications request.user as notifications_list %}
+                                            {% for notification in notifications_list %}
+                                                <a class="dropdown-item d-flex align-items-center" href="{% url 'webapp:index' %}">
+                                                    <div class="mr-3">
+                                                        <div class="icon-circle bg-primary">
+                                                            <i class="fas fa-tasks text-white"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="small text-gray-500">{{ notification.start_date }}</div>
+                                                        {{ notification.title }}
+                                                    </div>
+                                                </a>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </div>
                                 </a>
 
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>

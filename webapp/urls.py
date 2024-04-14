@@ -1,7 +1,7 @@
 from django.urls import path
 from webapp.views import (TaskListView, TaskCreateView, TaskUpdateView, TaskDeleteView, TaskView, add_subtasks,
                           FileAddView, FileDeleteView, get_task_files, get_history_task, CommentCreateView,
-                          CommentUpdateView, CommentDeleteView, get_tasks_from_id, sign_file)
+                          CommentUpdateView, CommentDeleteView, get_tasks_from_id, sign_file, check_new_task)
 
 app_name = 'webapp'
 
@@ -22,5 +22,6 @@ urlpatterns = [
     path('task/<int:task_pk>/comment/create/', CommentCreateView.as_view(), name='comment_create'),
     path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment_update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
-    path('sign_file/<int:file_id>/', sign_file, name='sign_file')
+    path('sign_file/<int:file_id>/', sign_file, name='sign_file'),
+    path('new_tasks/', check_new_task, name='new_tasks')
 ]

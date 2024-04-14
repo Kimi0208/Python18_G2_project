@@ -772,13 +772,26 @@ async function onConfirmDeletion(e){
 
 }
 
+async function onGetNewTask(){
+    let blink_notification = document.getElementById('blink_notification');
+    let response = await makeRequest('new_tasks/', "GET")
+    if (response.task_count > 0) {
+        blink_notification.style.display = 'block'
+    } else {
+        blink_notification.style.display = 'none'
+    }
+}
 
 
 let dataTable;
 function onLoad() {
+    setInterval(async function() {
+        await onGetNewTask() }, 5000);
+
     $(document).ready(function() {
           dataTable = $('#DataTable').DataTable();
-        });
+    });
+
     let action_buttons = document.getElementsByClassName('action-btn_task')
     for (let action_button of action_buttons) {
         action_button.addEventListener('click', onClick)
@@ -796,6 +809,7 @@ function onLoad() {
         get_tasks_button.addEventListener('click', onGetTasks)
     }
 }
+
 
 
 
