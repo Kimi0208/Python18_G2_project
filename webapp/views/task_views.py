@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, reverse, render, get_object_or_404
 from webapp.forms import TaskForm, FileForm
-from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment
+from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment, FileSignature
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from docxtpl import DocxTemplate
@@ -185,21 +185,25 @@ def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
     file_list = []
     for file in files:
-        user_signature = ''
+        sign_url = ''
         if file.checklist:
             if file.checklist.users.filter(id=request.user.id).exists():
-                user_signature = f'sign_file/{file.pk}/'
+                sign_url = f'sign_file/{file.pk}/'
 
         file_data = {
             'id': file.id,
             'name': file.file.name,
             'task_id': file.task.id,
             'url': file.file.url,
-            'signature': user_signature,
+            'sign_url': sign_url,
             'current_user': request.user.id
         }
         file_list.append(file_data)
-    return JsonResponse({'files': file_list})
+    signed_files = []
+    files = FileSignature.objects.filter(task_id=task_pk, user=request.user)
+    for file in files:
+        signed_files.append(file.file.pk)
+    return JsonResponse({'files': file_list, "signed_files": signed_files})
 
 
 def sign_file(request, file_id):
@@ -222,6 +226,7 @@ def sign_file(request, file_id):
                 run.add_picture(signature_path, width=Inches(2))
 
     doc.save(doc_to_sign.file.path)
+    FileSignature.objects.create(file=doc_to_sign, user=current_user, task=doc_to_sign.task)
     return JsonResponse({"success": True, "user_id": current_user_id, "file_id": file_id})
 
 

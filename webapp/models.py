@@ -73,6 +73,13 @@ class File(models.Model):
     history = HistoricalRecords()
 
 
+class FileSignature(models.Model):
+    file = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Файл')
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Пользователь')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+
+
 class Checklist(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
     users = models.ManyToManyField('accounts.DefUser', verbose_name='Сотрудники', related_name='checklists')

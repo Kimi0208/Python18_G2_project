@@ -681,10 +681,8 @@ async function onGetInfo(e) {
                 <div class="confirmation_file_delete" id="confirmation_file-${file.id}_delete" style="display: none; margin-top: 5px"></div>
            </li>`;
         let action_field = document.getElementById(`action_field_file_${file.id}`)
-        if (file.signature) {
-            let localStorageKey = `user_${file.current_user}_file_${file.id}`;
-            let localStorageValue = localStorage.getItem(localStorageKey);
-            if (localStorageValue === 'signed') {
+        if (file.sign_url) {
+            if (response.signed_files.includes(file.id)) {
                 action_field.innerHTML += `<span>Подписан</span>`
             } else {
                 action_field.innerHTML += `
@@ -693,11 +691,10 @@ async function onGetInfo(e) {
                         Подпись
                       </button>
                       <div class="dropdown-menu">
-                        <a class="dropdown-item sign_file" href="${file.signature}">Подписать файл</a>
+                        <a class="dropdown-item sign_file" href="${file.sign_url}">Подписать файл</a>
                       </div>
                     </div>`
             }
-
         }
     });
 
@@ -723,13 +720,11 @@ async  function onAddSign(e){
     let element = e.currentTarget
     let href_attribute = element.href
     let response = await makeRequest(href_attribute, "GET")
-    console.log(response)
     if (response.success) {
         let spanElement = document.createElement('span');
         spanElement.innerHTML='Подписан'
         let parent_div = element.parentNode.parentNode
         parent_div.parentNode.replaceChild(spanElement, parent_div);
-        localStorage.setItem(`user_${response.user_id}_file_${response.file_id}`, 'signed');
 
     }
 }
