@@ -4,10 +4,9 @@
 {% block title %}Добавить новый отдел{% endblock %}
 
 {% block content %}
-    {% csrf_token %}
 
-    <link rel="stylesheet" href="{% static 'css/form.css' %}">
-
-    {% include 'partial/form.html' with value_submit='Добавить' form_method='post' %}
+    <form id="test_form" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Добавить'%}
+    </form>
 
 {% endblock %}

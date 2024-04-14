@@ -15,4 +15,4 @@ def deadline_task_notification():
             subject = f'CRM: Задача #{task.id} истек дедлайн {task.title}'
             message = f'Дата дедлайна: {task.deadline}'
             send_email_notification(subject, message, task.author.email, task.author.email,
-                                    smtp_server, smtp_port, task.author.email, task.author.email_password)
+                                    smtp_server, smtp_port, task.author.email, task.author.decrypt_email_password())

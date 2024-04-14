@@ -12,6 +12,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "deadline_task_notification": {
         "task": "webapp.tasks.deadline_task_notification",
-        "schedule": timedelta(seconds=30)
+        "schedule": timedelta(days=1)
     }
 }

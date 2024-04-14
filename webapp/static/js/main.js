@@ -56,44 +56,59 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
-    if (form.action.includes('create_subtask')) {
-        let task_subtasks = response.subtasks
-        let subtasks_info = document.getElementById('subtasks_info')
-        if (task_subtasks.length > 0) {
-            subtasks_info.innerHTML = '';
-            await createTaskTable(task_subtasks, subtasks_info);
-        } else {
-            subtasks_info.innerHTML = 'Подзадач нет';
+    if ('errors' in response){
+        for (let error of response.errors.__all__) {
+            alert(error)
         }
-    }
-    if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
-        await addTask(
-        response.id,
-        response.title,
-        response.type,
-        formatDate(response.created_at),
-        response.status,
-        response.priority,
-        formatDate(response.deadline),
-        response.author,
-        response.destination_to_user,
-        `/task/${response.id}/`);
-    } else if (form.action.includes('task') && form.action.includes('update')) {
-        await updateTableTask(response.id, response.title, response.type, response.status, response.priority, formatDate(response.deadline));
-        await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
-            formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
-            formatDate(response.done_at), response.description)
+    } else {
+        if (form.action.includes('create_subtask')) {
+            let task_subtasks = response.subtasks
+            let subtasks_info = document.getElementById('subtasks_info')
+            if (task_subtasks.length > 0) {
+                subtasks_info.innerHTML = '';
+                await createTaskTable(task_subtasks, subtasks_info);
+            } else {
+                subtasks_info.innerHTML = 'Подзадач нет';
+            }
+        }
+        if (form.action.includes('/task/create/') || form.action.includes('create_subtask')) {
+            let tableBody = document.getElementById('table_body')
+            let whose_table = tableBody.dataset['whose_table']
+            if (whose_table === response.destination_to) {
+                await addTask(
+                response.id,
+                response.title,
+                response.type,
+                formatDate(response.created_at),
+                response.status,
+                response.priority,
+                formatDate(response.deadline),
+                response.author,
+                response.destination_to,
+                `/task/${response.id}/`);
+            }
+        } else if (form.action.includes('task') && form.action.includes('update')) {
+            let tableBody = document.getElementById('table_body')
+            let whose_table = tableBody.dataset['whose_table']
+            if (whose_table === response.destination_to) {
+                await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
+                    formatDate(response.deadline), response.destination_to);
+            }
+            await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
+                formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
+                formatDate(response.done_at), response.description)
 
-    } else if (form.action.includes('comment/create/')) {
-        let comment = response.comment
-        await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
-    } else if (form.action.includes('comment') && form.action.includes('update')){
-        let comment = response.comment
-        await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-            comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
-    }
+        } else if (form.action.includes('comment/create/')) {
+            let comment = response.comment
+            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        } else if (form.action.includes('comment') && form.action.includes('update')){
+            let comment = response.comment
+            await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
+                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        }
 
+    }
 }
 
 async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
@@ -153,8 +168,11 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
 
     let username_info = document.createElement('span')
     username_info.innerHTML = `${first_name} ${last_name}`
+    username_info.style.fontStyle='italic'
+    username_info.style.fontWeight='bold'
     let create_info = document.createElement('p')
     create_info.innerHTML = formatDate(created_at)
+    create_info.style.fontWeight='bold'
     let comment_info = document.createElement('span')
     comment_info.innerHTML = description
     comment_info.id = `comment_data_${id}`
@@ -220,18 +238,19 @@ async function onSubmitCommentDelete(e) {
 
 }
 
-async function updateTableTask(id, title, type, status, priority, deadline) {
-    let task_title = document.getElementById(`task_${id}_title`)
-    let task_type = document.getElementById(`task_${id}_type`)
-    let task_status = document.getElementById(`task_${id}_status`)
-    let task_priority = document.getElementById(`task_${id}_priority`)
-    let task_deadline = document.getElementById(`task_${id}_deadline`)
-    task_title.innerHTML = title
-    task_type.innerHTML = type
-    task_status.innerHTML = status
-    task_priority.innerHTML = priority
-    task_deadline.innerHTML = deadline
-
+async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
+    let task = dataTable.row(`#task_id_${id}`)
+    let data = [
+        title,
+        type,
+        status,
+        priority,
+        task.data()[4],
+        deadline,
+        task.data()[6]
+    ];
+    task.data(data).draw()
+    dataTable.columns.adjust().draw()
 }
 
 async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
@@ -274,57 +293,99 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
         description_element.innerHTML = description
     }
 }
-async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to_user, url) {
-    if (destination_to_user === author){
-        let tableBody = document.getElementById('table_body')
-
-        let newTask = document.createElement('tr');
-        newTask.classList.add('detail-btn_task');
-        newTask.dataset.detail_task = url;
-        newTask.style.cursor = 'pointer'
-        newTask.id=`task_id_${id}`
-        newTask.addEventListener('click', onGetDetailTask)
-
-        let taskTitle = document.createElement('td');
-        taskTitle.textContent = title;
-        taskTitle.id = `task_${id}_title`
 
 
-        let taskType = document.createElement('td');
-        taskType.textContent = type;
-        taskType.id = `task_${id}_type`
-        taskType.setAttribute('style', 'cursor: pointer');
-
-        let taskStatus = document.createElement('td');
-        taskStatus.textContent = status;
-        taskStatus.id = `task_${id}_status`
-
-        let taskPriority = document.createElement('td');
-        taskPriority.textContent = priority;
-        taskPriority.id = `task_${id}_priority`
-
-        let taskCreatedAt = document.createElement('td');
-        taskCreatedAt.textContent = created_at;
-        taskCreatedAt.id = `task_${id}_created_at`
-
-        let taskDeadline = document.createElement('td');
-        taskDeadline.textContent = deadline;
-        taskDeadline.id = `task_${id}_deadline`
-
-        let taskAuthor = document.createElement('td');
-        taskAuthor.textContent = author;
-        taskAuthor.id = `task_${id}_author`
-
-        newTask.appendChild(taskTitle);
-        newTask.appendChild(taskType);
-        newTask.appendChild(taskStatus);
-        newTask.appendChild(taskPriority);
-        newTask.appendChild(taskCreatedAt)
-        newTask.appendChild(taskDeadline);
-        newTask.appendChild(taskAuthor);
-
-        tableBody.appendChild(newTask);
+async function onGetTasks(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let get_tasks_buttons = document.getElementsByClassName('get-tasks_btn')
+    for (let button of get_tasks_buttons) {
+        if (button.style.background === 'lightgrey') {
+            button.style.background = ''
+        }
     }
+    element.style.background = 'lightgrey'
+    let data_attribute = element.dataset['get_tasks']
+    let response = await makeRequest(data_attribute, "GET")
+    let whose_table = element.dataset['whose_table']
+    let tasks = response.tasks
+    let tableBody = document.getElementById('table_body')
+    tableBody.dataset.whose_table = whose_table
+    dataTable.clear()
+    for (let task of tasks) {
+        let url = `/task/${task.id}/`
+        await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
+    }
+    dataTable.draw()
+}
+
+
+async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to, url) {
+    let data = [
+        title,
+        type,
+        status,
+        priority,
+        created_at,
+        deadline,
+        author
+    ];
+    let newTask = dataTable.row.add(data).draw().node();
+    newTask.classList.add('detail-btn_task');
+    newTask.dataset.detail_task = url;
+    newTask.style.cursor = 'pointer';
+    newTask.id = `task_id_${id}`;
+    newTask.addEventListener('click', onGetDetailTask)
+
+
+        // let tableBody = document.getElementById('table_body')
+        //
+        // let newTask = document.createElement('tr');
+        // newTask.classList.add('detail-btn_task');
+        // newTask.dataset.detail_task = url;
+        // newTask.style.cursor = 'pointer'
+        // newTask.id=`task_id_${id}`
+        // newTask.addEventListener('click', onGetDetailTask)
+        //
+        // let taskTitle = document.createElement('td');
+        // taskTitle.textContent = title;
+        // taskTitle.id = `task_${id}_title`
+        //
+        //
+        // let taskType = document.createElement('td');
+        // taskType.textContent = type;
+        // taskType.id = `task_${id}_type`
+        // taskType.setAttribute('style', 'cursor: pointer');
+        //
+        // let taskStatus = document.createElement('td');
+        // taskStatus.textContent = status;
+        // taskStatus.id = `task_${id}_status`
+        //
+        // let taskPriority = document.createElement('td');
+        // taskPriority.textContent = priority;
+        // taskPriority.id = `task_${id}_priority`
+        //
+        // let taskCreatedAt = document.createElement('td');
+        // taskCreatedAt.textContent = created_at;
+        // taskCreatedAt.id = `task_${id}_created_at`
+        //
+        // let taskDeadline = document.createElement('td');
+        // taskDeadline.textContent = deadline;
+        // taskDeadline.id = `task_${id}_deadline`
+        //
+        // let taskAuthor = document.createElement('td');
+        // taskAuthor.textContent = author;
+        // taskAuthor.id = `task_${id}_author`
+        //
+        // newTask.appendChild(taskTitle);
+        // newTask.appendChild(taskType);
+        // newTask.appendChild(taskStatus);
+        // newTask.appendChild(taskPriority);
+        // newTask.appendChild(taskCreatedAt)
+        // newTask.appendChild(taskDeadline);
+        // newTask.appendChild(taskAuthor);
+        //
+        // tableBody.appendChild(newTask);
 }
 
 function formatDate(dateTimeString) {
@@ -338,11 +399,29 @@ function formatDate(dateTimeString) {
     return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
 
+async function onAddChecklist(e) {
+    e.preventDefault()
+    let element = e.currentTarget
+    let data_attribute = element.dataset['add_checklist']
+    let response = await makeRequest(data_attribute, "GET")
+    let subtasks = response.subtasks
+    let subtasks_info = document.getElementById('subtasks_info')
+    subtasks_info.innerHTML = ''
+    await createTaskTable(subtasks, subtasks_info)
+}
+
 
 async function onGetDetailTask(e) {
     e.preventDefault();
     let element = e.currentTarget;
     let detail_attribute = element.dataset['detail_task'];
+    let detail_tasks_buttons = document.getElementsByClassName('detail-btn_task')
+    for (let button of detail_tasks_buttons) {
+        if (button.style.background === 'lightgrey') {
+            button.style.background = ''
+        }
+    }
+    element.style.background = 'lightgrey'
     let task_detail_info_element = document.getElementById('task-detail-info');
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");
@@ -366,6 +445,13 @@ async function onGetDetailTask(e) {
 
     let comment_create = document.getElementById('comment_add')
     comment_create.dataset.action_task = `task/${response_data.id}/comment/create/`
+
+    let add_checklist_btns = document.getElementsByClassName('add_checklist_btn')
+    for (let add_checklist_btn of add_checklist_btns) {
+        let checklist_id = add_checklist_btn.dataset['checklist_id']
+        add_checklist_btn.dataset.add_checklist = `task/${response_data.id}/${checklist_id}/`
+        add_checklist_btn.addEventListener('click', onAddChecklist)
+    }
 
     task_history.addEventListener('click', onGetTaskHistory)
 
@@ -512,10 +598,10 @@ async function createTaskTable(taskData, infoElement) {
         return;
     }
 
-    infoElement.innerHTML = '';
 
     let table = document.createElement('table');
     table.style.width = '100%';
+    table.id='subtask_table'
 
     let tr1 = document.createElement('tr');
     let nameTh = document.createElement('th');
@@ -527,7 +613,6 @@ async function createTaskTable(taskData, infoElement) {
 
     let updateTh = document.createElement('th');
     updateTh.innerHTML = 'Изменена в';
-
     tr1.appendChild(nameTh);
     tr1.appendChild(typeTh);
     tr1.appendChild(updateTh);
@@ -535,9 +620,11 @@ async function createTaskTable(taskData, infoElement) {
 
     taskData.forEach(task => {
         let tr = document.createElement('tr');
-
         let nameTd = document.createElement('td');
         let taskLink = document.createElement('a');
+        if (task.status === "Выполнена"){
+            taskLink.style.textDecoration='line-through'
+        }
         taskLink.href = `task/${task.id}/`;
         taskLink.dataset.detail_task = taskLink.href;
         taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to}`;
@@ -579,7 +666,7 @@ async function onGetInfo(e) {
                         <h4>Файлы </h4>
                         <button id="close_modal" style="background: white; border: none">Закрыть</button>
                     </div>
-                    <div class="card" style="width: 18rem;">
+                    <div style="width: 18rem;">
                         <ul class="list-group list-group-flush">
                                 
                         </ul>
@@ -592,22 +679,60 @@ async function onGetInfo(e) {
         ul_element.innerHTML += `
            <li class="list-group-item" id="file_${file.id}">
                 <p>${file.name.replace("uploads/user_docs/", "")}</p>
-                <a href="${file.url}" target="_blank" download="">Скачать</a>
-                <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a><br>
+                <div id="action_field_file_${file.id}" style="display:flex; align-items: center;">
+                    <a href="${file.url}" target="_blank" download="">Скачать</a>
+                    <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a>
+                </div>
                 
                 <div class="confirmation_file_delete" id="confirmation_file-${file.id}_delete" style="display: none; margin-top: 5px"></div>
            </li>`;
+        let action_field = document.getElementById(`action_field_file_${file.id}`)
+        if (file.sign_url) {
+            if (response.signed_files.includes(file.id)) {
+                action_field.innerHTML += `<span>Подписан</span>`
+            } else {
+                action_field.innerHTML += `
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
+                        Подпись
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item sign_file" href="${file.sign_url}">Подписать файл</a>
+                      </div>
+                    </div>`
+            }
+        }
     });
+
     let closeBtn = document.getElementById("close_modal");
     closeBtn.onclick = function () {
         modal.style.display = "none";
         modal.innerHTML = ''
     }
+    let sign_file_btns = document.getElementsByClassName('sign_file')
+    for (let sign_file_btn of sign_file_btns) {
+        sign_file_btn.addEventListener('click', onAddSign)
+    }
+
     let file_delete_buttons = document.getElementsByClassName('file_delete')
     for (let file_delete_button of file_delete_buttons) {
         file_delete_button.addEventListener('click', onConfirmDeletion)
     }
 
+}
+
+async  function onAddSign(e){
+    e.preventDefault()
+    let element = e.currentTarget
+    let href_attribute = element.href
+    let response = await makeRequest(href_attribute, "GET")
+    if (response.success) {
+        let spanElement = document.createElement('span');
+        spanElement.innerHTML='Подписан'
+        let parent_div = element.parentNode.parentNode
+        parent_div.parentNode.replaceChild(spanElement, parent_div);
+
+    }
 }
 
 async function onConfirmDeletion(e){
@@ -642,7 +767,12 @@ async function onConfirmDeletion(e){
 }
 
 
+
+let dataTable;
 function onLoad() {
+    $(document).ready(function() {
+          dataTable = $('#DataTable').DataTable();
+        });
     let action_buttons = document.getElementsByClassName('action-btn_task')
     for (let action_button of action_buttons) {
         action_button.addEventListener('click', onClick)
@@ -654,6 +784,10 @@ function onLoad() {
     let get_info_buttons = document.getElementsByClassName('get-info-btn_task')
     for (let get_info_button of get_info_buttons) {
         get_info_button.addEventListener('click', onGetInfo)
+    }
+    let get_tasks_buttons = document.getElementsByClassName('get-tasks_btn')
+    for (let get_tasks_button of get_tasks_buttons) {
+        get_tasks_button.addEventListener('click', onGetTasks)
     }
 }
 

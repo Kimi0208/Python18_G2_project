@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import models
 from simple_history.models import HistoricalRecords
@@ -67,7 +68,16 @@ class File(models.Model):
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
+    checklist = models.ForeignKey('Checklist', on_delete=models.CASCADE, verbose_name='Чеклист', null=True,
+                                  blank=True, related_name='files')
     history = HistoricalRecords()
+
+
+class FileSignature(models.Model):
+    file = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Файл')
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Пользователь')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
 
 class Checklist(models.Model):
