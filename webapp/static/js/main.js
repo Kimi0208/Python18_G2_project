@@ -56,6 +56,7 @@ async function onSubmitData(e) {
     let formData = new FormData(form);
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
+    let modal = document.getElementById('action-task-modal_window');
     if ('errors' in response){
         for (let error of response.errors.__all__) {
             alert(error)
@@ -87,6 +88,8 @@ async function onSubmitData(e) {
                 response.destination_to,
                 `/task/${response.id}/`);
             }
+            modal.style.display = 'none'
+            modal.innerHTML = ''
         } else if (form.action.includes('task') && form.action.includes('update')) {
             await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), response.destination_to);
@@ -103,6 +106,9 @@ async function onSubmitData(e) {
             let comment = response.comment
             await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
                 comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+        } else if (form.action.includes('file/add/')){
+            modal.style.display = 'none'
+            modal.innerHTML = ''
         }
 
     }
@@ -193,6 +199,9 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
     } else {
         comments_info_block.appendChild(comment_card);
     }
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'none'
+    modal.innerHTML = ''
 
 }
 
@@ -298,6 +307,9 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     for (description_element of detail_task_description){
         description_element.innerHTML = description
     }
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'none'
+    modal.innerHTML = ''
 }
 
 
@@ -343,55 +355,9 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
     newTask.id = `task_id_${id}`;
     newTask.addEventListener('click', onGetDetailTask)
 
-
-        // let tableBody = document.getElementById('table_body')
-        //
-        // let newTask = document.createElement('tr');
-        // newTask.classList.add('detail-btn_task');
-        // newTask.dataset.detail_task = url;
-        // newTask.style.cursor = 'pointer'
-        // newTask.id=`task_id_${id}`
-        // newTask.addEventListener('click', onGetDetailTask)
-        //
-        // let taskTitle = document.createElement('td');
-        // taskTitle.textContent = title;
-        // taskTitle.id = `task_${id}_title`
-        //
-        //
-        // let taskType = document.createElement('td');
-        // taskType.textContent = type;
-        // taskType.id = `task_${id}_type`
-        // taskType.setAttribute('style', 'cursor: pointer');
-        //
-        // let taskStatus = document.createElement('td');
-        // taskStatus.textContent = status;
-        // taskStatus.id = `task_${id}_status`
-        //
-        // let taskPriority = document.createElement('td');
-        // taskPriority.textContent = priority;
-        // taskPriority.id = `task_${id}_priority`
-        //
-        // let taskCreatedAt = document.createElement('td');
-        // taskCreatedAt.textContent = created_at;
-        // taskCreatedAt.id = `task_${id}_created_at`
-        //
-        // let taskDeadline = document.createElement('td');
-        // taskDeadline.textContent = deadline;
-        // taskDeadline.id = `task_${id}_deadline`
-        //
-        // let taskAuthor = document.createElement('td');
-        // taskAuthor.textContent = author;
-        // taskAuthor.id = `task_${id}_author`
-        //
-        // newTask.appendChild(taskTitle);
-        // newTask.appendChild(taskType);
-        // newTask.appendChild(taskStatus);
-        // newTask.appendChild(taskPriority);
-        // newTask.appendChild(taskCreatedAt)
-        // newTask.appendChild(taskDeadline);
-        // newTask.appendChild(taskAuthor);
-        //
-        // tableBody.appendChild(newTask);
+    let modal = document.getElementById('action-task-modal_window');
+    modal.style.display = 'none'
+    modal.innerHTML = ''
 }
 
 function formatDate(dateTimeString) {
@@ -781,7 +747,6 @@ async function onGetNewTask(){
         blink_notification.style.display = 'none'
     }
 }
-
 
 let dataTable;
 function onLoad() {

@@ -172,7 +172,6 @@ def get_history_task(request, task_pk):
             verbose_name = current_record._meta.get_field(change.field).verbose_name
             ttt = current_record._meta.get_field(change.field)
             old, new = check_is_foreign_key(ttt, change.old, change.new)
-            print(old, new)
             change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
             changes.append(change_info)
         # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
@@ -187,7 +186,6 @@ def get_history_task(request, task_pk):
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
-        print(sorted_history)
         return JsonResponse({'history': sorted_history})
     else:
         return JsonResponse({'history': history_list})
@@ -466,14 +464,15 @@ class FileAddView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.user = self.request.user
-        self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
-        self.object.save()
-        file = {
-            'file': self.object.file.name,
-        }
-        print(file)
-        return JsonResponse({'file' : file})
+        if self.object.file:
+            self.object.user = self.request.user
+            self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
+            self.object.save()
+            file = {
+                'file': self.object.file.name,
+            }
+            return JsonResponse({'file': file})
+        return JsonResponse({'file': None})
 
 
 class FileDeleteView(DeleteView):
