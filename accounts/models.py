@@ -43,7 +43,7 @@ class DefUser(AbstractUser):
 
 
 class Position(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название должности', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Название должности', unique=True)
     department = models.ForeignKey('Department', on_delete=models.CASCADE, verbose_name='Отдел')
 
     def __str__(self):
@@ -51,7 +51,7 @@ class Position(models.Model):
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название отдела', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Название отдела', unique=True)
 
     def __str__(self):
         return self.name

@@ -2,28 +2,24 @@
 {% load static %}
 
 
-{% block title %}Новый пользователь{% endblock %}
+{% block title %}Удалить пользователя{% endblock %}
 
 {% block content %}
 
     <div class="modal-content p-4">
         <div>
 
-            <h1>Удалить пользователя</h1>
+            <h3>Вы уверены, что хотите удалить пользователя?</h3>
 
-                <h3>Вы уверены, что хотите удалить пользователя "{{ object }}"?</h3>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Удалить">
+                <a class="btn btn-primary" href="{% url 'accounts:user_list' %}">Отмена</a>
+            </form>
+            </p>
 
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <input type="submit" value="ДА"/>
-                </form>
-                    <a href="{% url 'accounts:user_list' %}">Нет</a>
-
-                        </div>
-                    </div>
+        </div>
+    </div>
 
 {% endblock %}
 
-{% block scripts %}
-    <link rel="stylesheet" href="{% static 'css/task.css' %}">
-{% endblock %}

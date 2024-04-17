@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import models
 from simple_history.models import HistoricalRecords
@@ -15,17 +16,14 @@ class Task(models.Model):
     priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи')
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор задачи',
                                related_name='task_author', null=True)
-    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE, verbose_name='Подзадача',
-                                    related_name='tasks')
+    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE,
+                                    verbose_name='Связанная задача', related_name='tasks')
     destination_to_department = models.ForeignKey('accounts.Department', verbose_name='На какой отдел задача',
                                                   on_delete=models.SET_NULL, null=True, blank=True)
     destination_to_user = models.ForeignKey('accounts.DefUser', verbose_name='На какого сотрудника задача',
                                             on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип')
-    file_to_sign = models.ForeignKey('File', related_name='sign_task', on_delete=models.SET_NULL,
-                                     verbose_name='Файл для подписи', null=True, blank=True)
     history = HistoricalRecords()
-
 
     def __str__(self):
         return f'{self.id}){self.title}'
@@ -40,9 +38,11 @@ class Type(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор комментария')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Коммент к задаче', related_name='comments',
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Комментарий к задаче', related_name='comments',
                              null=True, blank=True)
     description = models.TextField(max_length=2500, verbose_name='Текст комментария')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата изменения', blank=True, null=True)
     history = HistoricalRecords()
 
     def __str__(self):
@@ -67,11 +67,17 @@ class File(models.Model):
     file = models.FileField(verbose_name="Файлы", upload_to='uploads/user_docs', null=True, blank=True)
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, related_name='files', verbose_name='Задача', null=True,
-                             blank=True)
-    checklist = models.ForeignKey('CheckList', on_delete=models.RESTRICT, related_name='files', verbose_name='Чеклист',
-                                  null=True, blank=True)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
+    checklist = models.ForeignKey('Checklist', on_delete=models.CASCADE, verbose_name='Чеклист', null=True,
+                                  blank=True, related_name='files')
     history = HistoricalRecords()
+
+
+class FileSignature(models.Model):
+    file = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Файл')
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Пользователь')
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
 
 class Checklist(models.Model):
