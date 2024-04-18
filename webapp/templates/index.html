@@ -112,6 +112,9 @@
     
 
     <div id="action-task-modal_window" class="modal action_task_modal"></div>
+    <div id="overlay" class="overlay">
+        <div class="loader"></div>
+    </div>
 <!--     </div>
 
     <div id="action-task-modal_window" class="modal">
@@ -169,9 +172,9 @@
         document.addEventListener('DOMContentLoaded', function() {
         let checklistDropdown = document.getElementById('checklist_dropdown');
         let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
-    
+
         let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
-    
+
         checklistDropdownButton.addEventListener('click', function(event) {
             checklistDropdownMenu.classList.toggle('show');
             event.stopPropagation();

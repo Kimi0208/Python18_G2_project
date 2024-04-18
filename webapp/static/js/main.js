@@ -51,6 +51,7 @@ async function onClick(e) {
 }
 
 async function onSubmitData(e) {
+    showLoadingProcess()
     e.preventDefault();
     let form = e.target.closest('form');
     let formData = new FormData(form);
@@ -112,6 +113,7 @@ async function onSubmitData(e) {
         }
 
     }
+    hideLoadingProcess()
 }
 
 async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
@@ -207,6 +209,7 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
 
 
 async function onSubmitCommentDelete(e) {
+    showLoadingProcess
     e.preventDefault()
     let element = e.currentTarget
     let data_attribute = element.dataset['delete_comment']
@@ -241,7 +244,7 @@ async function onSubmitCommentDelete(e) {
         confirmation_comment_delete_field.style.display = 'none'
     })
 
-
+    hideLoadingProcess()
 }
 
 async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
@@ -314,6 +317,7 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
 
 
 async function onGetTasks(e) {
+    showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
     let get_tasks_buttons = document.getElementsByClassName('get-tasks_btn')
@@ -335,6 +339,7 @@ async function onGetTasks(e) {
         await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
     }
     dataTable.draw()
+    hideLoadingProcess()
 }
 
 
@@ -372,6 +377,7 @@ function formatDate(dateTimeString) {
 }
 
 async function onAddChecklist(e) {
+    showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
     let data_attribute = element.dataset['add_checklist']
@@ -380,10 +386,12 @@ async function onAddChecklist(e) {
     let subtasks_info = document.getElementById('subtasks_info')
     subtasks_info.innerHTML = ''
     await createTaskTable(subtasks, subtasks_info)
+    hideLoadingProcess()
 }
 
 
 async function onGetDetailTask(e) {
+    showLoadingProcess()
     e.preventDefault();
     let element = e.currentTarget;
     let detail_attribute = element.dataset['detail_task'];
@@ -398,7 +406,6 @@ async function onGetDetailTask(e) {
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
-    console.log(response_data)
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `task/${response_data.id}/update/`
@@ -502,11 +509,13 @@ async function onGetDetailTask(e) {
     } else {
         comments_info.innerHTML = 'Комментариев нет'
     }
+    hideLoadingProcess()
 
 }
 
 
 async function onGetTaskHistory(e){
+    showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
     let data_atribute = element.dataset['get_history_task']
@@ -563,6 +572,7 @@ async function onGetTaskHistory(e){
         modal.style.display = "none";
         modal.innerHTML = ''
     }
+    hideLoadingProcess()
 }
 
 async function createTaskTable(taskData, infoElement) {
@@ -623,6 +633,7 @@ async function createTaskTable(taskData, infoElement) {
 
 
 async function onGetInfo(e) {
+    showLoadingProcess()
     e.preventDefault();
     let element = e.currentTarget;
     let data_attribute = element.dataset['get_info_task'];
@@ -690,10 +701,11 @@ async function onGetInfo(e) {
     for (let file_delete_button of file_delete_buttons) {
         file_delete_button.addEventListener('click', onConfirmDeletion)
     }
-
+    hideLoadingProcess()
 }
 
 async  function onAddSign(e){
+    showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
     let href_attribute = element.href
@@ -705,9 +717,11 @@ async  function onAddSign(e){
         parent_div.parentNode.replaceChild(spanElement, parent_div);
 
     }
+    hideLoadingProcess()
 }
 
 async function onConfirmDeletion(e){
+    showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
     let data_attribute = element.getAttribute('href')
@@ -735,6 +749,7 @@ async function onConfirmDeletion(e){
         div_element.innerHTML = ''
         div_element.style.display='none'
     })
+    hideLoadingProcess()
 
 }
 
@@ -776,7 +791,16 @@ function onLoad() {
 }
 
 
+function showLoadingProcess() {
+    console.log(123)
+    let loader = document.getElementById('overlay')
+    loader.style.display='flex'
+}
 
+function hideLoadingProcess() {
+    let loader = document.getElementById('overlay')
+    loader.style.display='none'
+}
 
 
 window.addEventListener('load', onLoad);
