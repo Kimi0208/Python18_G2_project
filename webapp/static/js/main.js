@@ -755,7 +755,8 @@ async function onConfirmDeletion(e){
 
 async function onGetNewTask(){
     let blink_notification = document.getElementById('blink_notification');
-    let response = await makeRequest('new_tasks/', "GET")
+    let data_attribute = blink_notification.dataset['action_url']
+    let response = await makeRequest(data_attribute, "GET")
     if (response.task_count > 0) {
         blink_notification.style.display = 'block'
     } else {
