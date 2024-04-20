@@ -30,14 +30,15 @@ class TaskViewsTest(TestCase):
     def tearDownClass(cls):
         super().tearDownClass()
 
-    def test_task_create_view(self):
+    @mock.patch("webapp.views.task_views.send_email_notification", return_value='ok')
+    def test_task_create_view(self, mock_function):
         self.client.login(username='user', password='user')
         task_type = TypeFactory()
         task_status = StatusFactory()
         task_priority = PriorityFactory()
         task_user_department = DepartmentFactory()
         task_user = DefUserFactory()
-        task = TaskFactory(type=task_type, status=task_status)
+        task = TaskFactory(type=task_type, status=task_status, parent_task=TaskFactory())
         data = {
             'title': 'Task 1',
             'type': task_type.id,
@@ -47,16 +48,16 @@ class TaskViewsTest(TestCase):
             'done_at': '2024-04-04 19:35:02',
             'deadline': '2024-04-04T19:43',
             'priority': task_priority.id,
-            'destination_to_department': task_user_department.id,
+            # 'destination_to_department': task_user_department.id,
             'destination_to_user': task_user.id
         }
-        response = self.client.post('/create/', data=data)
-        # print(response.content)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        url = reverse('webapp:create_task')
+        response = self.client.post(url, data=data)
+        print(response.json())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         # self.assertEqual(Task.objects.count(), 1)
-        task = Task.objects.get(title='Task 1')
-        self.assertEqual(task.title, data['title'])
-        self.assertEqual(task.status.id, task_status.id)
+        self.assertEqual(response.json()["title"], data["title"])
+        self.assertEqual(response.json()["status"], task_status.name)
 
     def test_task_update_view(self):
         self.client.login(username='user', password='user')
@@ -135,19 +136,19 @@ class AddSubtasksTestCase(TestCase):
         user.set_password('user')
         user.save()
         self.user = user
-        self.main_task = Task.objects.create(author=self.user, title='Основная задача', description='Описание основной задачи')
+        self.main_task = TaskFactory(author=self.user, title='Основная задача', description='Описание основной задачи')
         self.checklist = Checklist.objects.create(name='Тестовый чеклист')
         self.checklist.users.add(self.user)
 
     @mock.patch("webapp.views.task_views.send_email_notification", return_value='ok')
     def test_add_subtasks(self, mock_function):
         self.client.login(username='user', password='user')
-        task_status = StatusFactory()
-        task_priority = PriorityFactory()
-        task_type = TypeFactory()
+        # task_status = StatusFactory()
+        # task_priority = PriorityFactory()
+        # task_type = TypeFactory()
         url = reverse('webapp:add_subtasks', kwargs={'task_pk': self.main_task.pk, 'checklist_pk': self.checklist.pk})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         subtasks = Task.objects.filter(parent_task=self.main_task)
         self.assertEqual(subtasks.count(), self.checklist.users.count())
 

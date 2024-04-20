@@ -459,7 +459,7 @@ def add_subtasks(request, checklist_pk, task_pk):
     for user in users:
         task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
                                    priority=priority,
-                                   type=type, destination_to_user=user, parent_task=main_task)
+                                   type=type_task, destination_to_user=user, parent_task=main_task)
         subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
         message = task.description
         try:
