@@ -5,7 +5,6 @@ from crm import settings
 
 
 class DefUser(AbstractUser):
-
     first_name = models.CharField(max_length=30, verbose_name='Имя сотрудника')
     last_name = models.CharField(max_length=30, verbose_name='Фамилия сотрудника')
 

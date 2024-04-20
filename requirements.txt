@@ -36,3 +36,5 @@ typing_extensions==4.10.0
 tzdata==2024.1
 vine==5.1.0
 wcwidth==0.2.13
+factory_boy==3.3.0
+

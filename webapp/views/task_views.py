@@ -455,7 +455,7 @@ def add_subtasks(request, checklist_pk, task_pk):
     description = f'Необходима подпись документа в задаче #{task_pk}'
     status = Status.objects.get(pk=1)
     priority = Priority.objects.get(pk=1)
-    type = Type.objects.get(pk=1)
+    type_task = Type.objects.get(pk=1)
     for user in users:
         task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
                                    priority=priority,
