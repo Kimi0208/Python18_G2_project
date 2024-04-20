@@ -14,7 +14,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-
 class LogoutView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user

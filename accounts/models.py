@@ -20,7 +20,6 @@ class DefUser(AbstractUser):
     def __str__(self):
         return self.username
 
-
     def save(self, *args, **kwargs):
         if self.email_password and type(self.email_password) != bytes:
             cipher_suite = Fernet(settings.SECRET_KEY)

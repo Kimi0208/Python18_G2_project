@@ -1,9 +1,8 @@
 from django.http import JsonResponse
-from django.shortcuts import redirect, reverse, render, get_object_or_404
+from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
 from webapp.models import Task, Status, Priority, Type, File, Checklist, Comment, FileSignature
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from docxtpl import DocxTemplate
 from shutil import copyfile
 from webapp.views.mail_send import send_email_notification
@@ -63,14 +62,6 @@ def get_object_from_model(model, value):
 
 def check_is_foreign_key(field, old_value, new_value):
     if isinstance(field, ForeignKey):
-        # if old_value is not None:
-        #     old_obj_name = field.related_model.objects.get(pk=old_value)
-        # else:
-        #     old_obj_name = None
-        # if new_value is not None:
-        #     new_obj_name = field.related_model.objects.get(pk=new_value)
-        # else:
-        #     new_obj_name = None
         old_obj_name = get_object_from_model(field.related_model, old_value)
         new_obj_name = get_object_from_model(field.related_model, new_value)
 
@@ -78,41 +69,6 @@ def check_is_foreign_key(field, old_value, new_value):
     else:
         return old_value, new_value
 
-
-# def get_files_history(task):
-#     try:
-#         files_history = []
-#         files = File.objects.filter(task=task)
-#         print(files)
-#         for file in files:
-#             task_file_history = file.history.all()
-#             for history in task_file_history:
-#                 action = ""
-#                 if history.history_type == '+':
-#                     action = "Добавлен файл"
-#                 elif history.history_type == '-':
-#                     action = "Удален файл"
-#                 history_info = (action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, file.file.name)
-#                 files_history.append(history_info)
-#         print(files_history)
-#         return files_history
-#     except File.DoesNotExist:
-#         pass
-
-# def get_files_history(task_pk):
-#     files_history_list = []
-#     files = File.objects.filter(task_id=task_pk)
-#     for file in files:
-#         file_history = file.history.all()
-#         for history in file_history:
-#             action = ""
-#             if history.history_type == "+":
-#                 action = "Добавлен файл"
-#             elif history.history_type == "-":
-#                 action = "Удален файл"
-#             history_info = [(action, history.history_date.strftime("%Y-%m-%d %H:%M:%S"), history.history_user, history.file)]
-#             files_history_list.append(history_info)
-#     return files_history_list
 
 def get_files_history(task_pk):
     files_history_list = []
@@ -165,8 +121,6 @@ def get_history_task(request, task_pk):
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%d-%m-%Y %H:%M")
         change_user = current_record.history_user
-        #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
-        # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
@@ -174,14 +128,10 @@ def get_history_task(request, task_pk):
             old, new = check_is_foreign_key(ttt, change.old, change.new)
             change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
             changes.append(change_info)
-        # field_verbose_name = Task._meta.get_field(changes[0][0]).verbose_name
-        # field_verbose_name = current_record._meta.get_field(changes[0][0]).verbose_name
-        # print(f'Изменения {changes}\n')
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
-
     create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
     history_list.extend([(create_record)])
     if history_list:
@@ -262,6 +212,7 @@ def get_subtasks(object):
         subtasks_list.append(subtask_data)
     return subtasks_list
 
+
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
 
@@ -293,9 +244,6 @@ class TaskView(DetailView):
         context = super().get_context_data(**kwargs)
         checklists = Checklist.objects.all()
         context['checklists'] = checklists
-
-        # history_list = record_history(self.object.pk)
-        # context['history'] = history_list
         return context
 
     def render_to_response(self, context, **response_kwargs):
