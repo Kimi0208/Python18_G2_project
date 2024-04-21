@@ -1,0 +1,38 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Исходящий № документа</th>
+                <th>Дата регистрации</th>
+                <th>Кому адресован документ</th>
+                <th>Краткое содержание</th>
+                <th>Кол-во страниц</th>
+                <th>Какой входящий № документ исполнения</th>
+                <th>ФИО исполнителя/подписавший документ</th>
+                <th>Статус</th>
+                <th>Скан</th>
+                <th>Комментарии</th>
+                <th>Вложение</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for out_mail in out_mails %}
+                <tr>
+                    <td>{{ out_mail.out_mail_number }}</td>
+                    <td>{{ out_mail.registration_date }}</td>
+                    <td>{{ out_mail.receiver }}</td>
+                    <td>{{ out_mail.description }}</td>
+                    <td>{{ out_mail.pages_count }}</td>
+                    <td>{{ out_mail.input_mail_number }}</td>
+                    <td>{{ out_mail.responsible_person }}</td>
+                    <td>{{ out_mail.status }}</td>
+                    <td>{{ out_mail.scan }}</td>
+                    <td>{{ out_mail.comments }}</td>
+                    <td>{{ out_mail.attachment }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

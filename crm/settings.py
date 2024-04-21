@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'simple_history',
     'cryptography',
+    'secretarial_work_app',
 ]
 
 REST_FRAMEWORK = {

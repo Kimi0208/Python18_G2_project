@@ -53,6 +53,24 @@
                         <span>Отделы</span>
                     </a>
                 
+                    <a class="collapse-item" href="{% url 'secretary:companies_list_view' %}">
+                        <span>Список компаний</span>
+                    </a>
+                
+                    <a class="collapse-item" href="{% url 'secretary:contracts_list_view' %}">
+                        Контракты
+                    </a>
+                
+                    <a class="collapse-item" href="{% url 'secretary:in_mails_list_view' %}">
+                        Входящие письма
+                    </a>
+                
+                    <a class="collapse-item" href="{% url 'secretary:out_mails_list_view' %}">
+                        Исходящие письма
+                    </a>
+
+
+                
 
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">

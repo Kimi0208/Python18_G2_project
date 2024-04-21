@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+{% block title %}{{ task.name }}{% endblock %}
+{% block menu %}
+    <a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>
+{% endblock %}
+{% block links %}
+    {% if request.user.is_authenticated %}
+        {% if perms.webapp.add_task %}
+            <a href="{% url 'secretary:contracts_create_view' %}">Добавить контракт</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div style="font-size: 14px">
+        <h1>Список контрактов</h1>
+        {% include 'partial/contracts_table.html' %}
+    </div>
+{% endblock %}

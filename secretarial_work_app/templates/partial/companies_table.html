@@ -1,0 +1,26 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Код компании</th>
+                <th>Название компании</th>
+                <th>Вложение</th>
+                <th>ИНН Компании</th>
+                <th>Физическое расположение договора</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for company in companies %}
+                <tr>
+                    <td>{{ company.company_code }}</td>
+                    <td>{{ company.company_name }}</td>
+                    <td>{{ company.contract_with_company }}</td>
+                    <td>{{ company.company_inn }}</td>
+                    <td>{{ company.contract_location.location_name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
