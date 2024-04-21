@@ -19,7 +19,18 @@
             <tbody id="table_body">
             {% for out_mail in out_mails %}
                 <tr>
-                    <td>{{ out_mail.out_mail_number }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0; border: none; font-size: 14px">
+                                {{ out_mail.out_mail_number }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Изменить</a>
+                                <a class="dropdown-item" href="#">Удалить</a>
+                            </div>
+                        </div>
+                    </td>
                     <td>{{ out_mail.registration_date }}</td>
                     <td>{{ out_mail.receiver }}</td>
                     <td>{{ out_mail.description }}</td>
@@ -29,7 +40,12 @@
                     <td>{{ out_mail.status }}</td>
                     <td>{{ out_mail.scan }}</td>
                     <td>{{ out_mail.comments }}</td>
-                    <td>{{ out_mail.attachment }}</td>
+                    <td>{% if out_mail.attachment %}
+                            <a href={{ out_mail.attachment.url }} download>{{ out_mail.attachment | cut:'uploads/out_mails/' }}</a>
+                        {% else %}
+                            <p>Нет вложений</p>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

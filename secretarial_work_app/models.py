@@ -17,7 +17,7 @@ class OutMails(models.Model):
     input_mail_number = models.CharField(max_length=20, verbose_name='Номер входящего документа', null=True, blank=True)
     responsible_person = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE,
                                            verbose_name='Исполнитель')
-    scan = models.CharField(max_length=10, verbose_name='Наличие скан копии')
+    scan = models.BooleanField(default=False, verbose_name='Наличие скан копии')
     status = models.ForeignKey('InOutMailsStatus', verbose_name='Статус', on_delete=models.CASCADE, null=True, blank=True)
     comments = models.TextField(max_length='1500', null=True, blank=True, verbose_name='Комментарии')
     attachment = models.FileField(upload_to='uploads/out_mails/', null=True, blank=True, verbose_name='Вложение')
@@ -34,7 +34,7 @@ class InMails(models.Model):
                                            verbose_name='Кому передан на исполнение')
     output_mail_number = models.CharField(max_length=20, verbose_name='Номер исходящего документа', null=True,
                                           blank=True)
-    scan = models.CharField(max_length=10, verbose_name='Наличие скана копии')
+    scan = models.BooleanField(default=False, verbose_name='Наличие скан копии')
     status = models.ForeignKey('InOutMailsStatus', verbose_name='Статус', on_delete=models.CASCADE, null=True, blank=True)
     comments = models.TextField(max_length=1500, verbose_name='Коментарии', null=True, blank=True)
     attachment = models.FileField(upload_to='uploads/in_mails/', null=True, blank=True, verbose_name='Вложение')
@@ -42,14 +42,14 @@ class InMails(models.Model):
 
 class CompaniesList(models.Model):
     company_code = models.CharField(max_length=250, verbose_name='Код компании')
-    company_name = models.CharField(max_length=250, verbose_name='Назыание компании')
+    company_name = models.CharField(max_length=250, verbose_name='Название компании')
     attachment = models.FileField(upload_to='uploads/companies/', null=True, blank=True, verbose_name='Вложение')
     contract_location = models.ForeignKey('ContractLocation', on_delete=models.CASCADE,
                                           verbose_name='Физическое расположение документа', null=True, blank=True)
     company_inn = models.CharField(max_length=250, verbose_name='ИНН Компании', null=True, blank=True)
 
     def __str__(self):
-        return f'{self.company_name}' f'({self.company_code})' f'{self.company_inn})'
+        return f'{self.company_code} {self.company_name}'
 
 
 class ContractLocation(models.Model):

@@ -1,13 +1,12 @@
+{% extends '_base.html' %}
+{% load static %}
 
-<div class="modal-content">
-    <div>
-        <div class="form-modal-header">
-            <h4>Добавить контракт</h4>
-            <button id="close_modal" style="background: white; border: none">Закрыть</button>
-        </div>
-        <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
-            {% include 'partial/form.html' with button_text='Добавить' %}
-        </form>
+{% block title %}Добавить контракт{% endblock %}
 
-    </div>
-</div>
+{% block content %}
+
+    <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Добавить' %}
+    </form>
+
+{% endblock %}

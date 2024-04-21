@@ -23,13 +23,12 @@
                     <td>
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0; border: none; font-size: 14px">
                                 {{ in_mail.in_mail_number }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">Изменить</a>
+                                <a class="dropdown-item" href="#">Удалить</a>
                             </div>
                         </div>
                     </td>
@@ -44,7 +43,7 @@
                     <td>{{ in_mail.scan }}</td>
                     <td>{{ in_mail.comments }}</td>
                     <td>{% if in_mail.attachment %}
-                        <a href="#">{{ in_mail.attachment }}</a>
+                        <a href={{ in_mail.attachment.url }} download>{{ in_mail.attachment | cut:'uploads/in_mails/' }}</a>
                     {% else %}
                         <p>Нет вложений</p>
                     {% endif %} </td>

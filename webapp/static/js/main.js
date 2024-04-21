@@ -663,7 +663,7 @@ async function onGetInfo(e) {
            <li class="list-group-item" id="file_${file.id}">
                 <p>${file.name.replace("uploads/user_docs/", "")}</p>
                 <div id="action_field_file_${file.id}" style="display:flex; align-items: center;">
-                    <a href="${file.url}" target="_blank" download="">Скачать</a>
+                    <a href="${file.url}" target="_blank" download>Скачать</a>
                     <a href="task/${file.task_id}/file/${file.id}/delete/" class="file_delete">Удалить</a>
                 </div>
                 

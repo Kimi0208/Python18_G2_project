@@ -15,6 +15,9 @@ class ContractsForm(forms.ModelForm):
         model = ContractRegistry
         fields = ['company', 'input_contract_number', 'description', 'consultion_date', 'responsible_employee',
                   'scan_copy', 'attachment', 'contract_location', 'attachment']
+        widgets = {
+            'consultion_date' : forms.DateInput(attrs={'type': 'date'})
+        }
 
 
 class InMailsForm(forms.ModelForm):
@@ -22,7 +25,7 @@ class InMailsForm(forms.ModelForm):
     class Meta:
         model = InMails
         fields = ['in_mail_number', 'mail_number', 'sender', 'description', 'pages_count', 'responsible_person',
-                  'output_mail_number', 'status', 'scan', 'comments', 'attachment']
+                  'output_mail_number', 'status', 'scan', 'attachment', 'comments']
 
 
 class OutMailsForm(forms.ModelForm):
@@ -30,4 +33,4 @@ class OutMailsForm(forms.ModelForm):
     class Meta:
         model = OutMails
         fields = ['out_mail_number', 'receiver', 'description', 'pages_count', 'input_mail_number',
-                  'responsible_person', 'status', 'scan', 'comments', 'attachment']
+                  'responsible_person', 'status', 'scan', 'attachment', 'comments']
