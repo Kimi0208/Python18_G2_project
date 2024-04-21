@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from secretarial_work_app.forms import CompaniesListForm, ContractsForm, InMailsForm, OutMailsForm
-from secretarial_work_app.models import CompaniesList, ContractRegistry, InMails, OutMails
+from secretarial_work_app.models import CompaniesList, ContractRegistry, InMails, OutMails, Attachment
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
@@ -55,12 +55,18 @@ class ContractsCreateView(CreateView):
     template_name = 'contracts_create.html'
     success_url = reverse_lazy('secretary:contracts_list_view')
 
-    # def form_valid(self, form):
-    #     contract = form.save(commit=False)
-    #     if 'attachment' in self.request.FILES:
-    #         contract.attachment = self.request.FILES['attachment']
-    #     contract.save()
-    #     return redirect(reverse_lazy('secretary:contracts_list_view'))
+    def form_valid(self, form):
+        contract = form.save()
+        contract.document_auto_number = contract.id
+        contract.save()
+
+        files = form.cleaned_data['attachment']
+        for file in files:
+            attachment = Attachment.objects.create(file=file)
+            contract.attachments.add(attachment)
+
+        return redirect(reverse_lazy('secretary:contracts_list_view'))
+
 
 
 class ContractsListView(ListView):
@@ -70,6 +76,7 @@ class ContractsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['attachments'] = Attachment.objects.all()
         return context
 
 

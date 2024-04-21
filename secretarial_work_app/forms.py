@@ -9,12 +9,30 @@ class CompaniesListForm(forms.ModelForm):
         fields = ['company_code', 'company_name', 'company_inn', 'contract_location', 'attachment']
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
 class ContractsForm(forms.ModelForm):
+    attachment = MultipleFileField(required=False)
 
     class Meta:
         model = ContractRegistry
         fields = ['company', 'input_contract_number', 'description', 'consultion_date', 'responsible_employee',
-                  'scan_copy', 'attachment', 'contract_location', 'attachment']
+                  'scan_copy', 'attachment', 'contract_location']
         widgets = {
             'consultion_date' : forms.DateInput(attrs={'type': 'date'})
         }

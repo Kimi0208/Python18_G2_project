@@ -5,9 +5,10 @@
             <tr>
                 <th>Код компании</th>
                 <th>Название компании</th>
-                <th>Вложение</th>
                 <th>ИНН Компании</th>
                 <th>Физическое расположение договора</th>
+                <th>Вложение</th>
+                <th>Действия</th>
             </tr>
             </thead>
             <tbody id="table_body">
@@ -15,9 +16,21 @@
                 <tr>
                     <td>{{ company.company_code }}</td>
                     <td>{{ company.company_name }}</td>
-                    <td>{{ company.contract_with_company }}</td>
                     <td>{{ company.company_inn }}</td>
                     <td>{{ company.contract_location.location_name }}</td>
+                    <td>
+                        {% if company.attachment %}
+                            <a href={{ company.attachment.url }} download>{{ company.attachment | cut:'uploads/companies/' }}</a>
+                        {% else %}
+                            <p>Нет вложений</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href=""><i
+                            class="fas fa-fw fa-edit"></i></a>
+                        <a href=""><i
+                                class="fas fa-fw fa-trash-alt"></i></a>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

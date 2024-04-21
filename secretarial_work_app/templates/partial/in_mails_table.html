@@ -40,13 +40,14 @@
                     <td>{{ in_mail.responsible_person }}</td>
                     <td>{{ in_mail.output_mail_number }}</td>
                     <td>{{ in_mail.status }}</td>
-                    <td>{{ in_mail.scan }}</td>
+                    <td>{{ in_mail.get_scan_status }}</td>
                     <td>{{ in_mail.comments }}</td>
                     <td>{% if in_mail.attachment %}
                         <a href={{ in_mail.attachment.url }} download>{{ in_mail.attachment | cut:'uploads/in_mails/' }}</a>
                     {% else %}
                         <p>Нет вложений</p>
-                    {% endif %} </td>
+                    {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

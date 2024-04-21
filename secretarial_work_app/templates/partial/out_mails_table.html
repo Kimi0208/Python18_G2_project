@@ -38,7 +38,7 @@
                     <td>{{ out_mail.input_mail_number }}</td>
                     <td>{{ out_mail.responsible_person }}</td>
                     <td>{{ out_mail.status }}</td>
-                    <td>{{ out_mail.scan }}</td>
+                    <td>{{ out_mail.get_scan_status }}</td>
                     <td>{{ out_mail.comments }}</td>
                     <td>{% if out_mail.attachment %}
                             <a href={{ out_mail.attachment.url }} download>{{ out_mail.attachment | cut:'uploads/out_mails/' }}</a>
