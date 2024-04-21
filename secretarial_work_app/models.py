@@ -87,8 +87,7 @@ class ContractRegistry(models.Model):
     responsible_employee = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE,
                                              verbose_name='Ответственный сотрудник', null=True, blank=True)
     scan_copy = models.BooleanField(default=False, verbose_name='Наличие отсканированной копии', choices=SCAN_CHOICES)
-    # attachment = models.FileField(upload_to='uploads/contracts/', null=True, blank=True, verbose_name='Вложение')
-    attachments = models.ManyToManyField('Attachment', blank=True, related_name='contracts')
+    attachments = models.ManyToManyField('Attachment', blank=True, related_name='contracts', verbose_name='Вложения')
     contract_location = models.ForeignKey('ContractLocation', on_delete=models.CASCADE,
                                           verbose_name='Физическое расположение договора')
 
@@ -100,7 +99,7 @@ class ContractRegistry(models.Model):
 
 
 class Attachment(models.Model):
-    file = models.FileField(upload_to='uploads/contracts/')
+    file = models.FileField(upload_to='uploads/contracts/', verbose_name='Вложение')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

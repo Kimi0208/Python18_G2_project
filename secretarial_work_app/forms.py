@@ -26,8 +26,9 @@ class MultipleFileField(forms.FileField):
             result = [single_file_clean(data, initial)]
         return result
 
+
 class ContractsForm(forms.ModelForm):
-    attachment = MultipleFileField(required=False)
+    attachment = MultipleFileField(required=False, label="Вложения")
 
     class Meta:
         model = ContractRegistry
