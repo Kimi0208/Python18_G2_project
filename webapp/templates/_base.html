@@ -44,7 +44,7 @@
                     </a>
                 
                     <a class="nav-link" href="{% url 'accounts:user_list' %}">
-                        <i class="fas fa-fw fa-user-friends"></i>
+                        <i class="fa-solid fa-users"></i>
                         <span>Пользователи</span>
                     </a>
                     
@@ -53,20 +53,24 @@
                         <span>Отделы</span>
                     </a>
                 
-                    <a class="collapse-item" href="{% url 'secretary:companies_list_view' %}">
+                    <a class="nav-link" href="{% url 'secretary:companies_list_view' %}">
+                        <i class="fa-solid fa-building"></i>
                         <span>Список компаний</span>
                     </a>
                 
-                    <a class="collapse-item" href="{% url 'secretary:contracts_list_view' %}">
-                        Контракты
+                    <a class="nav-link" href="{% url 'secretary:contracts_list_view' %}">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Контракты</span>
                     </a>
                 
-                    <a class="collapse-item" href="{% url 'secretary:in_mails_list_view' %}">
-                        Входящие письма
+                    <a class="nav-link" href="{% url 'secretary:in_mails_list_view' %}">
+                        <i class="fa-solid fa-arrow-down"></i>
+                        <span>Входящие письма</span>
                     </a>
                 
-                    <a class="collapse-item" href="{% url 'secretary:out_mails_list_view' %}">
-                        Исходящие письма
+                    <a class="nav-link" href="{% url 'secretary:out_mails_list_view' %}">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        <span>Исходящие письма</span>
                     </a>
 
 

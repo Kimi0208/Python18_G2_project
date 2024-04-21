@@ -1,18 +1,24 @@
 {% extends '_base.html' %}
-{% block title %}{{ task.name }}{% endblock %}
-{% block menu %}
-    <a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>
+{% load static %}
+
+{% block title %}
+    Список исходящих писем
 {% endblock %}
+
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
-            <a href="{% url 'secretary:out_mails_create_view' %}">Добавить письмо</a>
+            <a href="{% url 'secretary:out_mails_create_view' %}"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> 
+                Добавить исходящее письмо
+            </a>
         {% endif %}
     {% endif %}
 {% endblock %}
+
 {% block content %}
-    <div style="font-size: 14px">
-        <h1>Список исходящих писем</h1>
+    <div id="main_area">
         {% include 'partial/out_mails_table.html' %}
     </div>
 {% endblock %}
