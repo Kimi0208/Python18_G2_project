@@ -1,3 +1,44 @@
+.blink {
+  animation: blink 2s infinite;
+  color: green;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+#main_area {
+    font-size: 14px;
+}
+.card-body {
+    padding-top: 0px;
+}
+
+#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-end,
+#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start {
+    padding-top: 0px;
+}
+
+table.dataTable>tbody>tr>th,
+table.dataTable>tbody>tr>td {
+    padding: 5px 7px;
+}
+table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataTable td.dt-type-numeric, table.dataTable td.dt-type-date {
+    text-align: left;
+}
+
+#user_dep_list_area > table > tbody > tr > td {
+    padding: 7px 7px;
+}
 
 .form-group{
   margin-bottom: 20px;
@@ -20,7 +61,7 @@
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 41%;
+  width: 35%;
 }
 
 .close {
@@ -45,4 +86,12 @@
 
 #task-detail-info {
   display: none;
+}
+
+.list-group-item {
+    margin-bottom: 20px;
+}
+.list-group-item a {
+
+    margin-right: 10px;
 }
