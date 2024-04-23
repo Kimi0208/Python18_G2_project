@@ -68,7 +68,6 @@ class ContractsCreateView(CreateView):
         return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
-
 class ContractsListView(ListView):
     model = ContractRegistry
     context_object_name = 'contracts'
@@ -84,7 +83,7 @@ class ContractsUpdateView(UpdateView):
     model = ContractRegistry
     context_object_name = 'contracts'
     form_class = ContractsForm
-
+    success_url = reverse_lazy('secretary:contracts_list_view')
 
     # def form_valid(self, form):
     #     self.object = form.save(commit=False)
@@ -106,12 +105,6 @@ class InMailsListView(ListView):
     template_name = 'in_mails_list.html'
 
 
-class OutMailsListView(ListView):
-    model = OutMails
-    context_object_name = 'out_mails'
-    template_name = 'out_mails_list.html'
-
-
 class InMailsCreateView(CreateView):
     model = InMails
     form_class = InMailsForm
@@ -126,6 +119,25 @@ class InMailsCreateView(CreateView):
     #     return redirect(reverse_lazy('secretary:in_mails_list_view'))
 
 
+class InMailsUpdateView(UpdateView):
+    model = InMails
+    form_class = InMailsForm
+    template_name = 'in_mails_update.html'
+    success_url = reverse_lazy('secretary:in_mails_list_view')
+
+
+class InMailsDeleteView(DeleteView):
+    model = InMails
+    template_name = 'in_mails_delete.html'
+    success_url = reverse_lazy('secretary:in_mails_list_view')
+
+
+class OutMailsListView(ListView):
+    model = OutMails
+    context_object_name = 'out_mails'
+    template_name = 'out_mails_list.html'
+
+
 class OutMailsCreateView(CreateView):
     model = OutMails
     form_class = OutMailsForm
@@ -138,3 +150,16 @@ class OutMailsCreateView(CreateView):
     #         out_mails.attachment = self.request.FILES['attachment']
     #     out_mails.save()
     #     return redirect(reverse_lazy('secretary:out_mails_list_view'))
+
+
+class OutMailsUpdateView(UpdateView):
+    model = OutMails
+    form_class = OutMailsForm
+    template_name = 'out_mails_update.html'
+    success_url = reverse_lazy('secretary:out_mails_list_view')
+
+
+class OutMailsDeleteView(DeleteView):
+    model = OutMails
+    template_name = 'out_mails_delete.html'
+    success_url = reverse_lazy('secretary:out_mails_list_view')

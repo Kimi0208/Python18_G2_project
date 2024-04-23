@@ -18,7 +18,22 @@
             <tbody id="table_body">
             {% for contract  in contracts %}
                 <tr>
-                    <td>{{ contract.document_auto_number }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    style="padding: 0; border: none; font-size: 14px">
+                                {{ contract.document_auto_number }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:contracts_update_view' pk=contract.pk %}">Изменить</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:contracts_delete_view' pk=contract.pk %}">Удалить</a>
+                            </div>
+                        </div>
+
+                    </td>
                     <td>{{ contract.company.company_name }}</td>
                     <td>{{ contract.input_contract_number }}</td>
                     <td>{{ contract.description }}</td>
@@ -27,12 +42,12 @@
                     <td>{{ contract.get_scan_status }}</td>
                     <td>{{ contract.contract_location }}</td>
                     <td>{% if contract.attachments.all %}
-                            {% for attachment in contract.attachments.all %}
-                                <a href={{ attachment.file.url }} download>{{ attachment | cut:'uploads/contracts/' }}</a>
-                            {% endfor %}
-                        {% else %}
-                            <p>Нет вложений</p>
-                        {% endif %}
+                        {% for attachment in contract.attachments.all %}
+                            <a href={{ attachment.file.url }} download>{{ attachment | cut:'uploads/contracts/' }}</a>
+                        {% endfor %}
+                    {% else %}
+                        <p>Нет вложений</p>
+                    {% endif %}
                     </td>
                     <td>
                         <a href=""><i class="fas fa-fw fa-edit"></i></a>

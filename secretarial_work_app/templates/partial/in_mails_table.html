@@ -23,12 +23,15 @@
                     <td>
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="padding: 0; border: none; font-size: 14px">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    style="padding: 0; border: none; font-size: 14px">
                                 {{ in_mail.in_mail_number }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">Изменить</a>
-                                <a class="dropdown-item" href="#">Удалить</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:in_mails_update_view' pk=in_mail.pk %}">Изменить</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:in_mails_delete_view' pk=in_mail.pk %}">Удалить</a>
                             </div>
                         </div>
                     </td>

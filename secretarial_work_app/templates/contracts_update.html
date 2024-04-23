@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}Обновить запись{% endblock %}
+{% block content %}
+    <div class="modal-content p-4">
+        <div>
+            {% include 'partial/form.html' with value_submit='Изменить комментарий' %}
+        </div>
+    </div>
+    
+
+{% endblock %}
