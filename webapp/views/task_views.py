@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
@@ -342,6 +344,7 @@ class TaskUpdateView(UpdateView):
         elif self.object.destination_to_department:
             destination_to = self.object.destination_to_department.name
         if self.object.status.name == 'Выполнена':
+            self.object.done_at = datetime.now()
             if self.object.destination_to_user:
                 subject = f'CRM: Задача #{self.object.id} выполнена {self.object.title}'
                 message = self.object.description

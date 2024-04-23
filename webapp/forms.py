@@ -7,7 +7,7 @@ from webapp.models import Task, File, Comment
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'type', 'description', 'start_date', 'done_at', 'deadline',
+        fields = ['title', 'type', 'description', 'start_date', 'deadline',
                   'status', 'priority', 'destination_to_department', 'destination_to_user',
                   ]
 

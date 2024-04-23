@@ -5,8 +5,10 @@
     Cписок пользователей
 {% endblock %}
 {% block links %}
-    <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Добавить пользователя </a>
+    <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fa-solid fa-plus"></i>
+        Добавить пользователя
+    </a>
 {% endblock %}
 {% block menu %}
 {% endblock %}
