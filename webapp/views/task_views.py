@@ -11,7 +11,6 @@ from django.db.models import ForeignKey
 import json
 
 
-
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
@@ -34,6 +33,7 @@ def get_object_from_model(model, value):
         return model.objects.get(pk=value)
     except model.DoesNotExist:
         return None
+
 
 def check_is_foreign_key(field, old_value, new_value):
     if isinstance(field, ForeignKey):
@@ -94,12 +94,14 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл:"
+            action = "Добавлен файл:"
         elif file_history.history_type == "-":
             action = "Удален файл:"
-        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"), file_history.history_user.username, file_history.file)]
+        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
+                         file_history.history_user.username, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
+
 
 def get_comments_history(task_pk):
     comments_history_list = []
@@ -113,11 +115,10 @@ def get_comments_history(task_pk):
             action = f"Добавлен комментарий: {comment_history.description}"
         elif comment_history.history_type == "-":
             action = f"Удален комментарий: {comment_history.description}"
-        history_info = [(action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
+        history_info = [
+            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
         comments_history_list.append(history_info)
     return comments_history_list
-
-
 
 
 def get_history_task(request, task_pk):
@@ -130,7 +131,7 @@ def get_history_task(request, task_pk):
         delta = current_record.diff_against(previous_record)
         change_date = current_record.history_date.strftime("%d-%m-%Y %H:%M")
         change_user = current_record.history_user
-        #Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
+        # Если в истории можно будет оставить название поля (как записано в бд), а не verbose_name
         # changes = [(change.field, change.old, change.new, change_date, change_user) for change in delta.changes]
         changes = []
         for change in delta.changes:
@@ -154,6 +155,7 @@ def get_history_task(request, task_pk):
     else:
         return JsonResponse({'history': history_list})
 
+
 def get_task_files(request, task_pk):
     files = File.objects.filter(task=task_pk)
     file_list = []
@@ -166,6 +168,7 @@ def get_task_files(request, task_pk):
         }
         file_list.append(file_data)
     return JsonResponse({'files': file_list})
+
 
 def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object)
@@ -187,6 +190,7 @@ def get_subtasks(object):
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
+
 
 smtp_server = "mail.elcat.kg"
 smtp_port = 465
@@ -211,8 +215,7 @@ def get_comments(task_pk, user_id):
     return comments_list
 
 
-
-class TaskView(DetailView):
+class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
     permission_required = 'webapp.view_task'
 
@@ -256,10 +259,10 @@ class TaskView(DetailView):
             'subtasks': subtasks_list,
             'comments': get_comments(self.object.pk, self.request.user.pk)
         }
-        return JsonResponse({'task':task_data})
+        return JsonResponse({'task': task_data})
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(PermissionRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_create.html'
@@ -296,7 +299,7 @@ class TaskCreateView(CreateView):
         return JsonResponse(task_data)
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_edit.html'
@@ -327,9 +330,10 @@ class TaskUpdateView(UpdateView):
         return JsonResponse(task_data)
 
 
-class TaskDeleteView(DeleteView):
+class TaskDeleteView(PermissionRequiredMixin, DeleteView):
     model = Task
     template_name = 'task_proposal_delete.html'
+    permission_required = 'webapp.delete_task'
 
     def get_success_url(self):
         return reverse('webapp:index')
@@ -368,10 +372,11 @@ def add_subtasks(request, checklist_pk, task_pk):
     return redirect('webapp:detail_task', pk=task_pk)
 
 
-class FileAddView(CreateView):
+class FileAddView(PermissionRequiredMixin, CreateView):
     model = File
     form_class = FileForm
     template_name = 'file_add.html'
+    permission_required = 'webapp.add_file'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -381,12 +386,13 @@ class FileAddView(CreateView):
         file = {
             'file': self.object.file.name,
         }
-        return JsonResponse({'file' : file})
+        return JsonResponse({'file': file})
 
 
-class FileDeleteView(DeleteView):
+class FileDeleteView(PermissionRequiredMixin, DeleteView):
     model = File
     template_name = 'partial/file_delete.html'
+    permission_required = 'webapp.delete_file'
 
     def form_valid(self, form):
         file_id = self.object.id

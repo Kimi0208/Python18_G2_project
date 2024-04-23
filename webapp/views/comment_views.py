@@ -1,13 +1,15 @@
 from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
 from webapp.forms import CommentForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from webapp.models import Comment, Task
 
 
-class CommentCreateView(CreateView):
+class CommentCreateView(PermissionRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'comment_proporsal_create.html'
+    permission_required = 'webapp.add_comment'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -28,10 +30,11 @@ class CommentCreateView(CreateView):
         return JsonResponse({'comment': comment})
 
 
-class CommentUpdateView(UpdateView):
+class CommentUpdateView(PermissionRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'comment_proporsal_edit.html'
+    permission_required = 'webapp.change_comment'
 
     def form_valid(self, form):
         self.object = form.save()
@@ -49,9 +52,10 @@ class CommentUpdateView(UpdateView):
         return JsonResponse({'comment': comment})
 
 
-class CommentDeleteView(DeleteView):
+class CommentDeleteView(PermissionRequiredMixin, DeleteView):
     model = Comment
     template_name = 'partial/comment_delete.html'
+    permission_required = 'webapp.delete_comment'
 
     def form_valid(self, form):
         comment_id = self.object.id
