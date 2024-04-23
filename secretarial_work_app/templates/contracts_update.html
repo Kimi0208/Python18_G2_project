@@ -1,0 +1,10 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}Обновить запись{% endblock %}
+{% block content %}
+    <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Обновить запись' %}
+    </form>
+    
+
+{% endblock %}

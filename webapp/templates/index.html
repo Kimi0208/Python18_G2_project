@@ -15,60 +15,70 @@
 {% endblock %}
 
 {% block content %}
-    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;" class="list-group"; id="user_dep_list_area">
+    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;"
+         class="list-group" ; id="user_dep_list_area">
         <table class="table table-hover" style="margin-bottom: 0px">
-          <thead>
+            <thead>
             <tr>
-              <th scope="col">Отделы и сотрудники</th>
+                <th scope="col">Отделы и сотрудники</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {% for department in departments %}
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}" data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk%}">{{ department.name }}</td>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}"
+                        data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk %}">{{ department.name }}</td>
                 </tr>
             {% endfor %}
             {% for user in users %}
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}" data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                        data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
                 </tr>
             {% endfor %}
 
-          </tbody>
+            </tbody>
         </table>
     </div>
-   
+
     <div id="main_area" style="width:60%">
 
-         {% include 'partial/tables.html' %}
+        {% include 'partial/tables.html' %}
     </div>
     <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
-        <div style="display: flex; justify-content: space-between;" class="bg-primary" >
-            <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать</button>
-            <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы</button>
+        <div style="display: flex; justify-content: space-between;" class="bg-primary">
+            <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
+            </button>
+            <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
+            </button>
             <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
             <div class="dropdown">
-              <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Добавить
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу</button>
-                <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
-                <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий</button>
-                <div class="dropleft" id="checklist_dropdown">
-                    <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button" aria-haspopup="true" aria-expanded="false">
-                        Чеклист
+                <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Добавить
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
-                        {% for checklist in checklists %}
-                            <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}" data-add_checklist="">{{ checklist.name }}</button>
-                        {% endfor %}
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий
+                    </button>
+                    <div class="dropleft" id="checklist_dropdown">
+                        <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button"
+                                aria-haspopup="true" aria-expanded="false">
+                            Чеклист
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
+                            {% for checklist in checklists %}
+                                <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}"
+                                        data-add_checklist="">{{ checklist.name }}</button>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-              </div>
             </div>
         </div>
-    <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
+        <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
         <p class="card-text" id="task_start_date"></p>
@@ -102,7 +112,7 @@
     </div>
     <div id="detail-task-modal_window" class="modal action_task_modal"></div>
 
-    
+
 
     <div id="action-task-modal_window" class="modal action_task_modal"></div>
     <div id="overlay" class="overlay">
@@ -112,22 +122,22 @@
 {% endblock %}
 {% block scripts %}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#DataTable').DataTable();
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        let checklistDropdown = document.getElementById('checklist_dropdown');
-        let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
+        document.addEventListener('DOMContentLoaded', function () {
+            let checklistDropdown = document.getElementById('checklist_dropdown');
+            let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
 
-        let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
+            let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
 
-        checklistDropdownButton.addEventListener('click', function(event) {
-            checklistDropdownMenu.classList.toggle('show');
-            event.stopPropagation();
-        });
-            document.addEventListener('click', function(event) {
+            checklistDropdownButton.addEventListener('click', function (event) {
+                checklistDropdownMenu.classList.toggle('show');
+                event.stopPropagation();
+            });
+            document.addEventListener('click', function (event) {
                 if (!checklistDropdown.contains(event.target)) {
                     checklistDropdownMenu.classList.remove('show');
                 }

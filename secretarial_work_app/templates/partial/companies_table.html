@@ -26,9 +26,9 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href=""><i
+                        <a href="{% url 'secretary:company_update_view' pk=company.pk %}"><i
                             class="fas fa-fw fa-edit"></i></a>
-                        <a href=""><i
+                        <a href="{% url 'secretary:company_delete_view' pk=company.pk %}"><i
                                 class="fas fa-fw fa-trash-alt"></i></a>
                     </td>
                 </tr>
