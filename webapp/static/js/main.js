@@ -41,7 +41,10 @@ async function onClick(e) {
     modal.innerHTML = datar
     modal.style.display = 'block'
     let form = document.getElementById('test_form');
-    form.addEventListener('submit', onSubmitData)
+    $(document).ready(function() {
+            $(form.elements['destination_to_user']).select2();
+            $(form.elements['destination_to_department']).select2();
+        });    form.addEventListener('submit', onSubmitData)
     form.action = data_attribute
     let closeBtn = document.getElementById("close_modal");
     closeBtn.onclick = function () {
