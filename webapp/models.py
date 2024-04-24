@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import models
 from simple_history.models import HistoricalRecords
+from django.utils.translation import gettext_lazy as _
 
 
 class Task(models.Model):
@@ -24,6 +25,10 @@ class Task(models.Model):
                                             on_delete=models.SET_NULL, null=True, blank=True)
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип')
     history = HistoricalRecords()
+
+    def clean(self):
+        if self.deadline and self.deadline < timezone.now():
+            raise ValidationError('Нельзя установить дедлайн раньше текущей даты и времени.')
 
     def __str__(self):
         return f'{self.id}){self.title}'

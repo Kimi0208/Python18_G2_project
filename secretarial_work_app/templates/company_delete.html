@@ -1,0 +1,21 @@
+{% extends '_base.html' %}
+{% load static %}
+
+
+{% block title %}Удалить компанию{% endblock %}
+
+{% block content %}
+
+    <div class="modal-content p-4">
+        <div>
+            <h3>Вы уверены, что хотите удалить компанию?</h3>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Удалить">
+                <a class="btn btn-primary" href="{% url 'secretary:companies_list_view' %}">Отмена</a>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+

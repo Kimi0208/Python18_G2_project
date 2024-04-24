@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'simple_history',
     'cryptography',
+    'secretarial_work_app',
 ]
 
 REST_FRAMEWORK = {
@@ -101,7 +102,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'crm_db',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }

@@ -9,7 +9,6 @@
         <p class="card-text">Статус {{ task.status }}</p>
         <p class="card-text">Приоритет {{ task.priority }}</p>
         <p class="card-text">{{ task.description }}</p>
-{#        <a href="#" class="btn btn-primary">Go somewhere</a>#}
       </div>
       <div class="card-footer text-body-secondary">
         Дата создания {{ task.created_at }}
@@ -45,13 +44,6 @@
     {% endif %}
     <div id="action-task-modal_window" class="modal"></div>
     <div>
-{#    <ul>#}
-{#        {% for changes in history %}#}
-{#            {% for change in changes %}#}
-{#                <li>Поле {{ change.0 }} изменено с {{ change.1 }} на {{ change.2 }} Дата изменения: {{ change.3 }} Кто изменил: {{ change.4 }}</li>#}
-{#            {% endfor %}#}
-{#        {% endfor %}#}
-{#    </ul>#}
         {% for changes in history %}
             <ul>
                 {% for change in changes %}

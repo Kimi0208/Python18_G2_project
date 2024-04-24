@@ -1,0 +1,60 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Входящий № документа</th>
+                <th>Дата регистрации</th>
+                <th>№ поступившего документа</th>
+                <th>Отправитель документа</th>
+                <th>Краткое содержание</th>
+                <th>Кол-во листов</th>
+                <th>Кому направлено на исполнение</th>
+                <th>Каким исходящим № исполнен документ</th>
+                <th>Статус</th>
+                <th>Наличие скан копии</th>
+                <th>Комментарии</th>
+                <th>Вложение</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for in_mail in in_mails %}
+                <tr>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    style="padding: 0; border: none; font-size: 14px">
+                                {{ in_mail.in_mail_number }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:in_mails_update_view' pk=in_mail.pk %}">Изменить</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:in_mails_delete_view' pk=in_mail.pk %}">Удалить</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ in_mail.registration_date }}</td>
+                    <td>{{ in_mail.mail_number }}</td>
+                    <td>{{ in_mail.sender }}</td>
+                    <td>{{ in_mail.description }}</td>
+                    <td>{{ in_mail.pages_count }}</td>
+                    <td>{{ in_mail.responsible_person }}</td>
+                    <td>{{ in_mail.output_mail_number }}</td>
+                    <td>{{ in_mail.status }}</td>
+                    <td>{{ in_mail.get_scan_status }}</td>
+                    <td>{{ in_mail.comments }}</td>
+                    <td>{% if in_mail.attachment %}
+                        <a href={{ in_mail.attachment.url }} download>{{ in_mail.attachment | cut:'uploads/in_mails/' }}</a>
+                    {% else %}
+                        <p>Нет вложений</p>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
