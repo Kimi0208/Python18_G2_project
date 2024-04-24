@@ -1,7 +1,7 @@
 from django.urls import path
 from secretarial_work_app.views import (CompanyCreateView, CompanyListView, ContractsListView, ContractsCreateView,
                                         InMailsListView, OutMailsListView, InMailsCreateView, OutMailsCreateView,
-                                        ContractDeleteView, ContractsUpdateView, CompanyDeleteView, CompanyUpdateView,
+                                        contract_delete, ContractsUpdateView, CompanyDeleteView, CompanyUpdateView,
                                         InMailsDeleteView, InMailsUpdateView, OutMailsUpdateView, OutMailsDeleteView)
 
 app_name = 'secretary'
@@ -15,7 +15,7 @@ urlpatterns = [
     path('contracts/', ContractsListView.as_view(), name='contracts_list_view'),
     path('contracts/create/', ContractsCreateView.as_view(), name='contracts_create_view'),
     path('contracts/<int:pk>/update', ContractsUpdateView.as_view(), name='contracts_update_view'),
-    path('contracts/<int:pk>/delete', ContractDeleteView.as_view(), name='contracts_delete_view'),
+    path('contracts/<int:pk>/delete', contract_delete, name='contracts_delete_view'),
     path('inmails/', InMailsListView.as_view(), name='in_mails_list_view'),
     path('inmails/create/', InMailsCreateView.as_view(), name='in_mails_create_view'),
     path('inmails/<int:pk>/update', InMailsUpdateView.as_view(), name='in_mails_update_view'),

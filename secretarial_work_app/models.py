@@ -65,7 +65,7 @@ class CompaniesList(models.Model):
     company_inn = models.CharField(max_length=250, verbose_name='ИНН Компании', null=True, blank=True)
 
     def __str__(self):
-        return f'{self.company_code} {self.company_name}'
+        return f'{self.company_name}'
 
 
 class ContractLocation(models.Model):

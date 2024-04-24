@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from secretarial_work_app.forms import CompaniesListForm, ContractsForm, InMailsForm, OutMailsForm
 from secretarial_work_app.models import CompaniesList, ContractRegistry, InMails, OutMails, Attachment
@@ -57,7 +57,7 @@ class ContractsCreateView(CreateView):
 
     def form_valid(self, form):
         contract = form.save()
-        contract.document_auto_number = contract.id
+        contract.document_auto_number = contract.pk
         contract.save()
 
         files = form.cleaned_data['attachment']
@@ -82,21 +82,33 @@ class ContractsListView(ListView):
 class ContractsUpdateView(UpdateView):
     model = ContractRegistry
     context_object_name = 'contracts'
+    template_name = 'contracts_update.html'
     form_class = ContractsForm
     success_url = reverse_lazy('secretary:contracts_list_view')
 
-    # def form_valid(self, form):
-    #     self.object = form.save(commit=False)
-    #     if 'attachment' in self.request.FILES:
-    #         self.object.attachment = self.request.FILES['attachment']
-    #         self.object.save()
-    #         return redirect(reverse_lazy('secretary:contracts_list_view'))
+    def form_valid(self, form):
+        contract = form.save()
+        contract.document_auto_number = contract.id
+        contract.save()
+
+        files = form.cleaned_data['attachment']
+        for file in files:
+            attachment = Attachment.objects.create(file=file)
+            contract.attachments.add(attachment)
+
+        return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
-class ContractDeleteView(DeleteView):
-    model = ContractRegistry
-    template_name = ''
-    success_url = reverse_lazy('secretary:contracts_list_view')
+def contract_delete(request, pk):
+    contract = get_object_or_404(ContractRegistry, pk=pk)
+    if contract.attachments:
+        for attachment in contract.attachments.all():
+            Attachment.objects.filter(id=attachment.id).delete()
+    contract.delete()
+
+    return redirect(reverse_lazy('secretary:contracts_list_view'))
+
+
 
 
 class InMailsListView(ListView):
