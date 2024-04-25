@@ -14,5 +14,8 @@ def deadline_task_notification():
         if task.destination_to_user:
             subject = f'CRM: Задача #{task.id} истек дедлайн {task.title}'
             message = f'Дата дедлайна: {task.deadline}'
-            send_email_notification(subject, message, task.author.email, task.author.email,
-                                    smtp_server, smtp_port, task.author.email, task.author.decrypt_email_password())
+            try:
+                send_email_notification(subject, message, task.author.email, task.author.email,
+                                        smtp_server, smtp_port, task.author.email, task.author.decrypt_email_password())
+            except Exception as e:
+                print(f"Ошибка при отправке электронного уведомления: {e}")
