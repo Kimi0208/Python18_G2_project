@@ -37,9 +37,8 @@ class DepartmentUpdateView(UpdateView):
         return reverse('accounts:department_list')
 
 
-class DepartmentDeleteView(DeleteView):
-    model = Department
-    template_name = 'departments/department_delete.html'
+def department_delete(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    department.delete()
 
-    def get_success_url(self):
-        return reverse('accounts:department_list')
+    return redirect(reverse_lazy('accounts:department_list'))

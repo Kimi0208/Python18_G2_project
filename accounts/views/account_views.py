@@ -1,8 +1,8 @@
 from django.contrib import messages
-from django.db.models import Count
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.contrib.auth import login, get_user_model
-from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm, UserForm
 from django.contrib.auth.views import PasswordChangeView
@@ -83,9 +83,8 @@ class UserUpdateView(UpdateView):
         return redirect('accounts:user_list')
 
 
-class UserDeleteView(DeleteView):
-    model = DefUser
-    template_name = 'user_crud/user_delete.html'
+def user_delete(request, pk):
+    user = get_object_or_404(DefUser, pk=pk)
+    user.delete()
 
-    def get_success_url(self):
-        return reverse('accounts:user_list')
+    return redirect(reverse_lazy('accounts:user_list'))

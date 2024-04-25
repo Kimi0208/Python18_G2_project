@@ -43,10 +43,11 @@ class CompanyUpdateView(UpdateView):
             return redirect(reverse_lazy('secretary:companies_list_view'))
 
 
-class CompanyDeleteView(DeleteView):
-    model = CompaniesList
-    template_name = 'company_delete.html'
-    success_url = reverse_lazy('secretary:companies_list_view')
+def company_delete(request, pk):
+    company = get_object_or_404(CompaniesList, pk=pk)
+    company.delete()
+
+    return redirect(reverse_lazy('secretary:companies_list_view'))
 
 
 class ContractsCreateView(CreateView):
@@ -109,8 +110,6 @@ def contract_delete(request, pk):
     return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
-
-
 class InMailsListView(ListView):
     model = InMails
     context_object_name = 'in_mails'
@@ -123,13 +122,6 @@ class InMailsCreateView(CreateView):
     template_name = 'in_mails_create.html'
     success_url = reverse_lazy('secretary:in_mails_list_view')
 
-    # def form_valid(self, form):
-    #     in_mails = form.save(commit=False)
-    #     if 'attachment' in self.request.FILES:
-    #         in_mails.attachment = self.request.FILES['attachment']
-    #     in_mails.save()
-    #     return redirect(reverse_lazy('secretary:in_mails_list_view'))
-
 
 class InMailsUpdateView(UpdateView):
     model = InMails
@@ -138,10 +130,10 @@ class InMailsUpdateView(UpdateView):
     success_url = reverse_lazy('secretary:in_mails_list_view')
 
 
-class InMailsDeleteView(DeleteView):
-    model = InMails
-    template_name = 'in_mails_delete.html'
-    success_url = reverse_lazy('secretary:in_mails_list_view')
+def in_mail_delete(request, pk):
+    in_mails = get_object_or_404(InMails, pk=pk)
+    in_mails.delete()
+    return redirect(reverse_lazy('secretary:in_mails_list_view'))
 
 
 class OutMailsListView(ListView):
@@ -156,13 +148,6 @@ class OutMailsCreateView(CreateView):
     template_name = 'out_mails_create.html'
     success_url = reverse_lazy('secretary:out_mails_list_view')
 
-    # def form_valid(self, form):
-    #     out_mails = form.save(commit=False)
-    #     if 'attachment' in self.request.FILES:
-    #         out_mails.attachment = self.request.FILES['attachment']
-    #     out_mails.save()
-    #     return redirect(reverse_lazy('secretary:out_mails_list_view'))
-
 
 class OutMailsUpdateView(UpdateView):
     model = OutMails
@@ -171,7 +156,7 @@ class OutMailsUpdateView(UpdateView):
     success_url = reverse_lazy('secretary:out_mails_list_view')
 
 
-class OutMailsDeleteView(DeleteView):
-    model = OutMails
-    template_name = 'out_mails_delete.html'
-    success_url = reverse_lazy('secretary:out_mails_list_view')
+def out_mail_delete(request, pk):
+    out_mail = get_object_or_404(OutMails, pk=pk)
+    out_mail.delete()
+    return redirect(reverse_lazy('secretary:out_mails_list_view'))

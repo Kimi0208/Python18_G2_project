@@ -1,10 +1,8 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
-from accounts.views.views import UserCreateView, UserUpdateView, UserDeleteView
-
-from accounts.views.views import UserDetailView, UserChangeView, UserPasswordChangeView, UserListView
-from accounts.views.department_views import DepartmentListView, DepartmentCreateView, DepartmentUpdateView, \
-    DepartmentDeleteView
+from accounts.views import (UserCreateView, UserDetailView, UserUpdateView, user_delete, UserChangeView,
+                            UserPasswordChangeView, UserListView, DepartmentListView, DepartmentCreateView,
+                            DepartmentUpdateView, department_delete)
 
 app_name = 'accounts'
 urlpatterns = [
@@ -16,9 +14,9 @@ urlpatterns = [
     path('user_list/', UserListView.as_view(), name='user_list'),
     path('add/', UserCreateView.as_view(), name='add_user'),
     path('<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
-    path('<int:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
+    path('<int:pk>/delete/', user_delete, name='user_delete'),
     path('group_list/', DepartmentListView.as_view(), name='department_list'),
     path('create/department', DepartmentCreateView.as_view(), name='create_department'),
     path('<int:pk>/update_department/', DepartmentUpdateView.as_view(), name='update_department'),
-    path('<int:pk>/delete_department/', DepartmentDeleteView.as_view(), name='delete_department'),
+    path('<int:pk>/delete_department/', department_delete, name='delete_department'),
 ]

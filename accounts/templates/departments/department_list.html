@@ -32,10 +32,29 @@
                         <tr>
                             <td>{{ department.name }}</td>
                             <td style="text-align: center;">{{ department.num_users }}</td>
-                            <td><a href="{% url 'accounts:update_department' department.id %}"><i
+                            <td>
+                                <a href="{% url 'accounts:update_department' department.id %}"><i
                                     class="fas fa-fw fa-edit"></i></a>
-                                <a href="{% url 'accounts:delete_department' department.id %}"><i
-                                        class="fas fa-fw fa-trash-alt"></i></a>
+                                <i class="fas fa-fw fa-trash-alt" type="button" data-toggle="modal" data-target="#departmentDeleteModal{{ department.pk }}" style="color: #4e73df"></i>
+                                <div class="modal fade" id="departmentDeleteModal{{ department.pk }}" tabindex="-1" aria-labelledby="departmentDeleteModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="departmentDeleteModalLabel{{ department.pk }}">Подтвердите действия</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                        </button>
+                                      </div>
+                                      <div class="modal-body">
+                                        Вы уверены что хотите удалить отдел?
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                        <a href="{% url 'accounts:delete_department' pk=department.pk %}"><button type="button" class="btn btn-danger">Да</button></a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}
