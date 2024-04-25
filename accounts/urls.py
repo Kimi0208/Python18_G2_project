@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 from accounts.views import (UserCreateView, UserDetailView, UserUpdateView, user_delete, UserChangeView,
                             UserPasswordChangeView, UserListView, DepartmentListView, DepartmentCreateView,
-                            DepartmentUpdateView, DepartmentDeleteView)
+                            DepartmentUpdateView, department_delete)
 
 app_name = 'accounts'
 urlpatterns = [
@@ -18,5 +18,5 @@ urlpatterns = [
     path('group_list/', DepartmentListView.as_view(), name='department_list'),
     path('create/department', DepartmentCreateView.as_view(), name='create_department'),
     path('<int:pk>/update_department/', DepartmentUpdateView.as_view(), name='update_department'),
-    path('<int:pk>/delete_department/', DepartmentDeleteView.as_view(), name='delete_department'),
+    path('<int:pk>/delete_department/', department_delete, name='delete_department'),
 ]

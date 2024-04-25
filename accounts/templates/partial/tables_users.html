@@ -19,7 +19,8 @@
                     <td>{{ user.position.name }}</td>
                     <td>{{ user.position.department.name }}</td>
                     <td>{{ user.date_joined |date:"d-m-Y H:i" }}</td>
-                    <td><a href="{% url 'accounts:user_update' user.id %}"><i class="fas fa-fw fa-edit"></i></a>
+                    <td>
+                        <a href="{% url 'accounts:user_update' user.id %}"><i class="fas fa-fw fa-edit"></i></a>
                         <i class="fas fa-fw fa-trash-alt" type="button" data-toggle="modal" data-target="#userDeleteModal{{ user.pk }}" style="color: #4e73df"></i>
                             <div class="modal fade" id="userDeleteModal{{ user.pk }}" tabindex="-1" aria-labelledby="userDeleteModalLabel" aria-hidden="true">
                               <div class="modal-dialog">
