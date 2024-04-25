@@ -29,14 +29,14 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ in_mail.pk }}">
                                 <a class="dropdown-item"
                                    href="{% url 'secretary:in_mails_update_view' pk=in_mail.pk %}">Изменить</a>
-                                <span class="dropdown-item" type="button" data-toggle="modal" data-target="#inmailDeleteModal{{ in_mail.pk }}">Удалить</span>
+                                <span class="dropdown-item" type="button" data-toggle="modal" data-target="#inMailDeleteModal{{ in_mail.pk }}">Удалить</span>
                             </div>
                         </div>
-                        <div class="modal fade" id="inmailDeleteModal{{ in_mail.pk }}" tabindex="-1" aria-labelledby="inmailDeleteModalLabel{{ in_mail.pk }}" aria-hidden="true">
+                        <div class="modal fade" id="inMailDeleteModal{{ in_mail.pk }}" tabindex="-1" aria-labelledby="inMailDeleteModalLabel{{ in_mail.pk }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="inmailDeleteModalLabel{{ in_mail.pk }}">Подтвердите действия</h5>
+                                        <h5 class="modal-title" id="inMailDeleteModalLabel{{ in_mail.pk }}">Подтвердите действия</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
