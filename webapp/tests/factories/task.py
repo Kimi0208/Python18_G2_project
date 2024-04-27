@@ -12,14 +12,14 @@ class TypeFactory(DjangoModelFactory):
 
 
 class StatusFactory(DjangoModelFactory):
-    name = factory.Sequence(lambda n: f"Status {n}")
+    name = factory.Sequence(lambda n: f"N:{n}")
 
     class Meta:
         model = Status
 
 
 class PriorityFactory(DjangoModelFactory):
-    name = factory.Sequence(lambda n: f"Priority {n}")
+    name = factory.Sequence(lambda n: f"P:{n}")
 
     class Meta:
         model = Priority

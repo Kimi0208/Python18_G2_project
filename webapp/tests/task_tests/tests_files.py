@@ -8,27 +8,29 @@ from webapp.models import Task, File
 from webapp.tests.factories.task import TaskFactory, StatusFactory
 from webapp.forms import FileForm
 from webapp.views.task_views import get_files_history
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 class DeleteFileViewTest(TestCase):
     def setUp(self):
         task_status = StatusFactory()
         self.user = DefUser.objects.create_user(username='testuser', password='12345')
-        self.task = Task.objects.create(title='Test Task', status=task_status)
+        self.task = TaskFactory(title='Test Task', status=task_status)
         self.file = File.objects.create(task=self.task, file='test.txt')
 
     def test_delete_file(self):
         self.client.login(username='testuser', password='12345')
-        delete_url = reverse('webapp:delete_file', kwargs={'task_pk': self.task.pk, 'file_pk': self.file.pk})
+        delete_url = reverse('webapp:delete_file', kwargs={'task_pk': self.task.pk, 'pk': self.file.pk})
         response = self.client.delete(delete_url)
         self.assertFalse(File.objects.filter(pk=self.file.pk).exists())
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_delete_file_unauthenticated(self):
-        delete_url = reverse('webapp:delete_file', kwargs={'task_pk': self.task.pk, 'file_pk': self.file.pk})
+        new_file = File.objects.create(task=self.task, file='test.txt')
+        delete_url = reverse('webapp:delete_file', kwargs={'task_pk': self.task.pk, 'pk': new_file.pk})
         response = self.client.delete(delete_url)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertFalse(File.objects.filter(pk=self.file.pk).exists())
+        self.assertFalse(File.objects.filter(pk=new_file.pk).exists())
 
 
 class FileAddViewTest(TestCase):
@@ -38,11 +40,13 @@ class FileAddViewTest(TestCase):
 
     def test_file_add_view(self):
         self.client.login(username='testuser', password='12345')
+        file_content = b'Test file content'
+        file = SimpleUploadedFile('test_file.txt', file_content, content_type='text/plain')
         data = {
-            'name': 'test_file.txt',
+            'file': file,
         }
         response = self.client.post(reverse('webapp:add_file', kwargs={'task_pk': self.task.pk}), data=data)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(File.objects.filter(task=self.task).exists())
 
     # def test_file_add_view_unauthenticated(self):

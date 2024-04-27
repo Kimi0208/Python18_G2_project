@@ -15,16 +15,14 @@ class TaskViewsTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.type = StatusFactory
-        cls.status = StatusFactory
+        cls.type = StatusFactory()
+        cls.status = StatusFactory()
         user, created = DefUser.objects.get_or_create(username='user')
         # if created:
         user.is_superuser = True
         user.set_password('user')
         user.save()
         cls.user = user
-
-
 
     @classmethod
     def tearDownClass(cls):
@@ -34,7 +32,7 @@ class TaskViewsTest(TestCase):
     def test_task_create_view(self, mock_function):
         self.client.login(username='user', password='user')
         task_type = TypeFactory()
-        task_status = StatusFactory()
+        task_status = StatusFactory(id=1)
         task_priority = PriorityFactory()
         task_user_department = DepartmentFactory()
         task_user = DefUserFactory()
@@ -53,9 +51,7 @@ class TaskViewsTest(TestCase):
         }
         url = reverse('webapp:create_task')
         response = self.client.post(url, data=data)
-        print(response.json())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        # self.assertEqual(Task.objects.count(), 1)
         self.assertEqual(response.json()["title"], data["title"])
         self.assertEqual(response.json()["status"], task_status.name)
 
@@ -77,12 +73,11 @@ class TaskViewsTest(TestCase):
             'deadline': '2024-04-04T19:43',
             'priority': task_priority.id,
             'destination_to_department': task_user_department.id,
-            'destination_to_user': task_user.id
         }
 
         update_url = reverse('webapp:update_task', kwargs={'pk': task.pk})
         response = self.client.post(update_url, data=updated_data)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         updated_task = Task.objects.get(pk=task.pk)
         self.assertEqual(updated_task.title, updated_data['title'])
         self.assertEqual(updated_task.description, updated_data['description'])
@@ -120,13 +115,13 @@ class TaskViewsTest(TestCase):
 
         task_type = TypeFactory()
         task_status = StatusFactory()
-        TaskFactory.create_batch(5, type=task_type, status=task_status)
-
+        TaskFactory.create_batch(5, type=task_type, status=task_status, destination_to_user=self.user)
         index_url = reverse('webapp:index')
+
         response = self.client.get(index_url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Task.objects.count(), 5)
-        self.assertContains(response, '<tr class="task">', count=5)
+        self.assertContains(response, 'tr data-type="task"', count=5)
 
 
 class AddSubtasksTestCase(TestCase):

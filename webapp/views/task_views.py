@@ -535,6 +535,9 @@ class FileDeleteView(PermissionRequiredMixin, DeleteView):
         self.object.delete()
         return JsonResponse({'file_id': file_id})
 
+    def get_success_url(self):
+        return reverse('webapp:index')
+
 
 def check_new_task(request):
     tasks = Task.objects.filter(destination_to_user=request.user.id, status_id=1)
