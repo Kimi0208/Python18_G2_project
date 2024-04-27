@@ -46,38 +46,50 @@
         {% include 'partial/tables.html' %}
     </div>
     <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
-        <div style="display: flex; justify-content: space-between;" class="bg-primary">
-            <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
-            </button>
-            <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
-            </button>
-            <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Добавить
+{#        {% if request.user.is_authenticated %}#}
+            <div style="display: flex; justify-content: space-between;" class="bg-primary">
+                {% if request.user.is_authenticated %}
+                    <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
+                    </button>
+                {% endif %}
+                <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
-                    </button>
-                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
-                    <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий
-                    </button>
-                    <div class="dropleft" id="checklist_dropdown">
-                        <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button"
-                                aria-haspopup="true" aria-expanded="false">
-                            Чеклист
+                <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
+                {% if request.user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Добавить
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
-                            {% for checklist in checklists %}
-                                <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}"
-                                        data-add_checklist="">{{ checklist.name }}</button>
-                            {% endfor %}
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% if perms.webapp.add_task %}
+                                <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
+                                </button>
+                            {% endif %}
+                            {% if perms.webapp.add_file %}
+                                <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
+                            {% endif %}
+                            {% if perms.webapp.add_comment %}
+                                <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий
+                                </button>
+                            {% endif %}
+                            <div class="dropleft" id="checklist_dropdown">
+                                <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    Чеклист
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
+                                    {% for checklist in checklists %}
+                                        <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}"
+                                                data-add_checklist="">{{ checklist.name }}</button>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
-        </div>
+{#        {% endif %}#}
         <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
