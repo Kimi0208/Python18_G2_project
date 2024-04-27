@@ -1,4 +1,7 @@
 from unittest import mock
+
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from http import HTTPStatus
 from webapp.models import Task, Type, Status, Checklist
@@ -15,6 +18,9 @@ class TaskViewsTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
+        content_type = ContentType.objects.get(model="file")
+        permission, created = Permission.objects.get_or_create(codename='change_task', content_type=content_type)
+        task_status = StatusFactory()
         cls.type = StatusFactory()
         cls.status = StatusFactory()
         user, created = DefUser.objects.get_or_create(username='user')
@@ -22,7 +28,9 @@ class TaskViewsTest(TestCase):
         user.is_superuser = True
         user.set_password('user')
         user.save()
+        user.user_permissions.add(permission)
         cls.user = user
+
 
     @classmethod
     def tearDownClass(cls):
@@ -44,7 +52,7 @@ class TaskViewsTest(TestCase):
             'status': task_status.id,
             'start_date': '2024-04-04T19:35:02',
             'done_at': '2024-04-04 19:35:02',
-            'deadline': '2024-04-04T19:43',
+            'deadline': '2025-04-04T19:43',
             'priority': task_priority.id,
             # 'destination_to_department': task_user_department.id,
             'destination_to_user': task_user.id
@@ -70,7 +78,7 @@ class TaskViewsTest(TestCase):
             'status': task_status.id,
             'start_date': '2024-04-04T19:35:02',
             'done_at': '2024-04-04 19:35:02',
-            'deadline': '2024-04-04T19:43',
+            'deadline': '2025-04-04T19:43',
             'priority': task_priority.id,
             'destination_to_department': task_user_department.id,
         }

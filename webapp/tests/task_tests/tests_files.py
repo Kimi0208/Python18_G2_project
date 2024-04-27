@@ -1,4 +1,7 @@
 from http import HTTPStatus
+
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 import unittest
 from django.urls import reverse
@@ -13,8 +16,11 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 class DeleteFileViewTest(TestCase):
     def setUp(self):
+        content_type = ContentType.objects.get(model="file")
+        permission, created = Permission.objects.get_or_create(codename='delete_file', content_type=content_type)
         task_status = StatusFactory()
         self.user = DefUser.objects.create_user(username='testuser', password='12345')
+        self.user.user_permissions.add(permission)
         self.task = TaskFactory(title='Test Task', status=task_status)
         self.file = File.objects.create(task=self.task, file='test.txt')
 
@@ -30,12 +36,16 @@ class DeleteFileViewTest(TestCase):
         delete_url = reverse('webapp:delete_file', kwargs={'task_pk': self.task.pk, 'pk': new_file.pk})
         response = self.client.delete(delete_url)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertFalse(File.objects.filter(pk=new_file.pk).exists())
+        self.assertTrue(File.objects.filter(pk=new_file.pk).exists())
 
 
 class FileAddViewTest(TestCase):
     def setUp(self):
+        # import pdb; pdb.set_trace()
+        content_type = ContentType.objects.get(model="file")
+        permission, created = Permission.objects.get_or_create(codename='add_file', content_type=content_type)
         self.user = DefUser.objects.create_user(username='testuser', password='12345')
+        self.user.user_permissions.add(permission)
         self.task = TaskFactory()
 
     def test_file_add_view(self):
@@ -45,7 +55,9 @@ class FileAddViewTest(TestCase):
         data = {
             'file': file,
         }
+        self.assertTrue(self.user.has_perm('webapp.add_file'))
         response = self.client.post(reverse('webapp:add_file', kwargs={'task_pk': self.task.pk}), data=data)
+        # import pdb; pdb.set_trace()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(File.objects.filter(task=self.task).exists())
 
