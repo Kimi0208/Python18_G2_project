@@ -17,35 +17,30 @@
             <tbody id="table_body">
             {% for contract  in contracts %}
                 <tr>
-                    <td>
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                    style="padding: 0; border: none; font-size: 14px">
-                                {{ contract.document_auto_number }}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item"
-                                   href="{% url 'secretary:contracts_update_view' pk=contract.pk %}">Изменить</a>
-                                <a class="dropdown-item"
-                                   href="{% url 'secretary:contracts_delete_view' pk=contract.pk %}">Удалить</a>
-                            </div>
-                        </div>
-
-                    </td>
+                    <td>{{ contract.document_auto_number }}</td>
                     <td>{{ contract.company.company_name }}</td>
                     <td>{{ contract.input_contract_number }}</td>
                     <td>{{ contract.description }}</td>
                     <td>{{ contract.consultion_date }}</td>
                     <td>{{ contract.responsible_employee }}</td>
                     <td>{{ contract.contract_location }}</td>
-                    <td>{% if contract.attachments.all %}
-                        {% for attachment in contract.attachments.all %}
-                            <a href={{ attachment.file.url }} download>{{ attachment | cut:'uploads/contracts/' }}</a>
-                        {% endfor %}
-                    {% else %}
-                        <p>Нет вложений</p>
-                    {% endif %}
+                    <td>
+                        {% if contract.attachments.all %}
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        style="padding: 0; border: none; font-size: 14px">
+                                    {{ contract.attachments.all.count }}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
+                                    {% for attachment in contract.attachments.all %}
+                                        <a class="dropdown-item" href="{{ attachment.file.url }}" download>{{ attachment | cut:'uploads/contracts/' }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <p>Нет вложений</p>
+                        {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'secretary:contracts_update_view' pk=contract.pk%}"><i class="fas fa-fw fa-edit"></i></a>
