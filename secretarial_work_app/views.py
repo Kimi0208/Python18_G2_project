@@ -100,6 +100,12 @@ class ContractsUpdateView(UpdateView):
         return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
+def attachment_delete(request, contract_id, attachment_id):
+    attachment = get_object_or_404(Attachment, pk=attachment_id)
+    attachment.delete()
+    return redirect("secretary:contracts_update_view", pk=contract_id)
+
+
 def contract_delete(request, pk):
     contract = get_object_or_404(ContractRegistry, pk=pk)
     if contract.attachments:
