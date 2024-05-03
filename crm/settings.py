@@ -164,3 +164,7 @@ LOGOUT_REDIRECT_URL = 'webapp:index'
 CELERY_BROKER_URL = "redis://localhost:6379"
 # CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
+SMTP_SERVER = 'mail.elcat.kg'
+SMTP_PORT = 465
+EMAIL_USER = 'test@mail.kg'
+EMAIL_PASSWORD = 'test1234'
