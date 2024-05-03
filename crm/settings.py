@@ -168,3 +168,7 @@ REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
 CELERY_BROKER_URL = f"redis://:{REDIS_PASSWORD}@redis:6379"
 CELERY_RESULT_BACKEND = f"redis://:{REDIS_PASSWORD}@redis:6379"
 
+SMTP_SERVER = os.environ.get('SMTP_SERVER')
+SMTP_PORT = os.environ.get('SMTP_PORT')
+EMAIL_USER = os.environ.get('EMAIL_USER')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')

@@ -220,10 +220,6 @@ def get_subtasks(object):
     return subtasks_list
 
 
-smtp_server = "mail.elcat.kg"
-smtp_port = 465
-
-
 def get_comments(task_pk, user_id):
     comments = Comment.objects.filter(task=task_pk)
     comments_list = []
@@ -311,8 +307,7 @@ class TaskCreateView(CreateView):
             subject = f'CRM: Новая задача #{self.object.pk}  {self.object.title}'
             message = self.object.description
             try:
-                send_email_notification(subject, message, self.object.author.email, self.object.destination_to_user.email,
-                                        smtp_server, smtp_port, self.object.author.email, self.object.author.decrypt_email_password())
+                send_email_notification(subject, message, self.object.destination_to_user.email)
             except Exception as e:
                 print(f"Ошибка при отправке электронного уведомления: {e}")
 
@@ -357,9 +352,7 @@ class TaskUpdateView(UpdateView):
                 subject = f'CRM: Задача #{self.object.id} выполнена {self.object.title}'
                 message = self.object.description
                 try:
-                    send_email_notification(subject, message, self.request.user.email, self.object.author.email,
-                                            smtp_server, smtp_port, self.request.user.email,
-                                            self.request.user.decrypt_email_password())
+                    send_email_notification(subject, message, self.object.author.email)
                 except Exception as e:
                     print(f"Ошибка при отправке электронного уведомления: {e}")
 
@@ -404,8 +397,7 @@ def add_subtasks(request, checklist_pk, task_pk):
         subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
         message = task.description
         try:
-            send_email_notification(subject, message, task.author.email, user.email,
-                                    smtp_server, smtp_port, task.author.email, task.author.decrypt_email_password())
+            send_email_notification(subject, message, user.email)
         except Exception as e:
             print(f"Ошибка при отправке электронного уведомления: {e}")
 
