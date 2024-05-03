@@ -16,7 +16,7 @@ urlpatterns = [
     path('<int:pk>/update/', UserUpdateView.as_view(), name='user_update'),
     path('<int:pk>/delete/', user_delete, name='user_delete'),
     path('group_list/', DepartmentListView.as_view(), name='department_list'),
-    path('create/department', DepartmentCreateView.as_view(), name='create_department'),
+    path('create/department/', DepartmentCreateView.as_view(), name='create_department'),
     path('<int:pk>/update_department/', DepartmentUpdateView.as_view(), name='update_department'),
     path('<int:pk>/delete_department/', department_delete, name='delete_department'),
 ]

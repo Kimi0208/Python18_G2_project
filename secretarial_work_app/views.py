@@ -9,13 +9,7 @@ class CompanyCreateView(CreateView):
     model = CompaniesList
     form_class = CompaniesListForm
     template_name = 'company_create.html'
-
-    def form_valid(self, form):
-        company = form.save(commit=False)
-        if 'attachment' in self.request.FILES:
-            company.contract_with_company = self.request.FILES['attachment']
-        company.save()
-        return redirect(reverse_lazy('secretary:companies_list_view'))
+    success_url = reverse_lazy('secretary:companies_list_view')
 
 
 class CompanyListView(ListView):
