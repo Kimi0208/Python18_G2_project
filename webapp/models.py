@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db import models
 from simple_history.models import HistoricalRecords
-from django.utils.translation import gettext_lazy as _
 
 
 class Task(models.Model):
@@ -69,7 +68,7 @@ class Priority(models.Model):
 
 
 class File(models.Model):
-    file = models.FileField(verbose_name="Файлы", upload_to='uploads/user_docs', null=True, blank=True)
+    file = models.FileField(verbose_name="Файл", upload_to='uploads/user_docs', null=True, blank=True)
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)

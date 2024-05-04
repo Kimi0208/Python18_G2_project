@@ -9,13 +9,7 @@ class CompanyCreateView(CreateView):
     model = CompaniesList
     form_class = CompaniesListForm
     template_name = 'company_create.html'
-
-    def form_valid(self, form):
-        company = form.save(commit=False)
-        if 'attachment' in self.request.FILES:
-            company.contract_with_company = self.request.FILES['attachment']
-        company.save()
-        return redirect(reverse_lazy('secretary:companies_list_view'))
+    success_url = reverse_lazy('secretary:companies_list_view')
 
 
 class CompanyListView(ListView):
@@ -34,13 +28,6 @@ class CompanyUpdateView(UpdateView):
     form_class = CompaniesListForm
     template_name = 'company_update.html'
     success_url = reverse_lazy('secretary:companies_list_view')
-
-    def form_valid(self, form):
-        company = form.save(commit=False)
-        if 'attachment' in self.request.FILES:
-            company.contract_with_company = self.request.FILES['attachment']
-            company.save()
-            return redirect(reverse_lazy('secretary:companies_list_view'))
 
 
 def company_delete(request, pk):
@@ -98,6 +85,12 @@ class ContractsUpdateView(UpdateView):
             contract.attachments.add(attachment)
 
         return redirect(reverse_lazy('secretary:contracts_list_view'))
+
+
+def attachment_delete(request, contract_id, attachment_id):
+    attachment = get_object_or_404(Attachment, pk=attachment_id)
+    attachment.delete()
+    return redirect("secretary:contracts_update_view", pk=contract_id)
 
 
 def contract_delete(request, pk):

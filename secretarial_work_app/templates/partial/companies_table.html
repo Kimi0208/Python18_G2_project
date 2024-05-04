@@ -22,7 +22,7 @@
                         {% if company.attachment %}
                             <a href={{ company.attachment.url }} download>{{ company.attachment | cut:'uploads/companies/' }}</a>
                         {% else %}
-                            <p>Нет вложений</p>
+                            <span>Нет вложений</span>
                         {% endif %}
                     </td>
                     <td>
@@ -34,7 +34,7 @@
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <div class="modal-header">
-                                <h5 class="modal-title" id="companyDeleteModalLabel{{ company.pk }}">Подтвердите действия</h5>
+                                <h5 class="modal-title" id="companyDeleteModalLabel{{ company.pk }}">Подтвердите действие</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>
                                 </button>

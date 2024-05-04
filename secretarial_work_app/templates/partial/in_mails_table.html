@@ -36,7 +36,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="inMailDeleteModalLabel{{ in_mail.pk }}">Подтвердите действия</h5>
+                                        <h5 class="modal-title" id="inMailDeleteModalLabel{{ in_mail.pk }}">Подтвердите действие</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -65,7 +65,7 @@
                     <td>{% if in_mail.attachment %}
                         <a href={{ in_mail.attachment.url }} download>{{ in_mail.attachment | cut:'uploads/in_mails/' }}</a>
                     {% else %}
-                        <p>Нет вложений</p>
+                        <span>Нет вложений</span>
                     {% endif %}
                     </td>
                 </tr>
