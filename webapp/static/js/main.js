@@ -399,11 +399,12 @@ async function onGetDetailTask(e) {
     let element = e.currentTarget;
     let detail_attribute = element.dataset['detail_task'];
     let detail_tasks_buttons = document.getElementsByClassName('detail-btn_task')
-    for (let button of detail_tasks_buttons) {
-        if (button.style.background === 'lightgrey') {
-            button.style.background = ''
+    let rows = dataTable.rows().nodes()
+    rows.each(function (row){
+        if (row.style.background === 'lightgrey'){
+            row.style.background = ''
         }
-    }
+    })
     element.style.background = 'lightgrey'
     let task_detail_info_element = document.getElementById('task-detail-info');
     task_detail_info_element.style.display = 'block';
@@ -796,7 +797,6 @@ function onLoad() {
 
 
 function showLoadingProcess() {
-    console.log(123)
     let loader = document.getElementById('overlay')
     loader.style.display='flex'
 }
@@ -808,26 +808,3 @@ function hideLoadingProcess() {
 
 
 window.addEventListener('load', onLoad);
-// function onLoad(e) {
-//     e.preventDefault();
-//     let action_buttons = document.getElementsByClassName('action-btn_task')
-//     console.log(action_buttons)
-//     for (let action_button of action_buttons) {
-//         action_button.addEventListener('click', onClick)
-//     }
-// }
-
-
-// window.addEventListener('load', onLoad);
-
-// function showModal(objectId) {
-//     // 1. API
-//     // 1.1 Get task JSON
-//     // 1.2 Update task JSON
-//     $('#modal-title').text(`Object id: ${objectId}`);
-//     $('#taskModal').modal('show')
-// }
-
-// function showCreateModal() {
-//     $('#taskCreateModal').modal('show')
-// }
