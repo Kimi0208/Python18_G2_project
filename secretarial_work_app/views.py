@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from secretarial_work_app.forms import CompaniesListForm, ContractsForm, InMailsForm, OutMailsForm
@@ -5,17 +6,20 @@ from secretarial_work_app.models import CompaniesList, ContractRegistry, InMails
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 
-class CompanyCreateView(CreateView):
+class CompanyCreateView(PermissionRequiredMixin, CreateView):
     model = CompaniesList
     form_class = CompaniesListForm
     template_name = 'company_create.html'
     success_url = reverse_lazy('secretary:companies_list_view')
+    permission_required = 'secretarial_work_app.add_companieslist'
 
 
-class CompanyListView(ListView):
+class CompanyListView(PermissionRequiredMixin, ListView):
     model = CompaniesList
     context_object_name = 'companies'
     template_name = 'companies_list.html'
+    permission_required = 'secretarial_work_app.view_companieslist'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,11 +27,12 @@ class CompanyListView(ListView):
         return context
 
 
-class CompanyUpdateView(UpdateView):
+class CompanyUpdateView(PermissionRequiredMixin, UpdateView):
     model = CompaniesList
     form_class = CompaniesListForm
     template_name = 'company_update.html'
     success_url = reverse_lazy('secretary:companies_list_view')
+    permission_required = 'secretarial_work_app.change_companieslist'
 
 
 def company_delete(request, pk):
@@ -37,11 +42,12 @@ def company_delete(request, pk):
     return redirect(reverse_lazy('secretary:companies_list_view'))
 
 
-class ContractsCreateView(CreateView):
+class ContractsCreateView(PermissionRequiredMixin, CreateView):
     model = ContractRegistry
     form_class = ContractsForm
     template_name = 'contracts_create.html'
     success_url = reverse_lazy('secretary:contracts_list_view')
+    permission_required = 'secretarial_work_app.add_contractregistry'
 
     def form_valid(self, form):
         contract = form.save()
@@ -56,10 +62,11 @@ class ContractsCreateView(CreateView):
         return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
-class ContractsListView(ListView):
+class ContractsListView(PermissionRequiredMixin, ListView):
     model = ContractRegistry
     context_object_name = 'contracts'
     template_name = 'contracts_list.html'
+    permission_required = 'secretarial_work_app.view_companieslist'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,12 +74,13 @@ class ContractsListView(ListView):
         return context
 
 
-class ContractsUpdateView(UpdateView):
+class ContractsUpdateView(PermissionRequiredMixin, UpdateView):
     model = ContractRegistry
     context_object_name = 'contracts'
     template_name = 'contracts_update.html'
     form_class = ContractsForm
     success_url = reverse_lazy('secretary:contracts_list_view')
+    permission_required = 'secretarial_work_app.change_contractregistry'
 
     def form_valid(self, form):
         contract = form.save()
@@ -103,24 +111,27 @@ def contract_delete(request, pk):
     return redirect(reverse_lazy('secretary:contracts_list_view'))
 
 
-class InMailsListView(ListView):
+class InMailsListView(PermissionRequiredMixin, ListView):
     model = InMails
     context_object_name = 'in_mails'
     template_name = 'in_mails_list.html'
+    permission_required = 'secretarial_work_app.view_inmails'
 
 
-class InMailsCreateView(CreateView):
+class InMailsCreateView(PermissionRequiredMixin, CreateView):
     model = InMails
     form_class = InMailsForm
     template_name = 'in_mails_create.html'
     success_url = reverse_lazy('secretary:in_mails_list_view')
+    permission_required = 'secretarial_work_app.add_inmails'
 
 
-class InMailsUpdateView(UpdateView):
+class InMailsUpdateView(PermissionRequiredMixin, UpdateView):
     model = InMails
     form_class = InMailsForm
     template_name = 'in_mails_update.html'
     success_url = reverse_lazy('secretary:in_mails_list_view')
+    permission_required = 'secretarial_work_app.change_inmails'
 
 
 def in_mail_delete(request, pk):
@@ -129,24 +140,27 @@ def in_mail_delete(request, pk):
     return redirect(reverse_lazy('secretary:in_mails_list_view'))
 
 
-class OutMailsListView(ListView):
+class OutMailsListView(PermissionRequiredMixin, ListView):
     model = OutMails
     context_object_name = 'out_mails'
     template_name = 'out_mails_list.html'
+    permission_required = 'secretarial_work_app.view_outmails'
 
 
-class OutMailsCreateView(CreateView):
+class OutMailsCreateView(PermissionRequiredMixin, CreateView):
     model = OutMails
     form_class = OutMailsForm
     template_name = 'out_mails_create.html'
     success_url = reverse_lazy('secretary:out_mails_list_view')
+    permission_required = 'secretarial_work_app.add_outmails'
 
 
-class OutMailsUpdateView(UpdateView):
+class OutMailsUpdateView(PermissionRequiredMixin, UpdateView):
     model = OutMails
     form_class = OutMailsForm
     template_name = 'out_mails_update.html'
     success_url = reverse_lazy('secretary:out_mails_list_view')
+    permission_required = 'secretarial_work_app.change_outmails'
 
 
 def out_mail_delete(request, pk):
