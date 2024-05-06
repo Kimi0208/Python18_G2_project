@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm

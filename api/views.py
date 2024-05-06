@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from webapp.models import Task
 from api.serializers import TaskSerializer
 
