@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}Обновить запись{% endblock %}
+{% block content %}
+    <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+            <p class="form-error">{{ error }}</p>
+        {% endfor %}
+        {% for field in form %}
+            <p><label for="{{ field.id_for_label }}">{{ field.label }}</label></p>
+            {% for error in field.errors %}
+                <p class="form-error">{{ error }}</p>
+            {% endfor %}
+            <p>{{ field }}</p>
+        {% endfor %}
+
+        {% if contracts.attachments.all %}
+            <h3>Текущие вложения:</h3>
+            <ul>
+                {% for attachment in contracts.attachments.all %}
+                    <li>{{ attachment.file.name }}
+                        <i class="fas fa-fw fa-trash-alt" type="button" data-toggle="modal"
+                           data-target="#attachmentDeleteModal{{ attachment.pk }}" style="color: #4e73df"></i>
+                        <div class="modal fade" id="attachmentDeleteModal{{ attachment.pk }}" tabindex="-1"
+                             aria-labelledby="attachmentDeleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="attachmentDeleteModalLabel{{ attachment.pk }}">
+                                            Подтвердите действия</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Вы уверены что хотите удалить вложение?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть
+                                        </button>
+                                        <a href="{% url 'secretary:attachment_delete' contract_id=contracts.pk attachment_id=attachment.pk %}">
+                                            <button type="button" class="btn btn-danger">Да</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary" id="send_data" data-task_action="POST">Обновить запись</button>
+    </form>
+{% endblock %}

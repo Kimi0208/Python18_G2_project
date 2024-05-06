@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'simple_history',
     'cryptography',
+    'secretarial_work_app',
 ]
 
 REST_FRAMEWORK = {
@@ -101,7 +102,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'crm_db',
         'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -163,3 +164,7 @@ LOGOUT_REDIRECT_URL = 'webapp:index'
 CELERY_BROKER_URL = "redis://localhost:6379"
 # CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
+SMTP_SERVER = 'mail.elcat.kg'
+SMTP_PORT = 465
+EMAIL_USER = 'test@mail.kg'
+EMAIL_PASSWORD = 'test1234'

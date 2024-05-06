@@ -1,16 +1,13 @@
 {% extends '_base.html' %}
 {% load static %}
-{% load task_form %}
 
 {% block links %}
     {% if request.user.is_authenticated %}
         {% if perms.webapp.add_task %}
             <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task"
                     data-action_task="{% url 'webapp:create_task' %}">
-                <i class="fas fa-download fa-sm text-white-50"></i> Создать задачу
+                <i class="fa-solid fa-plus"></i> Создать задачу
             </button>
-<!--             <a href="#" onclick="showCreateModal()" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                <i class="fas fa-download fa-sm text-white-50"></i>  Создать задачу </a> -->
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -18,64 +15,69 @@
 {% endblock %}
 
 {% block content %}
-    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px" class="list-group"; id="user_dep_list_area">
-        <table class="table table-hover">
-          <thead>
+    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;"
+         class="list-group" ; id="user_dep_list_area">
+        <table class="table table-hover" style="margin-bottom: 0px">
+            <thead>
             <tr>
-              <th scope="col">Отделы и сотрудники</th>
+                <th scope="col">Отделы и сотрудники</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {% for department in departments %}
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}" data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk%}">{{ department.name }}</td>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}"
+                        data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk %}">{{ department.name }}</td>
                 </tr>
             {% endfor %}
             {% for user in users %}
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}" data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
+                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                        data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
                 </tr>
             {% endfor %}
-
-          </tbody>
+            </tbody>
         </table>
     </div>
-   
-    <div id="main_area" style="width:60%">
 
-         {% include 'partial/tables.html' %}
+    <div id="main_area" style="width:60%">
+        {% include 'partial/tables.html' %}
     </div>
+
     <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
-        <div style="display: flex; justify-content: space-between;" class="bg-primary" >
-            <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать</button>
-    {#        <button class="action-btn_task btn btn-primary" data-action_task="" id="add_file">Прикрепить файл</button>#}
-    {#        <button class="action-btn_task btn btn-primary" data-action_task="" id="add_subtask">Создать подзадачу</button>#}
-            <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы</button>
+        <div style="display: flex; justify-content: space-between;" class="bg-primary">
+            <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
+            </button>
+            <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
+            </button>
             <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
-    {#        <button class="btn btn-primary" style="display: none" id="prev_task">Назад</button>#}
-    {#        <button class="action-btn_task btn btn-primary" data-action_task="" id="comment_add">Добавить комментарий</button>#}
             <div class="dropdown">
-              <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Добавить
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу</button>
-                <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
-                <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий</button>
-                <div class="dropleft" id="checklist_dropdown">
-                    <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button" aria-haspopup="true" aria-expanded="false">
-                        Чеклист
+                <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Добавить
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
-                        {% for checklist in checklists %}
-                            <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}" data-add_checklist="">{{ checklist.name }}</button>
-                        {% endfor %}
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
+                    <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий
+                    </button>
+                    <div class="dropleft" id="checklist_dropdown">
+                        <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button"
+                                aria-haspopup="true" aria-expanded="false">
+                            Чеклист
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
+                            {% for checklist in checklists %}
+                                <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}"
+                                        data-add_checklist="">{{ checklist.name }}</button>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-              </div>
             </div>
         </div>
-    <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
+        <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
         <p class="card-text" id="task_type"></p>
         <p class="card-text" id="task_created_at"></p>
         <p class="card-text" id="task_start_date"></p>
@@ -109,74 +111,30 @@
     </div>
     <div id="detail-task-modal_window" class="modal action_task_modal"></div>
 
-    
-
     <div id="action-task-modal_window" class="modal action_task_modal"></div>
-<!--     </div>
-
-    <div id="action-task-modal_window" class="modal">
+    <div id="overlay" class="overlay">
+        <div class="loader"></div>
     </div>
-
-    <div class="modal" id="taskModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modal-title"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Modal body text goes here.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Save changes</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="taskCreateModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modal-title">Create Task</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-            <form class="custom_form" action="{% url "webapp:create_task" %}" method="POST">
-              <div class="modal-body">{% task_form as form %}
-                {% include 'partial/form.html' with form=form fields_only=True %}
-              </div>
-              <div class="modal-footer">
-                <input value="Создать" type="submit" class="btn btn-primary">
-              </div>
-            </form>
-        </div>
-      </div>
-    </div> -->
 
 {% endblock %}
 {% block scripts %}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#DataTable').DataTable();
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        let checklistDropdown = document.getElementById('checklist_dropdown');
-        let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
-    
-        let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
-    
-        checklistDropdownButton.addEventListener('click', function(event) {
-            checklistDropdownMenu.classList.toggle('show');
-            event.stopPropagation();
-        });
-            document.addEventListener('click', function(event) {
+        document.addEventListener('DOMContentLoaded', function () {
+            let checklistDropdown = document.getElementById('checklist_dropdown');
+            let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
+
+            let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
+
+            checklistDropdownButton.addEventListener('click', function (event) {
+                checklistDropdownMenu.classList.toggle('show');
+                event.stopPropagation();
+            });
+            document.addEventListener('click', function (event) {
                 if (!checklistDropdown.contains(event.target)) {
                     checklistDropdownMenu.classList.remove('show');
                 }

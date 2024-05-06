@@ -25,6 +25,10 @@ class Task(models.Model):
     type = models.ForeignKey('Type', on_delete=models.CASCADE, verbose_name='Тип')
     history = HistoricalRecords()
 
+    def clean(self):
+        if self.deadline and self.deadline < timezone.now():
+            raise ValidationError('Нельзя установить дедлайн раньше текущей даты и времени.')
+
     def __str__(self):
         return f'{self.id}){self.title}'
 
@@ -64,7 +68,7 @@ class Priority(models.Model):
 
 
 class File(models.Model):
-    file = models.FileField(verbose_name="Файлы", upload_to='uploads/user_docs', null=True, blank=True)
+    file = models.FileField(verbose_name="Файл", upload_to='uploads/user_docs', null=True, blank=True)
     user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
                              blank=True)
     task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)

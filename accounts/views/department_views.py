@@ -1,9 +1,9 @@
 from django.db.models import Count
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView
-from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm, UserForm, DepartmentForm
-from accounts.models import DefUser, Position, Department
+from django.views.generic import CreateView, UpdateView, ListView
+from accounts.forms import DepartmentForm
+from accounts.models import Department
 
 
 class DepartmentListView(ListView):
@@ -37,9 +37,8 @@ class DepartmentUpdateView(UpdateView):
         return reverse('accounts:department_list')
 
 
-class DepartmentDeleteView(DeleteView):
-    model = Department
-    template_name = 'departments/department_delete.html'
+def department_delete(request, pk):
+    department = get_object_or_404(Department, pk=pk)
+    department.delete()
 
-    def get_success_url(self):
-        return reverse('accounts:department_list')
+    return redirect(reverse_lazy('accounts:department_list'))
