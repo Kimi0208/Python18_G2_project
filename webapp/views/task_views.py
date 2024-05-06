@@ -401,7 +401,21 @@ def add_subtasks(request, checklist_pk, task_pk):
     new_file_path = f'uploads/user_docs/{doc_name}.docx'
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
-    context = {'title': main_task.title, 'description': main_task.description, 'users': users}
+    created_at = datetime.now().strftime("%d.%m.%Y")
+    user_patronymic = ''
+    if request.user.patronymic:
+        user_patronymic = request.user.patronymic[0] + "."
+    user_signature = ''
+    if request.user.signature:
+        user_signature = request.user.signature
+    user = {
+        'last_name': request.user.last_name,
+        'first_name': request.user.first_name[0] + ".",
+        'patronymic': user_patronymic,
+        'signature': user_signature
+    }
+    context = {'title': main_task.title, 'description': main_task.description, 'users': users, 'author': user,
+               'created_at': created_at}
     doc.render(context)
     doc.save(new_file_path)
     File.objects.create(user=request.user, task=main_task, file=new_file_path, checklist_id=checklist_pk)
