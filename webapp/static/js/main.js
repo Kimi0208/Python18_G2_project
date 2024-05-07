@@ -801,7 +801,7 @@ function onLoad() {
           dataTable = $('#TaskDataTable').DataTable({
               columnDefs: [
                   { visible:false, target: [0]}
-              ]
+              ],
           });
     });
 
