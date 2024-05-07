@@ -77,10 +77,11 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл:"
+            action = "Добавлен файл:"
         elif file_history.history_type == "-":
             action = "Удален файл:"
-        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"), file_history.history_user.username, file_history.file)]
+        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
+                         file_history.history_user.username, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
 
@@ -98,7 +99,8 @@ def get_comments_history(task_pk):
             action = f"Добавлен комментарий: {comment_history.description}"
         elif comment_history.history_type == "-":
             action = f"Удален комментарий: {comment_history.description}"
-        history_info = [(action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
+        history_info = [
+            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -107,7 +109,8 @@ def get_subtask_history(task_pk):
     subtask_history_list = []
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
-        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), subtask.author.username, subtask.title)]
+        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), subtask.author.username,
+                         subtask.title)]
         subtask_history_list.append(history_info)
     return subtask_history_list
 
@@ -274,7 +277,7 @@ class TaskView(DetailView):
             'subtasks': subtasks_list,
             'comments': get_comments(self.object.pk, self.request.user.pk)
         }
-        return JsonResponse({'task':task_data})
+        return JsonResponse({'task': task_data})
 
 
 class TaskCreateView(CreateView):
@@ -401,6 +404,17 @@ def add_subtasks(request, checklist_pk, task_pk):
     new_file_path = f'uploads/user_docs/{doc_name}.docx'
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
+
+    doc.save(new_file_path)
+    for table in doc.tables:
+        for row in table.rows:
+            if 'Подпись' in row.cells[0].text:
+                row.cells[1].text = ''
+                paragraph = row.cells[1].paragraphs[0]
+                run = paragraph.add_run()
+                paragraph.add_run().add_picture(request.user.signature.path, width=Inches(2))
+    doc.save(new_file_path)
+
     created_at = datetime.now().strftime("%d.%m.%Y")
     user_patronymic = ''
     if request.user.patronymic:
