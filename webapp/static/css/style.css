@@ -24,9 +24,13 @@
     padding-top: 0px;
 }
 
-#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-end,
-#DataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start {
+#TaskDataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-end,
+#TaskDataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start {
     padding-top: 0px;
+}
+
+#TaskDataTable tbody tr {
+    cursor: pointer;
 }
 
 table.dataTable > tbody > tr > th,

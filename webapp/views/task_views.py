@@ -365,7 +365,9 @@ class TaskUpdateView(UpdateView):
             'priority': self.object.priority.name,
             'type': self.object.type.name,
             'subtasks': get_subtasks(self.object),
-            'destination_to': destination_to
+            'destination_to': destination_to,
+            'created_at': self.object.created_at,
+            'author': self.object.author.username
         }
         return JsonResponse(task_data)
 

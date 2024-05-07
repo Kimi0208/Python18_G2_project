@@ -89,14 +89,13 @@ async function onSubmitData(e) {
                 response.priority,
                 formatDate(response.deadline),
                 response.author,
-                response.destination_to,
                 `/task/${response.id}/`);
             }
             modal.style.display = 'none'
             modal.innerHTML = ''
         } else if (form.action.includes('task') && form.action.includes('update')) {
             await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
-                formatDate(response.deadline), response.destination_to);
+                formatDate(response.created_at), formatDate(response.deadline), response.destination_to, response.author);
 
             await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
@@ -250,20 +249,21 @@ async function onSubmitCommentDelete(e) {
     hideLoadingProcess()
 }
 
-async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
+async function updateTableTask(id, title, type, status, priority, created_at, deadline, destination_to, author) {
     let task = dataTable.row(`#task_id_${id}`)
     let tableBody = document.getElementById('table_body')
     let whose_table = tableBody.dataset['whose_table']
 
     if (whose_table === destination_to) {
         let data = [
+            id,
             title,
             type,
             status,
             priority,
-            task.data()[4],
+            created_at,
             deadline,
-            task.data()[6]
+            author
         ];
         task.data(data).draw()
         dataTable.columns.adjust().draw()
@@ -336,18 +336,40 @@ async function onGetTasks(e) {
     let tasks = response.tasks
     let tableBody = document.getElementById('table_body')
     tableBody.dataset.whose_table = whose_table
-    dataTable.clear()
+    let table = dataTable.clear()
     for (let task of tasks) {
-        let url = `/task/${task.id}/`
-        await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
+        await loadTasks(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author)
     }
+
+    table.on('click', 'tbody tr', function (e) {
+        let task_id = table.row(this).data()[0];
+        this.dataset.detail_task = `/task/${task_id}/`;
+        this.id = `task_id_${task_id}`
+        onGetDetailTask(e);
+    });
+
     dataTable.draw()
     hideLoadingProcess()
 }
 
-
-async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to, url) {
+async function loadTasks(id, title, type, created_at, status, priority, deadline, author) {
     let data = [
+        id,
+        title,
+        type,
+        status,
+        priority,
+        created_at,
+        deadline,
+        author
+    ];
+    dataTable.row.add(data)
+}
+
+
+async function addTask(id, title, type, created_at, status, priority, deadline, author, url) {
+    let data = [
+        id,
         title,
         type,
         status,
@@ -357,12 +379,14 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
         author
     ];
     let newTask = dataTable.row.add(data).draw().node();
-    newTask.classList.add('detail-btn_task');
-    newTask.dataset.detail_task = url;
-    newTask.style.cursor = 'pointer';
-    newTask.id = `task_id_${id}`;
-    newTask.addEventListener('click', onGetDetailTask)
 
+    if (newTask) {
+        newTask.classList.add('detail-btn_task');
+        newTask.dataset.detail_task = url;
+        newTask.style.cursor = 'pointer';
+        newTask.id = `task_id_${id}`;
+        newTask.addEventListener('click', onGetDetailTask)
+    }
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'none'
     modal.innerHTML = ''
@@ -774,7 +798,11 @@ function onLoad() {
         await onGetNewTask() }, 5000);
 
     $(document).ready(function() {
-          dataTable = $('#DataTable').DataTable();
+          dataTable = $('#TaskDataTable').DataTable({
+              columnDefs: [
+                  { visible:false, target: [0]}
+              ]
+          });
     });
 
     let action_buttons = document.getElementsByClassName('action-btn_task')
