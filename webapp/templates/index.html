@@ -45,91 +45,98 @@
 
         {% include 'partial/tables.html' %}
     </div>
-    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
-{#        {% if request.user.is_authenticated %}#}
+    {% if request.user.is_authenticated %}
+        <div class="card-body" id="task-detail-info"
+             style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
             <div style="display: flex; justify-content: space-between;" class="bg-primary">
-                {% if request.user.is_authenticated %}
+                {% if perms.webapp.change_task and request.user == task.author %}
                     <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
                     </button>
                 {% endif %}
                 <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
                 </button>
                 <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
-                {% if request.user.is_authenticated %}
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Добавить
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            {% if perms.webapp.add_task %}
-                                <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
-                                </button>
-                            {% endif %}
-                            {% if perms.webapp.add_file %}
-                                <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл</button>
-                            {% endif %}
-                            {% if perms.webapp.add_comment %}
-                                <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">Комментарий
-                                </button>
-                            {% endif %}
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Добавить
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% if perms.webapp.add_task %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_file %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_comment %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">
+                                Комментарий
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_checklist %}
                             <div class="dropleft" id="checklist_dropdown">
-                                <button class="dropdown-item dropdown-toggle" type="button" id="checklist_dropdown_button"
+                                <button class="dropdown-item dropdown-toggle" type="button"
+                                        id="checklist_dropdown_button"
                                         aria-haspopup="true" aria-expanded="false">
                                     Чеклист
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
                                     {% for checklist in checklists %}
-                                        <button class="dropdown-item add_checklist_btn" data-checklist_id="{{ checklist.pk }}"
+                                        <button class="dropdown-item add_checklist_btn"
+                                                data-checklist_id="{{ checklist.pk }}"
                                                 data-add_checklist="">{{ checklist.name }}</button>
                                     {% endfor %}
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
             </div>
-{#        {% endif %}#}
-        <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
-        <p class="card-text" id="task_type"></p>
-        <p class="card-text" id="task_created_at"></p>
-        <p class="card-text" id="task_start_date"></p>
-        <p class="card-text" id="task_status"></p>
-        <p class="card-text" id="task_priority"></p>
-        <p class="card-text" id="task_updated_at"></p>
-        <p class="card-text" id="task_done_at"></p>
-        <p class="card-text" id="task_deadline"></p>
-        <p class="card-text" id="task_author"></p>
-        <div id="description_field">
-            <h4 id="description_field_header" style="background: antiquewhite; word-wrap: break-word">Описание</h4>
-            <div id="description_info">
-                <span id="task_description"></span>
+
+            <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
+            <p class="card-text" id="task_type"></p>
+            <p class="card-text" id="task_created_at"></p>
+            <p class="card-text" id="task_start_date"></p>
+            <p class="card-text" id="task_status"></p>
+            <p class="card-text" id="task_priority"></p>
+            <p class="card-text" id="task_updated_at"></p>
+            <p class="card-text" id="task_done_at"></p>
+            <p class="card-text" id="task_deadline"></p>
+            <p class="card-text" id="task_author"></p>
+            <div id="description_field">
+                <h4 id="description_field_header" style="background: antiquewhite; word-wrap: break-word">Описание</h4>
+                <div id="description_info">
+                    <span id="task_description"></span>
+                </div>
+            </div>
+            <div id="parent_field">
+                <h4 id="parent_field_header" style="background: antiquewhite">Относится к</h4>
+                <div id="parent_info">
+                </div>
+            </div>
+            <div id="subtasks_field">
+                <h4 id="subtasks_field_header" style="background: antiquewhite">Подзадачи</h4>
+                <div id="subtasks_info">
+                </div>
+            </div>
+            <div id="comments_field">
+                <h4 id="comments_field_header" style="background: antiquewhite">Комментарии</h4>
+                <div id="comments_info">
+                </div>
             </div>
         </div>
-        <div id="parent_field">
-            <h4 id="parent_field_header" style="background: antiquewhite">Относится к</h4>
-            <div id="parent_info">
-            </div>
-        </div>
-        <div id="subtasks_field">
-            <h4 id="subtasks_field_header" style="background: antiquewhite">Подзадачи</h4>
-            <div id="subtasks_info">
-            </div>
-        </div>
-        <div id="comments_field">
-            <h4 id="comments_field_header" style="background: antiquewhite">Комментарии</h4>
-            <div id="comments_info">
-            </div>
-        </div>
-    </div>
-    <div id="detail-task-modal_window" class="modal action_task_modal"></div>
+
+        <div id="detail-task-modal_window" class="modal action_task_modal"></div>
 
 
 
-    <div id="action-task-modal_window" class="modal action_task_modal"></div>
-    <div id="overlay" class="overlay">
-        <div class="loader"></div>
-    </div>
+        <div id="action-task-modal_window" class="modal action_task_modal"></div>
+        <div id="overlay" class="overlay">
+            <div class="loader"></div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 {% block scripts %}

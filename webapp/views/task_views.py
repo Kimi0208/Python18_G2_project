@@ -338,6 +338,9 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     def form_invalid(self, form):
         return JsonResponse({'errors': form.errors})
 
+    def has_permission(self):
+        return super().has_permission() and self.request.user == self.get_object().author
+
     def form_valid(self, form):
         self.object = form.save()
         destination_to = ''

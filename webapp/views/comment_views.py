@@ -36,6 +36,9 @@ class CommentUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = 'comment_proporsal_edit.html'
     permission_required = 'webapp.change_comment'
 
+    def has_permission(self):
+        return super().has_permission() and self.request.user == self.get_object().author
+
     def form_valid(self, form):
         self.object = form.save()
         comment = {
