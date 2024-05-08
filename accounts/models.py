@@ -15,10 +15,10 @@ class DefUser(AbstractUser):
 
                                  null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
+    signature = models.FileField(verbose_name="Подпись", upload_to='uploads/signature', null=True, blank=True)
 
     def __str__(self):
         return self.username
-
 
     def save(self, *args, **kwargs):
         if self.email_password and type(self.email_password) != bytes:
@@ -42,7 +42,7 @@ class DefUser(AbstractUser):
 
 
 class Position(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название должности', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Название должности', unique=True)
     department = models.ForeignKey('Department', on_delete=models.CASCADE, verbose_name='Отдел')
 
     def __str__(self):
@@ -50,7 +50,7 @@ class Position(models.Model):
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=30, verbose_name='Название отдела', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Название отдела', unique=True)
 
     def __str__(self):
         return self.name

@@ -11,6 +11,7 @@ click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.3.0
 Django==5.0.2
+django-simple-history==3.5.0
 django-appconf==1.0.6
 django-cryptography==1.1
 djangorestframework==3.14.0

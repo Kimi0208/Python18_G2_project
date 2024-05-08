@@ -584,9 +584,10 @@ pre code {
 
 .row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-right: -0.75rem;
   margin-left: -0.75rem;
+  /* justify-content: center; */
 }
 
 .no-gutters {
@@ -4484,15 +4485,15 @@ input[type="button"].btn-block {
 }
 
 .card {
-  position: relative;
-  display: flex;
+  /* position: relative; */
+  /* display: flex; */
   flex-direction: column;
-  min-width: 0;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 1px solid #e3e6f0;
-  border-radius: 0.35rem;
+  /* min-width: 0; */
+  /* word-wrap: break-word; */
+  /* background-color: #fff; */
+  /* background-clip: border-box; */
+  /* border: 1px solid #e3e6f0; */
+  /* border-radius: 0.35rem; */
 }
 
 .card > hr {

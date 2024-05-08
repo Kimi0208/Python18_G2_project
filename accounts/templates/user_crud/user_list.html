@@ -5,25 +5,17 @@
     Cписок пользователей
 {% endblock %}
 {% block links %}
-    <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Добавить пользователя </a>
+    <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+        <i class="fa-solid fa-plus"></i>
+        Добавить пользователя
+    </a>
 {% endblock %}
 {% block menu %}
 {% endblock %}
 
 {% block content %}
-    <div>
-{#        <button id="tasks" class="show_list" data-show_list="{% url 'webapp:tasks' %}">Задачи</button>#}
-{#        <button id="proposals" class="show_list" data-show_list="{% url 'webapp:proposals' %}">Заявки</button>#}
-    </div>
-{#    <div id="main_area">#}
-{#         {% include 'partial/task_list.html' %}#}
-{#    </div>#}
     <div id="main_area">
          {% include 'partial/tables_users.html' %}
-{#        <div class="container">#}
-{#            {% include 'partial/cards.html' %}#}
-{#        </div>#}
     </div>
 
     <div id="action-task-modal_window" class="modal">

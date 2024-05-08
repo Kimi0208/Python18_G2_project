@@ -9,7 +9,6 @@
         <p class="card-text">Статус {{ task.status }}</p>
         <p class="card-text">Приоритет {{ task.priority }}</p>
         <p class="card-text">{{ task.description }}</p>
-{#        <a href="#" class="btn btn-primary">Go somewhere</a>#}
       </div>
       <div class="card-footer text-body-secondary">
         Дата создания {{ task.created_at }}
@@ -20,7 +19,8 @@
     <div>
         <button class="action-btn_task" data-action_task="{% url 'webapp:add_file' task_pk=task.pk %}">Прикрепить файл</button>
         {% for file in files %}
-            <a href="{{ file.file.url }}" target="_blank">Документ {{ file.pk }}</a>
+            <a href="{{ file.file.url }}" target="_blank">{{ file.file.name|cut:'uploads/user_docs/' }}</a>
+            <a href="{% url 'webapp:delete_file' task_pk=file.task.pk file_pk=file.pk %}">Удалить</a>
         {% endfor %}
     </div>
     </div>
@@ -43,4 +43,23 @@
         {% endfor %}
     {% endif %}
     <div id="action-task-modal_window" class="modal"></div>
+    <div>
+        {% for changes in history %}
+            <ul>
+                {% for change in changes %}
+                    {% if "файл" in change.0 %}
+                        <li>{{ change.0 }} {{ change.3|cut:'uploads/user_docs/' }} Дата: {{ change.1 }} Автор {{ change.2 }}</li>
+                        {{ change.del }}
+                        {% else %}
+                        <li>Поле {{ change.0 }} изменено с {{ change.3 }} на {{ change.4 }} Дата изменения: {{ change.1 }} Кто изменил: {{ change.2 }}</li>
+                    {% endif %} 
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <ul>
+            <li>
+                Создана задача {{ task.id }} {{ task.title }} Дата создания: {{ task.created_at|date:"Y-m-d H:i:s" }} Автор {{ task.author }}
+            </li>
+        </ul>
+    </div>
 {% endblock %}

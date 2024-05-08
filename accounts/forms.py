@@ -42,14 +42,14 @@ class MyPasswordChangeForm(PasswordChangeForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = DefUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'phone_number', 'position')
-
+        fields = ('username', 'first_name', 'last_name', 'email', 'position', 'phone_number', 'password')
     username = forms.CharField(max_length=50, required=True, label="Логин")
     first_name = forms.CharField(max_length=50, required=True, label="Имя")
     last_name = forms.CharField(max_length=50, required=True, label="Фамилия")
     email = forms.EmailField(required=True, label="Email")
     phone_number = forms.CharField(required=True, label="Номер телефона")
     position = forms.ModelChoiceField(queryset=Position.objects.all(), label="Должность")
+    password = forms.CharField(max_length=50, required=True, label="Пароль")
 
 
 class DepartmentForm(forms.ModelForm):
@@ -57,3 +57,4 @@ class DepartmentForm(forms.ModelForm):
         model = Department
         fields = ('name',)
         labels = {'name': 'Название отдела'}
+

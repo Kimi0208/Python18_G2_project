@@ -1,21 +1,12 @@
 {% extends '_base.html' %}
 {% load static %}
 
-
-{% block title %}Новый пользователь{% endblock %}
+{% block title %}Добавить новый отдел{% endblock %}
 
 {% block content %}
 
-    <div class="modal-content p-4">
-        <div>
+    <form id="test_form" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Добавить'%}
+    </form>
 
-            {% include 'partial/form.html' with value_submit='Добавить' form_method='post'%}
-
-        </div>
-    </div>
-
-{% endblock %}
-
-{% block scripts %}
-    <link rel="stylesheet" href="{% static 'css/task.css' %}">
 {% endblock %}
