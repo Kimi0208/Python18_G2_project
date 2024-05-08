@@ -803,6 +803,7 @@ function onLoad() {
                   { visible:false, target: [0]}
               ],
           });
+          $('#TaskDataTable').show()
     });
 
     let action_buttons = document.getElementsByClassName('action-btn_task')
