@@ -1,6 +1,5 @@
 async function makeRequest(url, method = 'GET', data = null, token = null) {
-    let headers = {
-    };
+    let headers = {};
     if (token) {
         headers['Authorization'] = 'Token ' + token;
 
@@ -10,9 +9,9 @@ async function makeRequest(url, method = 'GET', data = null, token = null) {
     let options;
 
     if (method !== "GET") {
-        options = { method, headers, body: data };
+        options = {method, headers, body: data};
     } else {
-        options = { method, headers };
+        options = {method, headers};
     }
     let response = await fetch(url, options);
 
@@ -41,10 +40,11 @@ async function onClick(e) {
     modal.innerHTML = datar
     modal.style.display = 'block'
     let form = document.getElementById('test_form');
-    $(document).ready(function() {
-            $(form.elements['destination_to_user']).select2();
-            $(form.elements['destination_to_department']).select2();
-        });    form.addEventListener('submit', onSubmitData)
+    $(document).ready(function () {
+        $(form.elements['destination_to_user']).select2();
+        $(form.elements['destination_to_department']).select2();
+    });
+    form.addEventListener('submit', onSubmitData)
     form.action = data_attribute
     let closeBtn = document.getElementById("close_modal");
     closeBtn.onclick = function () {
@@ -61,7 +61,7 @@ async function onSubmitData(e) {
     let token = localStorage.getItem('apiToken');
     let response = await makeRequest(form.action, "POST", formData, token);
     let modal = document.getElementById('action-task-modal_window');
-    if ('errors' in response){
+    if ('errors' in response) {
         for (let error of response.errors.__all__) {
             alert(error)
         }
@@ -81,16 +81,16 @@ async function onSubmitData(e) {
             let whose_table = tableBody.dataset['whose_table']
             if (whose_table === response.destination_to) {
                 await addTask(
-                response.id,
-                response.title,
-                response.type,
-                formatDate(response.created_at),
-                response.status,
-                response.priority,
-                formatDate(response.deadline),
-                response.author,
-                response.destination_to,
-                `/task/${response.id}/`);
+                    response.id,
+                    response.title,
+                    response.type,
+                    formatDate(response.created_at),
+                    response.status,
+                    response.priority,
+                    formatDate(response.deadline),
+                    response.author,
+                    response.destination_to,
+                    `/task/${response.id}/`);
             }
             modal.style.display = 'none'
             modal.innerHTML = ''
@@ -106,11 +106,11 @@ async function onSubmitData(e) {
             let comment = response.comment
             await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
                 comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
-        } else if (form.action.includes('comment') && form.action.includes('update')){
+        } else if (form.action.includes('comment') && form.action.includes('update')) {
             let comment = response.comment
             await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
                 comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
-        } else if (form.action.includes('file/add/')){
+        } else if (form.action.includes('file/add/')) {
             modal.style.display = 'none'
             modal.innerHTML = ''
         }
@@ -128,7 +128,7 @@ async function editComment(id, first_name, last_name, task, created_at, updated_
 }
 
 
-async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id){
+async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
     let comments_info_block = document.getElementById('comments_info')
     let comment_card = document.createElement('div')
     comment_card.style.borderBottom = 'solid 1px black'
@@ -176,11 +176,11 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
 
     let username_info = document.createElement('span')
     username_info.innerHTML = `${first_name} ${last_name}`
-    username_info.style.fontStyle='italic'
-    username_info.style.fontWeight='bold'
+    username_info.style.fontStyle = 'italic'
+    username_info.style.fontWeight = 'bold'
     let create_info = document.createElement('p')
     create_info.innerHTML = formatDate(created_at)
-    create_info.style.fontWeight='bold'
+    create_info.style.fontWeight = 'bold'
     let comment_info = document.createElement('span')
     comment_info.innerHTML = description
     comment_info.id = `comment_data_${id}`
@@ -233,7 +233,7 @@ async function onSubmitCommentDelete(e) {
     confirmation_comment_delete_field.style.marginBottom = '10px'
     let confirm_delete_button = document.getElementById('confirm_delete')
     let cancel_delete_button = document.getElementById('cancel_delete')
-    confirm_delete_button.addEventListener('click', async function() {
+    confirm_delete_button.addEventListener('click', async function () {
         let post_response = await makeRequest(data_attribute, "POST")
         let comment_card = document.getElementById(`comment_card_${post_response.comment_id}`)
         comment_card.remove()
@@ -242,7 +242,7 @@ async function onSubmitCommentDelete(e) {
             comments_info_field.innerHTML = 'Комментариев нет'
         }
     })
-    cancel_delete_button.addEventListener('click', async function() {
+    cancel_delete_button.addEventListener('click', async function () {
         confirmation_comment_delete_field.innerHTML = ''
         confirmation_comment_delete_field.style.display = 'none'
     })
@@ -274,7 +274,7 @@ async function updateTableTask(id, title, type, status, priority, deadline, dest
 
 }
 
-async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description){
+async function updateDetailTaskInfo(id, title, type, status, priority, deadline, start_date, updated_at, done_at, description) {
     let detail_task_title = document.getElementsByClassName(`detail_task_${id}_title`)
     let detail_task_type = document.getElementsByClassName(`detail_task_${id}_type`)
     let detail_task_start_date = document.getElementsByClassName(`detail_task_${id}_start_date`)
@@ -286,31 +286,31 @@ async function updateDetailTaskInfo(id, title, type, status, priority, deadline,
     let detail_task_description = document.getElementsByClassName(`detail_task_${id}_description`)
 
 
-    for (title_element of detail_task_title){
+    for (title_element of detail_task_title) {
         title_element.innerHTML = `#${id} ${title}`
     }
-    for (type_element of detail_task_type){
+    for (type_element of detail_task_type) {
         type_element.innerHTML = `Тип: ${type}`
     }
-    for (start_date_element of detail_task_start_date){
+    for (start_date_element of detail_task_start_date) {
         start_date_element.innerHTML = `Начать: ${start_date}`
     }
-    for (status_element of detail_task_status){
+    for (status_element of detail_task_status) {
         status_element.innerHTML = `Статус: ${status}`
     }
-    for (priority_element of detail_task_priority){
+    for (priority_element of detail_task_priority) {
         priority_element.innerHTML = `Приоритет: ${priority}`
     }
-    for (updated_at_element of detail_task_updated_at){
+    for (updated_at_element of detail_task_updated_at) {
         updated_at_element.innerHTML = `Изменена: ${updated_at}`
     }
-    for (done_at_element of detail_task_done_at){
+    for (done_at_element of detail_task_done_at) {
         done_at_element.innerHTML = `Выполнена: ${done_at}`
     }
-    for (deadline_element of detail_task_deadline){
+    for (deadline_element of detail_task_deadline) {
         deadline_element.innerHTML = `Дедлайн: ${deadline}`
     }
-    for (description_element of detail_task_description){
+    for (description_element of detail_task_description) {
         description_element.innerHTML = description
     }
     let modal = document.getElementById('action-task-modal_window');
@@ -400,8 +400,8 @@ async function onGetDetailTask(e) {
     let detail_attribute = element.dataset['detail_task'];
     let detail_tasks_buttons = document.getElementsByClassName('detail-btn_task')
     let rows = dataTable.rows().nodes()
-    rows.each(function (row){
-        if (row.style.background === 'lightgrey'){
+    rows.each(function (row) {
+        if (row.style.background === 'lightgrey') {
             row.style.background = ''
         }
     })
@@ -410,28 +410,6 @@ async function onGetDetailTask(e) {
     task_detail_info_element.style.display = 'block';
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
-
-
-//start modalka net prav redaktirovat
-//
-//     function showNoPermissionsModal() {
-//         alert("У вас нет прав для редактирования этой задачи.");
-//     }
-//
-//     // let currentUser = getCurrentUser(); // Получаем информацию о текущем пользователе
-//     let currentUserID = element.dataset['currentUserId'];
-//
-//     if (currentUserID !== response_data.author_id) {
-//         // Если текущий пользователь не является автором задачи, отображаем модальное окно с сообщением "Нет прав"
-//         showNoPermissionsModal();
-//         hideLoadingProcess();
-//         return;
-//     }
-//         let task_edit = document.getElementById('task_edit')
-//         task_edit.dataset.action_task = `task/${response_data.id}/update/`
-//     }
-
-//end
 
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `task/${response_data.id}/update/`
@@ -519,8 +497,8 @@ async function onGetDetailTask(e) {
     }
 
     if (task_subtasks.length > 0) {
-    subtasks_info.innerHTML = '';
-    await createTaskTable(task_subtasks, subtasks_info);
+        subtasks_info.innerHTML = '';
+        await createTaskTable(task_subtasks, subtasks_info);
     } else {
         subtasks_info.innerHTML = 'Подзадач нет';
     }
@@ -540,7 +518,7 @@ async function onGetDetailTask(e) {
 }
 
 
-async function onGetTaskHistory(e){
+async function onGetTaskHistory(e) {
     showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
@@ -567,15 +545,15 @@ async function onGetTaskHistory(e){
 
     let card_element = document.createElement('div')
     card_element.classList.add('card')
-    for (let changes of history){
+    for (let changes of history) {
         let ul_element = document.createElement('ul')
         let li_element = document.createElement('li')
         for (let change of changes) {
 
-            if (change[0].includes('файл')){
+            if (change[0].includes('файл')) {
                 li_element.innerHTML = `${change[0]} ${change[3].replace("uploads/user_docs/", "")} 
                     <br>Дата: ${change[1]} Автор: ${change[2]}`
-            } else if (change[0].includes('Создана задача') || change[0].includes('Создана подзадача')){
+            } else if (change[0].includes('Создана задача') || change[0].includes('Создана подзадача')) {
                 li_element.innerHTML = `${change[0]} ${change[3]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
             } else if (change[0].includes('Изменен комментарий')) {
                 li_element.innerHTML = `${change[0]} <br>Дата создания: ${change[1]} Автор: ${change[2]}`
@@ -609,7 +587,7 @@ async function createTaskTable(taskData, infoElement) {
 
     let table = document.createElement('table');
     table.style.width = '100%';
-    table.id='subtask_table'
+    table.id = 'subtask_table'
 
     let tr1 = document.createElement('tr');
     let nameTh = document.createElement('th');
@@ -630,8 +608,8 @@ async function createTaskTable(taskData, infoElement) {
         let tr = document.createElement('tr');
         let nameTd = document.createElement('td');
         let taskLink = document.createElement('a');
-        if (task.status === "Выполнена"){
-            taskLink.style.textDecoration='line-through'
+        if (task.status === "Выполнена") {
+            taskLink.style.textDecoration = 'line-through'
         }
         taskLink.href = `task/${task.id}/`;
         taskLink.dataset.detail_task = taskLink.href;
@@ -655,7 +633,6 @@ async function createTaskTable(taskData, infoElement) {
 
     infoElement.appendChild(table);
 }
-
 
 
 async function onGetInfo(e) {
@@ -730,7 +707,7 @@ async function onGetInfo(e) {
     hideLoadingProcess()
 }
 
-async  function onAddSign(e){
+async function onAddSign(e) {
     showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
@@ -738,7 +715,7 @@ async  function onAddSign(e){
     let response = await makeRequest(href_attribute, "GET")
     if (response.success) {
         let spanElement = document.createElement('span');
-        spanElement.innerHTML='Подписан'
+        spanElement.innerHTML = 'Подписан'
         let parent_div = element.parentNode.parentNode
         parent_div.parentNode.replaceChild(spanElement, parent_div);
 
@@ -746,7 +723,7 @@ async  function onAddSign(e){
     hideLoadingProcess()
 }
 
-async function onConfirmDeletion(e){
+async function onConfirmDeletion(e) {
     showLoadingProcess()
     e.preventDefault()
     let element = e.currentTarget
@@ -756,30 +733,30 @@ async function onConfirmDeletion(e){
     let listItem = element.closest('li');
     let fileId = listItem.id.split('_')[1];
     let confirmation_file_delete_elements = document.getElementsByClassName('confirmation_file_delete')
-    for (confirmation_file_delete_element of confirmation_file_delete_elements){
+    for (confirmation_file_delete_element of confirmation_file_delete_elements) {
         if (confirmation_file_delete_element.style.display === 'block') {
-                confirmation_file_delete_element.style.display = 'none'
-                confirmation_file_delete_element.innerHTML=''
+            confirmation_file_delete_element.style.display = 'none'
+            confirmation_file_delete_element.innerHTML = ''
         }
     }
     let div_element = document.getElementById(`confirmation_file-${fileId}_delete`)
     div_element.innerHTML = data
-    div_element.style.display='block'
+    div_element.style.display = 'block'
     let confirm_delete_button = document.getElementById('confirm_delete')
     let cancel_delete_button = document.getElementById('cancel_delete')
-    confirm_delete_button.addEventListener('click', async function(){
+    confirm_delete_button.addEventListener('click', async function () {
         let post_response = await makeRequest(data_attribute, "POST")
         listItem.remove();
     })
-    cancel_delete_button.addEventListener('click', async function(){
+    cancel_delete_button.addEventListener('click', async function () {
         div_element.innerHTML = ''
-        div_element.style.display='none'
+        div_element.style.display = 'none'
     })
     hideLoadingProcess()
 
 }
 
-async function onGetNewTask(){
+async function onGetNewTask() {
     let blink_notification = document.getElementById('blink_notification');
     let data_attribute = blink_notification.dataset['action_url']
     let response = await makeRequest(data_attribute, "GET")
@@ -791,12 +768,14 @@ async function onGetNewTask(){
 }
 
 let dataTable;
-function onLoad() {
-    setInterval(async function() {
-        await onGetNewTask() }, 5000);
 
-    $(document).ready(function() {
-          dataTable = $('#DataTable').DataTable();
+function onLoad() {
+    setInterval(async function () {
+        await onGetNewTask()
+    }, 5000);
+
+    $(document).ready(function () {
+        dataTable = $('#DataTable').DataTable();
     });
 
     let action_buttons = document.getElementsByClassName('action-btn_task')
@@ -820,12 +799,12 @@ function onLoad() {
 
 function showLoadingProcess() {
     let loader = document.getElementById('overlay')
-    loader.style.display='flex'
+    loader.style.display = 'flex'
 }
 
 function hideLoadingProcess() {
     let loader = document.getElementById('overlay')
-    loader.style.display='none'
+    loader.style.display = 'none'
 }
 
 
