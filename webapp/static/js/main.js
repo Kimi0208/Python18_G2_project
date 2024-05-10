@@ -641,7 +641,7 @@ async function createTaskTable(taskData, infoElement) {
         }
         taskLink.href = `task/${task.id}/`;
         taskLink.dataset.detail_task = taskLink.href;
-        taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to}`;
+        taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to_init_n_dep}`;
         taskLink.addEventListener('click', onGetDetailTask);
 
         nameTd.appendChild(taskLink);

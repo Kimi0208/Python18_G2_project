@@ -235,20 +235,24 @@ def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object).order_by('-id')
     subtasks_list = []
     destination_to = ''
+    destination_to_init_n_dep = ''
     for subtask in subtasks:
         if subtask.destination_to_department:
             destination_to = subtask.destination_to_department.name
+            destination_to_init_n_dep = subtask.destination_to_department.name
         elif subtask.destination_to_user:
             destination_to = subtask.destination_to_user.username
+            destination_to_init_n_dep = get_user_initials(subtask.destination_to_user)
         subtask_data = {
             'id': subtask.id,
             'title': subtask.title,
             'destination_to': destination_to,
-            'author': subtask.author.username,
+            'author': get_user_initials(subtask.author),
             'created_at': subtask.created_at,
             'type': subtask.type.name,
             'updated_at': subtask.updated_at,
-            'status': subtask.status.name
+            'status': subtask.status.name,
+            'destination_to_init_n_dep': destination_to_init_n_dep
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
@@ -285,15 +289,19 @@ class TaskView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         subtasks_list = get_subtasks(self.object)
         destination_to = ''
+        destination_to_init_n_dep = ''
         if self.object.parent_task:
             if self.object.parent_task.destination_to_department:
                 destination_to = self.object.parent_task.destination_to_department.name
+                destination_to_init_n_dep = self.object.parent_task.destination_to_department.name
             elif self.object.parent_task.destination_to_user:
                 destination_to = self.object.parent_task.destination_to_user.username
+                destination_to_init_n_dep = get_user_initials(self.object.parent_task.author)
             parent_task = {'id': self.object.parent_task.id, 'title': self.object.parent_task.title,
-                           'author': self.object.parent_task.author.username,
+                           'author': get_user_initials(self.object.parent_task.author),
                            'created_at': self.object.parent_task.created_at, 'destination_to': destination_to,
-                           'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at}
+                           'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at,
+                           'destination_to_init_n_dep': destination_to_init_n_dep}
         else:
             parent_task = None
         task_author = get_user_initials(self.object.author)
