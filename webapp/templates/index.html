@@ -49,10 +49,10 @@
         <div class="card-body" id="task-detail-info"
              style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
             <div style="display: flex; justify-content: space-between;" class="bg-primary">
-                {% if perms.webapp.change_task and request.user == task.author %}
+{#                {% if perms.webapp.change_task and request.user == task.author %}#}
                     <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
                     </button>
-                {% endif %}
+{#                {% endif %}#}
                 <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
                 </button>
                 <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
