@@ -1,15 +1,12 @@
 from http import HTTPStatus
-
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 import unittest
 from django.urls import reverse
-from django.http import HttpResponseNotAllowed
 from accounts.models import DefUser
 from webapp.models import Task, File
 from webapp.tests.factories.task import TaskFactory, StatusFactory
-from webapp.forms import FileForm
 from webapp.views.task_views import get_files_history
 from django.core.files.uploadedfile import SimpleUploadedFile
 

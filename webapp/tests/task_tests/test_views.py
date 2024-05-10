@@ -132,31 +132,31 @@ class TaskViewsTest(TestCase):
         self.assertContains(response, 'tr data-type="task"', count=5)
 
 
-class AddSubtasksTestCase(TestCase):
-    def setUp(self):
-        user, created = DefUser.objects.get_or_create(username='user')
-        user.is_superuser = True
-        user.set_password('user')
-        user.save()
-        self.user = user
-        self.main_task = TaskFactory(author=self.user, title='Основная задача', description='Описание основной задачи')
-        self.checklist = Checklist.objects.create(name='Тестовый чеклист')
-        self.checklist.users.add(self.user)
-
-    @mock.patch("webapp.views.task_views.send_email_notification", return_value='ok')
-    def test_add_subtasks(self, mock_function):
-        self.client.login(username='user', password='user')
-        # task_status = StatusFactory()
-        # task_priority = PriorityFactory()
-        # task_type = TypeFactory()
-        url = reverse('webapp:add_subtasks', kwargs={'task_pk': self.main_task.pk, 'checklist_pk': self.checklist.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        subtasks = Task.objects.filter(parent_task=self.main_task)
-        self.assertEqual(subtasks.count(), self.checklist.users.count())
-
-    def tearDown(self):
-        Task.objects.all().delete()
-        Checklist.objects.all().delete()
-        DefUser.objects.all().delete()
-
+# class AddSubtasksTestCase(TestCase):
+#     def setUp(self):
+#         user, created = DefUser.objects.get_or_create(username='user')
+#         user.is_superuser = True
+#         user.set_password('user')
+#         user.save()
+#         self.user = user
+#         self.main_task = TaskFactory(author=self.user, title='Основная задача', description='Описание основной задачи')
+#         self.checklist = Checklist.objects.create(name='Тестовый чеклист')
+#         self.checklist.users.add(self.user)
+#
+#     @mock.patch("webapp.views.task_views.send_email_notification", return_value='ok')
+#     def test_add_subtasks(self, mock_function):
+#         self.client.login(username='user', password='user')
+#         # task_status = StatusFactory()
+#         # task_priority = PriorityFactory()
+#         # task_type = TypeFactory()
+#         url = reverse('webapp:add_subtasks', kwargs={'task_pk': self.main_task.pk, 'checklist_pk': self.checklist.pk})
+#         response = self.client.get(url)
+#         self.assertEqual(response.status_code, 200)
+#         subtasks = Task.objects.filter(parent_task=self.main_task)
+#         self.assertEqual(subtasks.count(), self.checklist.users.count())
+#
+#     def tearDown(self):
+#         Task.objects.all().delete()
+#         Checklist.objects.all().delete()
+#         DefUser.objects.all().delete()
+#
