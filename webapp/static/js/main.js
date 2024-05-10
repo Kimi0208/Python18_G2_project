@@ -706,7 +706,7 @@ async function onGetInfo(e) {
         if (file.sign_url) {
             if (response.signed_files.includes(file.id)) {
                 action_field.innerHTML += `<span>Подписан</span>`
-            } else {
+            } else if (file.current_user_signature) {
                 action_field.innerHTML += `
                     <div class="btn-group">
                       <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
@@ -716,6 +716,8 @@ async function onGetInfo(e) {
                         <a class="dropdown-item sign_file" href="${file.sign_url}">Подписать файл</a>
                       </div>
                     </div>`
+            } else {
+                action_field.innerHTML += `<span>Нет подписи</span>`
             }
         }
     });

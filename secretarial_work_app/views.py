@@ -33,7 +33,6 @@ class CompanyUpdateView(UpdateView):
 def company_delete(request, pk):
     company = get_object_or_404(CompaniesList, pk=pk)
     company.delete()
-
     return redirect(reverse_lazy('secretary:companies_list_view'))
 
 
