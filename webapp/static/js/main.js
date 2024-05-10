@@ -411,6 +411,28 @@ async function onGetDetailTask(e) {
     let response = await makeRequest(detail_attribute, "GET");
     let response_data = response.task;
 
+
+//start modalka net prav redaktirovat
+//
+//     function showNoPermissionsModal() {
+//         alert("У вас нет прав для редактирования этой задачи.");
+//     }
+//
+//     // let currentUser = getCurrentUser(); // Получаем информацию о текущем пользователе
+//     let currentUserID = element.dataset['currentUserId'];
+//
+//     if (currentUserID !== response_data.author_id) {
+//         // Если текущий пользователь не является автором задачи, отображаем модальное окно с сообщением "Нет прав"
+//         showNoPermissionsModal();
+//         hideLoadingProcess();
+//         return;
+//     }
+//         let task_edit = document.getElementById('task_edit')
+//         task_edit.dataset.action_task = `task/${response_data.id}/update/`
+//     }
+
+//end
+
     let task_edit = document.getElementById('task_edit')
     task_edit.dataset.action_task = `task/${response_data.id}/update/`
 

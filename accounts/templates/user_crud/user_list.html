@@ -5,10 +5,12 @@
     Cписок пользователей
 {% endblock %}
 {% block links %}
-    <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fa-solid fa-plus"></i>
-        Добавить пользователя
-    </a>
+    {% if request.user.is_superuser or request.user.is_staff %}
+        <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fa-solid fa-plus"></i>
+            Добавить пользователя
+        </a>
+    {% endif %}
 {% endblock %}
 {% block menu %}
 {% endblock %}

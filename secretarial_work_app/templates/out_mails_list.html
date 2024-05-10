@@ -7,13 +7,11 @@
 
 {% block links %}
     {% if request.user.is_authenticated %}
-        {% if perms.webapp.add_task %}
             <a href="{% url 'secretary:out_mails_create_view' %}"
                 class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 <i class="fa-solid fa-plus"></i>
                 Добавить исходящее письмо
             </a>
-        {% endif %}
     {% endif %}
 {% endblock %}
 
