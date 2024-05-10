@@ -65,7 +65,9 @@ def get_tasks_from_id(request, pk):
     elif 'tasks/department' in request.path:
         tasks = Task.objects.filter(destination_to_department=pk)
     tasks_list = []
+
     for task in tasks:
+        task_author = get_user_initials(task.author)
         task_data = {
             'id': task.pk,
             'title': task.title,
@@ -74,7 +76,7 @@ def get_tasks_from_id(request, pk):
             'status': task.status.name,
             'priority': task.priority.name,
             'type': task.type.name,
-            'author': task.author.username
+            'author': task_author
         }
         tasks_list.append(task_data)
     return JsonResponse({'tasks': tasks_list})
@@ -294,6 +296,7 @@ class TaskView(DetailView):
                            'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at}
         else:
             parent_task = None
+        task_author = get_user_initials(self.object.author)
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -305,7 +308,7 @@ class TaskView(DetailView):
             'deadline': self.object.deadline,
             'status': self.object.status.name,
             'priority': self.object.priority.name,
-            'author': self.object.author.username,
+            'author': task_author,
             'type': self.object.type.name,
             'parent_task': parent_task,
             'subtasks': subtasks_list,
@@ -389,6 +392,8 @@ class TaskUpdateView(UpdateView):
                 except Exception as e:
                     print(f"Ошибка при отправке электронного уведомления: {e}")
 
+        task_author = get_user_initials(self.object.author)
+
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -403,7 +408,7 @@ class TaskUpdateView(UpdateView):
             'subtasks': get_subtasks(self.object),
             'destination_to': destination_to,
             'created_at': self.object.created_at,
-            'author': self.object.author.username
+            'author': task_author
         }
         return JsonResponse(task_data)
 
