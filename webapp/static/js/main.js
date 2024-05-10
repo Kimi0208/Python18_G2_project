@@ -103,12 +103,12 @@ async function onSubmitData(e) {
 
         } else if (form.action.includes('comment/create/')) {
             let comment = response.comment
-            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await addComment(comment.id, comment.author, comment.task, comment.created_at, comment.updated_at,
+                comment.description, comment.user_id)
         } else if (form.action.includes('comment') && form.action.includes('update')){
             let comment = response.comment
-            await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await editComment(comment.id, comment.author, comment.task, comment.created_at, comment.updated_at,
+                comment.description, comment.user_id)
         } else if (form.action.includes('file/add/')){
             modal.style.display = 'none'
             modal.innerHTML = ''
@@ -118,7 +118,7 @@ async function onSubmitData(e) {
     hideLoadingProcess()
 }
 
-async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
+async function editComment(id, author, task, created_at, updated_at, description, user_id) {
     let comment_data = document.getElementById(`comment_data_${id}`)
     comment_data.innerHTML = description
     let modal = document.getElementById('action-task-modal_window');
@@ -127,13 +127,13 @@ async function editComment(id, first_name, last_name, task, created_at, updated_
 }
 
 
-async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id){
+async function addComment(id, author, task, created_at, updated_at, description, user_id){
     let comments_info_block = document.getElementById('comments_info')
     let comment_card = document.createElement('div')
     comment_card.style.borderBottom = 'solid 1px black'
     comment_card.style.marginBottom = '10px'
     comment_card.id = `comment_card_${id}`
-    if (user_id === author_id) {
+    if (user_id === author.id) {
         let action_comment_block = document.createElement('div')
         action_comment_block.style.display = 'flex'
         action_comment_block.style.justifyContent = 'flex-end'
@@ -174,7 +174,11 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
     let comment_card_body = document.createElement('div')
 
     let username_info = document.createElement('span')
-    username_info.innerHTML = `${first_name} ${last_name}`
+    if (author.patronymic) {
+        username_info.innerHTML = `${author.last_name} ${author.first_name[0]}. ${author.patronymic[0]}.`
+    } else {
+        username_info.innerHTML = `${author.last_name} ${author.first_name[0]}.`
+    }
     username_info.style.fontStyle='italic'
     username_info.style.fontWeight='bold'
     let create_info = document.createElement('p')
@@ -531,8 +535,8 @@ async function onGetDetailTask(e) {
         comments_info.innerHTML = ''
         let comments = response_data.comments
         for (let comment of comments) {
-            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
-                comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await addComment(comment.id, comment.author, comment.task, comment.created_at,
+                comment.updated_at, comment.description, comment.user_id)
         }
     } else {
         comments_info.innerHTML = 'Комментариев нет'

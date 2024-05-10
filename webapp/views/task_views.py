@@ -13,6 +13,23 @@ from docx import Document
 from docx.shared import Inches
 
 
+def get_user_info(user_object):
+    if user_object.patronymic:
+        user_info = {
+            'id': user_object.id,
+            'first_name': user_object.first_name,
+            'last_name': user_object.last_name,
+            'patronymic': user_object.patronymic
+        }
+    else:
+        user_info = {
+            'id': user_object.id,
+            'first_name': user_object.first_name,
+            'last_name': user_object.last_name
+        }
+    return user_info
+
+
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
@@ -221,15 +238,14 @@ def get_comments(task_pk, user_id):
     comments = Comment.objects.filter(task=task_pk)
     comments_list = []
     for comment in comments:
+        author = get_user_info(comment.author)
         comment_data = {
             'id': comment.id,
-            'author_first_name': comment.author.first_name,
-            'author_last_name': comment.author.last_name,
+            'author': author,
             'task': comment.task.id,
             'created_at': comment.created_at,
             'updated_at': comment.updated_at,
             'description': comment.description,
-            'author_id': comment.author.id,
             'user_id': user_id
         }
         comments_list.append(comment_data)
