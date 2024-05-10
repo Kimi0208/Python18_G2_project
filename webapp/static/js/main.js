@@ -641,6 +641,7 @@ async function createTaskTable(taskData, infoElement) {
         taskLink.addEventListener('click', onGetDetailTask);
 
         nameTd.appendChild(taskLink);
+        nameTd.style.overflowWrap = 'anywhere'
 
         let typeTd = document.createElement('td');
         typeTd.innerHTML = task.type;

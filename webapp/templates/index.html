@@ -32,8 +32,15 @@
             {% endfor %}
             {% for user in users %}
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
-                        data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.first_name }} {{ user.last_name }}</td>
+                    {% if user.patronymic %}
+                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }} 
+                            {{ user.first_name }} {{ user.patronymic }}</td>
+                    {% else %}
+                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }} 
+                            {{ user.first_name }}</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
@@ -44,7 +51,8 @@
         {% include 'partial/tables.html' %}
     </div>
 
-    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
+    <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%; 
+    padding-right: 0px">
         <div style="display: flex; justify-content: space-between;" class="bg-primary">
             <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
             </button>

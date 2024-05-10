@@ -43,10 +43,9 @@
                     <span>Отделы</span>
                 </a>
                 <div class="dropdown">
-                    <button class="btn dropdown-toggle bluetext far fa-folder-open" type="button"
-                            id="dropdownMenuButton"
-                            data-toggle="dropdown">
-                        Делопроизводство
+                    <button class="btn dropdown-toggle bluetext" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown">
+                        <span class="fa-folder-open far"></span> Делопроизводство
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="nav-link" href="{% url 'secretary:companies_list_view' %}">
@@ -136,7 +135,8 @@
 
             <div class="container-fluid">
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">{% block title %}{% endblock %}</h1>
+                    <h1 class="h3 mb-0 text-gray-800">
+                    {% block title %}{% endblock %}</h1>
                     {% block links %}
                     {% endblock %}
                 </div>
