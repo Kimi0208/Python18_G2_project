@@ -145,8 +145,12 @@ def get_history_task(request, task_pk):
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
-            ttt = current_record._meta.get_field(change.field)
-            old, new = check_is_foreign_key(ttt, change.old, change.new)
+            field = current_record._meta.get_field(change.field)
+            if type(change.old) == datetime:
+                change.old = change.old.strftime("%d-%m-%Y %H:%M")
+            if type(change.new) == datetime:
+                change.new = change.new.strftime("%d-%m-%Y %H:%M")
+            old, new = check_is_foreign_key(field, change.old, change.new)
             change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
             changes.append(change_info)
         history_list.append(changes)
