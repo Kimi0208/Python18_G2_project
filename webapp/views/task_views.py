@@ -30,6 +30,15 @@ def get_user_info(user_object):
     return user_info
 
 
+def get_user_initials(user_object):
+    if user_object.patronymic:
+        author = (f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}. '
+                  f'{user_object.patronymic[0].capitalize()}.')
+    else:
+        author = f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}.'
+    return author
+
+
 class TaskListView(ListView):
     model = Task
     template_name = 'index.html'
@@ -97,8 +106,9 @@ def get_files_history(task_pk):
             action = "Добавлен файл:"
         elif file_history.history_type == "-":
             action = "Удален файл:"
+        author = get_user_initials(file_history.history_user)
         history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
-                         file_history.history_user.username, file_history.file)]
+                         author, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
 
@@ -116,8 +126,9 @@ def get_comments_history(task_pk):
             action = f"Добавлен комментарий: {comment_history.description}"
         elif comment_history.history_type == "-":
             action = f"Удален комментарий: {comment_history.description}"
+        author = get_user_initials(comment_history.history_user)
         history_info = [
-            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
+            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), author)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -126,7 +137,8 @@ def get_subtask_history(task_pk):
     subtask_history_list = []
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
-        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), subtask.author.username,
+        author = get_user_initials(subtask.author)
+        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), author,
                          subtask.title)]
         subtask_history_list.append(history_info)
     return subtask_history_list
@@ -151,13 +163,15 @@ def get_history_task(request, task_pk):
             if type(change.new) == datetime:
                 change.new = change.new.strftime("%d-%m-%Y %H:%M")
             old, new = check_is_foreign_key(field, change.old, change.new)
-            change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
+            change_author = get_user_initials(change_user)
+            change_info = (verbose_name, change_date, change_author, str(old), str(new))
             changes.append(change_info)
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
-    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
+    task_author = get_user_initials(task.author)
+    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task_author, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
