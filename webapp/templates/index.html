@@ -45,14 +45,38 @@
 
         {% include 'partial/tables.html' %}
     </div>
+    
     {% if request.user.is_authenticated %}
         <div class="card-body" id="task-detail-info"
              style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%">
             <div style="display: flex; justify-content: space-between;" class="bg-primary">
-{#                {% if perms.webapp.change_task and request.user == task.author %}#}
-                    <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
-                    </button>
-{#                {% endif %}#}
+            
+{#            {% if request.user.id == task.author %}#}
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" id="task_edit" data-target="#exampleModal">
+                  Редактировать
+                </button>
+{#            {% else %}#}
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Ошибка</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        У вас нет прав на редактирование
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+{#            {% endif %}#}
+            
                 <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
                 </button>
                 <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
