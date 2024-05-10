@@ -3,6 +3,10 @@
     color: green;
 }
 
+#TaskDataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start > div > label{
+    margin-left: 5px;
+}
+
 @keyframes blink {
     0% {
         opacity: 1;

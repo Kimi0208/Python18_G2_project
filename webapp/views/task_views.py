@@ -342,6 +342,8 @@ class TaskCreateView(CreateView):
             except Exception as e:
                 print(f"Ошибка при отправке электронного уведомления: {e}")
 
+        task_author = get_user_initials(self.object.author)
+
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -353,7 +355,7 @@ class TaskCreateView(CreateView):
             'deadline': self.object.deadline,
             'status': self.object.status.name,
             'priority': self.object.priority.name,
-            'author': self.object.author.username,
+            'author': task_author,
             'type': self.object.type.name,
             'destination_to': destination_to,
             'subtasks': get_subtasks(self.object.parent_task)
