@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
@@ -12,6 +11,32 @@ from django.db.models import ForeignKey
 from accounts.models import DefUser, Department
 from docx import Document
 from docx.shared import Inches
+
+
+def get_user_info(user_object):
+    if user_object.patronymic:
+        user_info = {
+            'id': user_object.id,
+            'first_name': user_object.first_name,
+            'last_name': user_object.last_name,
+            'patronymic': user_object.patronymic
+        }
+    else:
+        user_info = {
+            'id': user_object.id,
+            'first_name': user_object.first_name,
+            'last_name': user_object.last_name
+        }
+    return user_info
+
+
+def get_user_initials(user_object):
+    if user_object.patronymic:
+        author = (f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}. '
+                  f'{user_object.patronymic[0].capitalize()}.')
+    else:
+        author = f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}.'
+    return author
 
 
 class TaskListView(ListView):
@@ -40,7 +65,9 @@ def get_tasks_from_id(request, pk):
     elif 'tasks/department' in request.path:
         tasks = Task.objects.filter(destination_to_department=pk)
     tasks_list = []
+
     for task in tasks:
+        task_author = get_user_initials(task.author)
         task_data = {
             'id': task.pk,
             'title': task.title,
@@ -49,7 +76,7 @@ def get_tasks_from_id(request, pk):
             'status': task.status.name,
             'priority': task.priority.name,
             'type': task.type.name,
-            'author': task.author.username
+            'author': task_author
         }
         tasks_list.append(task_data)
     return JsonResponse({'tasks': tasks_list})
@@ -78,10 +105,12 @@ def get_files_history(task_pk):
     for file_history in files_history:
         action = ""
         if file_history.history_type == "+":
-             action = "Добавлен файл:"
+            action = "Добавлен файл:"
         elif file_history.history_type == "-":
             action = "Удален файл:"
-        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"), file_history.history_user.username, file_history.file)]
+        author = get_user_initials(file_history.history_user)
+        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
+                         author, file_history.file)]
         files_history_list.append(history_info)
     return files_history_list
 
@@ -99,7 +128,9 @@ def get_comments_history(task_pk):
             action = f"Добавлен комментарий: {comment_history.description}"
         elif comment_history.history_type == "-":
             action = f"Удален комментарий: {comment_history.description}"
-        history_info = [(action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), comment_history.history_user.username)]
+        author = get_user_initials(comment_history.history_user)
+        history_info = [
+            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), author)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -108,7 +139,9 @@ def get_subtask_history(task_pk):
     subtask_history_list = []
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
-        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), subtask.author.username, subtask.title)]
+        author = get_user_initials(subtask.author)
+        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), author,
+                         subtask.title)]
         subtask_history_list.append(history_info)
     return subtask_history_list
 
@@ -126,15 +159,21 @@ def get_history_task(request, task_pk):
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
-            ttt = current_record._meta.get_field(change.field)
-            old, new = check_is_foreign_key(ttt, change.old, change.new)
-            change_info = (verbose_name, change_date, change_user.username, str(old), str(new))
+            field = current_record._meta.get_field(change.field)
+            if type(change.old) == datetime:
+                change.old = change.old.strftime("%d-%m-%Y %H:%M")
+            if type(change.new) == datetime:
+                change.new = change.new.strftime("%d-%m-%Y %H:%M")
+            old, new = check_is_foreign_key(field, change.old, change.new)
+            change_author = get_user_initials(change_user)
+            change_info = (verbose_name, change_date, change_author, str(old), str(new))
             changes.append(change_info)
         history_list.append(changes)
     history_list.extend(get_files_history(task_pk))
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
-    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task.author.username, task.title)]
+    task_author = get_user_initials(task.author)
+    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task_author, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
@@ -201,20 +240,24 @@ def get_subtasks(object):
     subtasks = Task.objects.filter(parent_task=object).order_by('-id')
     subtasks_list = []
     destination_to = ''
+    destination_to_init_n_dep = ''
     for subtask in subtasks:
         if subtask.destination_to_department:
             destination_to = subtask.destination_to_department.name
+            destination_to_init_n_dep = subtask.destination_to_department.name
         elif subtask.destination_to_user:
             destination_to = subtask.destination_to_user.username
+            destination_to_init_n_dep = get_user_initials(subtask.destination_to_user)
         subtask_data = {
             'id': subtask.id,
             'title': subtask.title,
             'destination_to': destination_to,
-            'author': subtask.author.username,
+            'author': get_user_initials(subtask.author),
             'created_at': subtask.created_at,
             'type': subtask.type.name,
             'updated_at': subtask.updated_at,
-            'status': subtask.status.name
+            'status': subtask.status.name,
+            'destination_to_init_n_dep': destination_to_init_n_dep
         }
         subtasks_list.append(subtask_data)
     return subtasks_list
@@ -224,15 +267,14 @@ def get_comments(task_pk, user_id):
     comments = Comment.objects.filter(task=task_pk)
     comments_list = []
     for comment in comments:
+        author = get_user_info(comment.author)
         comment_data = {
             'id': comment.id,
-            'author_first_name': comment.author.first_name,
-            'author_last_name': comment.author.last_name,
+            'author': author,
             'task': comment.task.id,
             'created_at': comment.created_at,
             'updated_at': comment.updated_at,
             'description': comment.description,
-            'author_id': comment.author.id,
             'user_id': user_id
         }
         comments_list.append(comment_data)
@@ -252,17 +294,22 @@ class TaskView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         subtasks_list = get_subtasks(self.object)
         destination_to = ''
+        destination_to_init_n_dep = ''
         if self.object.parent_task:
             if self.object.parent_task.destination_to_department:
                 destination_to = self.object.parent_task.destination_to_department.name
+                destination_to_init_n_dep = self.object.parent_task.destination_to_department.name
             elif self.object.parent_task.destination_to_user:
                 destination_to = self.object.parent_task.destination_to_user.username
+                destination_to_init_n_dep = get_user_initials(self.object.parent_task.author)
             parent_task = {'id': self.object.parent_task.id, 'title': self.object.parent_task.title,
-                           'author': self.object.parent_task.author.username,
+                           'author': get_user_initials(self.object.parent_task.author),
                            'created_at': self.object.parent_task.created_at, 'destination_to': destination_to,
-                           'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at}
+                           'type': self.object.parent_task.type.name, 'updated_at': self.object.parent_task.updated_at,
+                           'destination_to_init_n_dep': destination_to_init_n_dep}
         else:
             parent_task = None
+        task_author = get_user_initials(self.object.author)
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -274,13 +321,13 @@ class TaskView(DetailView):
             'deadline': self.object.deadline,
             'status': self.object.status.name,
             'priority': self.object.priority.name,
-            'author': self.object.author.username,
+            'author': task_author,
             'type': self.object.type.name,
             'parent_task': parent_task,
             'subtasks': subtasks_list,
             'comments': get_comments(self.object.pk, self.request.user.pk)
         }
-        return JsonResponse({'task':task_data})
+        return JsonResponse({'task': task_data})
 
 
 class TaskCreateView(CreateView):
@@ -311,6 +358,8 @@ class TaskCreateView(CreateView):
             except Exception as e:
                 print(f"Ошибка при отправке электронного уведомления: {e}")
 
+        task_author = get_user_initials(self.object.author)
+
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -322,7 +371,7 @@ class TaskCreateView(CreateView):
             'deadline': self.object.deadline,
             'status': self.object.status.name,
             'priority': self.object.priority.name,
-            'author': self.object.author.username,
+            'author': task_author,
             'type': self.object.type.name,
             'destination_to': destination_to,
             'subtasks': get_subtasks(self.object.parent_task)
@@ -356,6 +405,8 @@ class TaskUpdateView(UpdateView):
                 except Exception as e:
                     print(f"Ошибка при отправке электронного уведомления: {e}")
 
+        task_author = get_user_initials(self.object.author)
+
         task_data = {
             'id': self.object.pk,
             'title': self.object.title,
@@ -368,7 +419,9 @@ class TaskUpdateView(UpdateView):
             'priority': self.object.priority.name,
             'type': self.object.type.name,
             'subtasks': get_subtasks(self.object),
-            'destination_to': destination_to
+            'destination_to': destination_to,
+            'created_at': self.object.created_at,
+            'author': task_author
         }
         return JsonResponse(task_data)
 
@@ -407,7 +460,32 @@ def add_subtasks(request, checklist_pk, task_pk):
     new_file_path = f'uploads/user_docs/{doc_name}.docx'
     copyfile(base_file_path, new_file_path)
     doc = DocxTemplate(new_file_path)
-    context = {'title': main_task.title, 'description': main_task.description, 'users': users}
+
+    doc.save(new_file_path)
+    for table in doc.tables:
+        for row in table.rows:
+            if 'Подпись' in row.cells[0].text:
+                row.cells[1].text = ''
+                paragraph = row.cells[1].paragraphs[0]
+                run = paragraph.add_run()
+                paragraph.add_run().add_picture(request.user.signature.path, width=Inches(2))
+    doc.save(new_file_path)
+
+    created_at = datetime.now().strftime("%d.%m.%Y")
+    user_patronymic = ''
+    if request.user.patronymic:
+        user_patronymic = request.user.patronymic[0] + "."
+    user_signature = ''
+    if request.user.signature:
+        user_signature = request.user.signature
+    user = {
+        'last_name': request.user.last_name,
+        'first_name': request.user.first_name[0] + ".",
+        'patronymic': user_patronymic,
+        'signature': user_signature
+    }
+    context = {'title': main_task.title, 'description': main_task.description, 'users': users, 'author': user,
+               'created_at': created_at}
     doc.render(context)
     doc.save(new_file_path)
     File.objects.create(user=request.user, task=main_task, file=new_file_path, checklist_id=checklist_pk)

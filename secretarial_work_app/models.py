@@ -59,10 +59,8 @@ class ContractLocation(models.Model):
 
 class ContractRegistry(models.Model):
     document_auto_number = models.IntegerField(auto_created=True, verbose_name='', null=True, blank=True)
-    company = models.ForeignKey('CompaniesList', on_delete=models.CASCADE, verbose_name='Компания', null=True,
-                                blank=True)
-    input_contract_number = models.CharField(max_length=250, verbose_name='Порядковый номер входяшего документа',
-                                             null=True, blank=True)
+    company = models.ForeignKey('CompaniesList', on_delete=models.CASCADE, verbose_name='Компания')
+    input_contract_number = models.CharField(max_length=250, verbose_name='Порядковый номер входяшего документа')
     description = models.TextField(max_length=250, verbose_name='Описание документа', null=True, blank=True)
     consultion_date = models.DateField(auto_now_add=False, verbose_name='Дата заключения договора', null=True,
                                        blank=True)

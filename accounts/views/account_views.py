@@ -1,13 +1,12 @@
 from django.contrib import messages
 from django.shortcuts import redirect, reverse, get_object_or_404
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from accounts.forms import MyUserCreationForm, UserChangeForm, MyPasswordChangeForm, UserForm
+from accounts.forms import UserChangeForm, MyPasswordChangeForm, UserForm
 from django.contrib.auth.views import PasswordChangeView
-from accounts.models import DefUser, Department
-from accounts.models import DefUser, Position, Department
+from accounts.models import DefUser
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):

@@ -89,14 +89,13 @@ async function onSubmitData(e) {
                 response.priority,
                 formatDate(response.deadline),
                 response.author,
-                response.destination_to,
                 `/task/${response.id}/`);
             }
             modal.style.display = 'none'
             modal.innerHTML = ''
         } else if (form.action.includes('task') && form.action.includes('update')) {
             await updateTableTask(response.id, response.title, response.type, response.status, response.priority,
-                formatDate(response.deadline), response.destination_to);
+                formatDate(response.created_at), formatDate(response.deadline), response.destination_to, response.author);
 
             await updateDetailTaskInfo(response.id, response.title, response.type, response.status, response.priority,
                 formatDate(response.deadline), formatDate(response.start_date), formatDate(response.updated_at),
@@ -104,12 +103,12 @@ async function onSubmitData(e) {
 
         } else if (form.action.includes('comment/create/')) {
             let comment = response.comment
-            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await addComment(comment.id, comment.author, comment.task, comment.created_at, comment.updated_at,
+                comment.description, comment.user_id)
         } else if (form.action.includes('comment') && form.action.includes('update')){
             let comment = response.comment
-            await editComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task,
-                comment.created_at, comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await editComment(comment.id, comment.author, comment.task, comment.created_at, comment.updated_at,
+                comment.description, comment.user_id)
         } else if (form.action.includes('file/add/')){
             modal.style.display = 'none'
             modal.innerHTML = ''
@@ -119,7 +118,7 @@ async function onSubmitData(e) {
     hideLoadingProcess()
 }
 
-async function editComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id) {
+async function editComment(id, author, task, created_at, updated_at, description, user_id) {
     let comment_data = document.getElementById(`comment_data_${id}`)
     comment_data.innerHTML = description
     let modal = document.getElementById('action-task-modal_window');
@@ -128,13 +127,13 @@ async function editComment(id, first_name, last_name, task, created_at, updated_
 }
 
 
-async function addComment(id, first_name, last_name, task, created_at, updated_at, description, author_id, user_id){
+async function addComment(id, author, task, created_at, updated_at, description, user_id){
     let comments_info_block = document.getElementById('comments_info')
     let comment_card = document.createElement('div')
     comment_card.style.borderBottom = 'solid 1px black'
     comment_card.style.marginBottom = '10px'
     comment_card.id = `comment_card_${id}`
-    if (user_id === author_id) {
+    if (user_id === author.id) {
         let action_comment_block = document.createElement('div')
         action_comment_block.style.display = 'flex'
         action_comment_block.style.justifyContent = 'flex-end'
@@ -175,7 +174,11 @@ async function addComment(id, first_name, last_name, task, created_at, updated_a
     let comment_card_body = document.createElement('div')
 
     let username_info = document.createElement('span')
-    username_info.innerHTML = `${first_name} ${last_name}`
+    if (author.patronymic) {
+        username_info.innerHTML = `${author.last_name} ${author.first_name[0]}. ${author.patronymic[0]}.`
+    } else {
+        username_info.innerHTML = `${author.last_name} ${author.first_name[0]}.`
+    }
     username_info.style.fontStyle='italic'
     username_info.style.fontWeight='bold'
     let create_info = document.createElement('p')
@@ -250,20 +253,21 @@ async function onSubmitCommentDelete(e) {
     hideLoadingProcess()
 }
 
-async function updateTableTask(id, title, type, status, priority, deadline, destination_to) {
+async function updateTableTask(id, title, type, status, priority, created_at, deadline, destination_to, author) {
     let task = dataTable.row(`#task_id_${id}`)
     let tableBody = document.getElementById('table_body')
     let whose_table = tableBody.dataset['whose_table']
 
     if (whose_table === destination_to) {
         let data = [
+            id,
             title,
             type,
             status,
             priority,
-            task.data()[4],
+            created_at,
             deadline,
-            task.data()[6]
+            author
         ];
         task.data(data).draw()
         dataTable.columns.adjust().draw()
@@ -336,18 +340,40 @@ async function onGetTasks(e) {
     let tasks = response.tasks
     let tableBody = document.getElementById('table_body')
     tableBody.dataset.whose_table = whose_table
-    dataTable.clear()
+    let table = dataTable.clear()
     for (let task of tasks) {
-        let url = `/task/${task.id}/`
-        await addTask(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author, task.destination_to, url)
+        await loadTasks(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author)
     }
+
+    table.on('click', 'tbody tr', function (e) {
+        let task_id = table.row(this).data()[0];
+        this.dataset.detail_task = `/task/${task_id}/`;
+        this.id = `task_id_${task_id}`
+        onGetDetailTask(e);
+    });
+
     dataTable.draw()
     hideLoadingProcess()
 }
 
-
-async function addTask(id, title, type, created_at, status, priority, deadline, author, destination_to, url) {
+async function loadTasks(id, title, type, created_at, status, priority, deadline, author) {
     let data = [
+        id,
+        title,
+        type,
+        status,
+        priority,
+        created_at,
+        deadline,
+        author
+    ];
+    dataTable.row.add(data)
+}
+
+
+async function addTask(id, title, type, created_at, status, priority, deadline, author, url) {
+    let data = [
+        id,
         title,
         type,
         status,
@@ -357,12 +383,14 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
         author
     ];
     let newTask = dataTable.row.add(data).draw().node();
-    newTask.classList.add('detail-btn_task');
-    newTask.dataset.detail_task = url;
-    newTask.style.cursor = 'pointer';
-    newTask.id = `task_id_${id}`;
-    newTask.addEventListener('click', onGetDetailTask)
 
+    if (newTask) {
+        newTask.classList.add('detail-btn_task');
+        newTask.dataset.detail_task = url;
+        newTask.style.cursor = 'pointer';
+        newTask.id = `task_id_${id}`;
+        newTask.addEventListener('click', onGetDetailTask)
+    }
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'none'
     modal.innerHTML = ''
@@ -399,11 +427,12 @@ async function onGetDetailTask(e) {
     let element = e.currentTarget;
     let detail_attribute = element.dataset['detail_task'];
     let detail_tasks_buttons = document.getElementsByClassName('detail-btn_task')
-    for (let button of detail_tasks_buttons) {
-        if (button.style.background === 'lightgrey') {
-            button.style.background = ''
+    let rows = dataTable.rows().nodes()
+    rows.each(function (row){
+        if (row.style.background === 'lightgrey'){
+            row.style.background = ''
         }
-    }
+    })
     element.style.background = 'lightgrey'
     let task_detail_info_element = document.getElementById('task-detail-info');
     task_detail_info_element.style.display = 'block';
@@ -506,8 +535,8 @@ async function onGetDetailTask(e) {
         comments_info.innerHTML = ''
         let comments = response_data.comments
         for (let comment of comments) {
-            await addComment(comment.id, comment.author_first_name, comment.author_last_name, comment.task, comment.created_at,
-                comment.updated_at, comment.description, comment.author_id, comment.user_id)
+            await addComment(comment.id, comment.author, comment.task, comment.created_at,
+                comment.updated_at, comment.description, comment.user_id)
         }
     } else {
         comments_info.innerHTML = 'Комментариев нет'
@@ -612,10 +641,11 @@ async function createTaskTable(taskData, infoElement) {
         }
         taskLink.href = `task/${task.id}/`;
         taskLink.dataset.detail_task = taskLink.href;
-        taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to}`;
+        taskLink.innerHTML = `#${task.id} ${task.title} <br>От: ${task.author}<br> Кому: ${task.destination_to_init_n_dep}`;
         taskLink.addEventListener('click', onGetDetailTask);
 
         nameTd.appendChild(taskLink);
+        nameTd.style.overflowWrap = 'anywhere'
 
         let typeTd = document.createElement('td');
         typeTd.innerHTML = task.type;
@@ -775,7 +805,12 @@ function onLoad() {
         await onGetNewTask() }, 5000);
 
     $(document).ready(function() {
-          dataTable = $('#DataTable').DataTable();
+          dataTable = $('#TaskDataTable').DataTable({
+              columnDefs: [
+                  { visible:false, target: [0]}
+              ],
+          });
+          $('#TaskDataTable').show()
     });
 
     let action_buttons = document.getElementsByClassName('action-btn_task')
@@ -798,7 +833,6 @@ function onLoad() {
 
 
 function showLoadingProcess() {
-    console.log(123)
     let loader = document.getElementById('overlay')
     loader.style.display='flex'
 }
@@ -810,26 +844,3 @@ function hideLoadingProcess() {
 
 
 window.addEventListener('load', onLoad);
-// function onLoad(e) {
-//     e.preventDefault();
-//     let action_buttons = document.getElementsByClassName('action-btn_task')
-//     console.log(action_buttons)
-//     for (let action_button of action_buttons) {
-//         action_button.addEventListener('click', onClick)
-//     }
-// }
-
-
-// window.addEventListener('load', onLoad);
-
-// function showModal(objectId) {
-//     // 1. API
-//     // 1.1 Get task JSON
-//     // 1.2 Update task JSON
-//     $('#modal-title').text(`Object id: ${objectId}`);
-//     $('#taskModal').modal('show')
-// }
-
-// function showCreateModal() {
-//     $('#taskCreateModal').modal('show')
-// }

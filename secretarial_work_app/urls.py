@@ -2,8 +2,8 @@ from django.urls import path
 from secretarial_work_app.views import (CompanyCreateView, CompanyListView, ContractsListView, ContractsCreateView,
                                         InMailsListView, OutMailsListView, InMailsCreateView, OutMailsCreateView,
                                         contract_delete, ContractsUpdateView, company_delete, CompanyUpdateView,
-                                        in_mail_delete, InMailsUpdateView, OutMailsUpdateView, out_mail_delete,
-                                        attachment_delete)
+                                        in_mail_delete, InMailsUpdateView, OutMailsUpdateView, out_mail_delete, attachment_delete)
+
 
 app_name = 'secretary'
 

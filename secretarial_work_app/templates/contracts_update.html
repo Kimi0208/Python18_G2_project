@@ -14,12 +14,11 @@
             {% endfor %}
             <p>{{ field }}</p>
         {% endfor %}
-
         {% if contracts.attachments.all %}
             <h3>Текущие вложения:</h3>
             <ul>
                 {% for attachment in contracts.attachments.all %}
-                    <li>{{ attachment.file.name | cut:'uploads/contracts/'}}
+                    <li>{{ attachment.file.name }}
                         <i class="fas fa-fw fa-trash-alt" type="button" data-toggle="modal"
                            data-target="#attachmentDeleteModal{{ attachment.pk }}" style="color: #4e73df"></i>
                         <div class="modal fade" id="attachmentDeleteModal{{ attachment.pk }}" tabindex="-1"

@@ -1,8 +1,9 @@
 <div class="card-body pt-0">
     <div class="table-responsive">
-        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+        <table class="table table-bordered" id="TaskDataTable" width="100%" cellspacing="0" style="display: none">
             <thead>
             <tr>
+                <th>ID</th>
                 <th>Задача</th>
                 <th>Тип</th>
                 <th>Статус</th>
@@ -13,21 +14,23 @@
             </tr>
             </thead>
             <tbody id="table_body" data-whose_table="{{ request.user.username }}">
-                {% for task in tasks %}
-                    <tr style="cursor: pointer" class="detail-btn_task" data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}" id="task_id_{{ task.pk }}">
-                        <td id="task_{{ task.pk }}_title">{{ task.title }}</td>
-                        <td id="task_{{ task.pk }}_type">{{ task.type }}</td>
-                        <td id="task_{{ task.pk }}_status">{{ task.status }}</td>
-                        <td id="task_{{ task.pk }}_priority">{{ task.priority }}</td>
-                        <td id="task_{{ task.pk }}_created_at">{{ task.created_at|date:"d-m-Y H:i" }}</td>
-                        {% if task.deadline %}
-                            <td id="task_{{ task.pk }}_deadline">{{ task.deadline|date:"d-m-Y H:i" }}</td>
-                        {% else %}
-                            <td id="task_{{ task.pk }}_deadline"></td>
-                        {% endif %}
-                        <td id="task_{{ task.pk }}_author">{{ task.author }}</td>
-                    </tr>
-                {% endfor %}
+            {% for task in tasks %}
+                <tr style="cursor: pointer" class="detail-btn_task"
+                    data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}" id="task_id_{{ task.pk }}">
+                    <td>{{ task.id }}</td>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.type }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.priority }}</td>
+                    <td>{{ task.created_at|date:"d-m-Y H:i" }}</td>
+                    {% if task.deadline %}
+                        <td>{{ task.deadline|date:"d-m-Y H:i" }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>{{ task.author }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
