@@ -2,12 +2,15 @@
     animation: blink 2s infinite;
     color: green;
 }
+
+#action-task-modal_window > div > div,
 #TaskDataTable > tbody > tr,
 #DataTable > tbody > tr,
 #comments_field,
 #task_description {
      overflow-wrap: anywhere;
 }
+
 
 #TaskDataTable_wrapper > div:nth-child(1) > div.dt-layout-cell.dt-start > div > label{
     margin-left: 5px;
@@ -81,7 +84,7 @@ table.dataTable th.dt-type-numeric, table.dataTable th.dt-type-date, table.dataT
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 35%;
+    width: 36%;
 }
 
 .close {

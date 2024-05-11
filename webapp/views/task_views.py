@@ -194,13 +194,18 @@ def get_task_files(request, task_pk):
             if file.checklist.users.filter(id=request.user.id).exists():
                 sign_url = f'sign_file/{file.pk}/'
 
+        current_user_signature = ''
+        if request.user.signature:
+            current_user_signature = request.user.signature.url
         file_data = {
             'id': file.id,
             'name': file.file.name,
             'task_id': file.task.id,
             'url': file.file.url,
             'sign_url': sign_url,
-            'current_user': request.user.id
+            'current_user': request.user.id,
+            'current_user_signature': current_user_signature
+
         }
         file_list.append(file_data)
     signed_files = []
@@ -457,7 +462,7 @@ def add_subtasks(request, checklist_pk, task_pk):
             print(f"Ошибка при отправке электронного уведомления: {e}")
 
     file_count = File.objects.count()
-    doc_name = f'Задача{task_pk}_{file_count}'
+    doc_name = f'Задача{task_pk}_{main_task.title}'
     base_file_path = 'uploads/user_docs/Шаблон.docx'
     new_file_path = f'uploads/user_docs/{doc_name}.docx'
     copyfile(base_file_path, new_file_path)

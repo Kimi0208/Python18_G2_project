@@ -560,6 +560,7 @@ async function onGetTaskHistory(e) {
     modal.style.display = 'block';
     let modal_content = document.createElement('div')
     modal_content.classList.add('modal-content', 'action_task_modal-content')
+    modal_content.style.overflowWrap = 'anywhere'
     let div_header = document.createElement('div')
     div_header.classList.add('form-modal-header', 'action_task_form-modal-header')
     let h4_header = document.createElement('h4')
@@ -686,7 +687,6 @@ async function onGetInfo(e) {
                     </div>
                     <div style="width: 18rem;">
                         <ul class="list-group list-group-flush">
-                                
                         </ul>
                     </div>
                 </div>
@@ -709,15 +709,27 @@ async function onGetInfo(e) {
             if (response.signed_files.includes(file.id)) {
                 action_field.innerHTML += `<span>Подписан</span>`
             } else {
-                action_field.innerHTML += `
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
-                        Подпись
-                      </button>
-                      <div class="dropdown-menu">
-                        <a class="dropdown-item sign_file" href="${file.sign_url}">Подписать файл</a>
-                      </div>
-                    </div>`
+                if (file.current_user_signature) {
+                    action_field.innerHTML += `
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
+                            Подпись
+                          </button>
+                          <div class="dropdown-menu">
+                            <a class="dropdown-item sign_file" href="${file.sign_url}">Подписать файл</a>
+                          </div>
+                        </div>`
+                } else {
+                    action_field.innerHTML += `
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-link dropdown-toggle p-0" data-toggle="dropdown" aria-expanded="false">
+                            Подпись
+                          </button>
+                          <div class="dropdown-menu">
+                            <button class="dropdown-item sign_file" disabled>Нет подписи</button>
+                          </div>
+                        </div>`
+                }
             }
         }
     });
