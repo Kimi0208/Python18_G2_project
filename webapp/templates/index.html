@@ -34,11 +34,11 @@
                 <tr>
                     {% if user.patronymic %}
                         <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
-                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }} 
+                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
                             {{ user.first_name }} {{ user.patronymic }}</td>
                     {% else %}
                         <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
-                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }} 
+                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
                             {{ user.first_name }}</td>
                     {% endif %}
                 </tr>
@@ -51,40 +51,11 @@
         {% include 'partial/tables.html' %}
     </div>
     {% if request.user.is_authenticated %}
-      <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%; 
+        <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%; 
       padding-right: 0px">
-          <div style="display: flex; justify-content: space-between;" class="bg-primary">
-              <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
-              </button>
-              <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
-              </button>
-              <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
-              <div class="dropdown">
-                  <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
-                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Добавить
-
+            <div style="display: flex; justify-content: space-between;" class="bg-primary">
+                <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
                 </button>
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Ошибка</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        У вас нет прав на редактирование
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            
                 <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
                 </button>
                 <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
@@ -116,9 +87,15 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
                                     {% for checklist in checklists %}
-                                        <button class="dropdown-item add_checklist_btn"
-                                                data-checklist_id="{{ checklist.pk }}"
-                                                data-add_checklist="">{{ checklist.name }}</button>
+                                        {% if request.user.signature %}
+                                            <button class="dropdown-item add_checklist_btn"
+                                                    data-checklist_id="{{ checklist.pk }}"
+                                                    data-add_checklist="">{{ checklist.name }}</button>
+                                        {% else %}
+                                            <button class="dropdown-item add_checklist_btn" disabled
+                                                    data-checklist_id="{{ checklist.pk }}"
+                                                    data-add_checklist="">{{ checklist.name }}</button>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
@@ -164,7 +141,7 @@
         <div id="overlay" class="overlay">
             <div class="loader"></div>
         </div>
-<!--         <div id="detail-task-modal_window" class="modal action_task_modal"></div> -->
+        <!--         <div id="detail-task-modal_window" class="modal action_task_modal"></div> -->
 
     {% endif %}
 
