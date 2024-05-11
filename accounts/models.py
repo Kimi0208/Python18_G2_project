@@ -11,7 +11,8 @@ class DefUser(AbstractUser):
 
     email = models.EmailField(verbose_name='Почтовый адрес')
     email_password = models.CharField(max_length=5000, null=True, blank=True, verbose_name='Пароль от почтового ящика')
-    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE, null=True, blank=True)
+    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.SET_NULL,
+                                 null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
     signature = models.FileField(verbose_name="Подпись", upload_to='uploads/signature', null=True, blank=True)
     patronymic = models.CharField(max_length=50, null=True, blank=True, verbose_name='Отчество')
@@ -47,7 +48,7 @@ class DefUser(AbstractUser):
 
 class Position(models.Model):
     name = models.CharField(max_length=100, verbose_name='Должность')
-    department = models.ForeignKey('Department', on_delete=models.CASCADE, verbose_name='Отдел')
+    department = models.ForeignKey('Department', on_delete=models.SET_NULL, verbose_name='Отдел')
 
     def __str__(self):
         return self.name

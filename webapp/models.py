@@ -12,11 +12,11 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Время обновления задачи')
     done_at = models.DateTimeField(verbose_name='Время завершения задачи', null=True, blank=True)
     deadline = models.DateTimeField(null=True, verbose_name='Дедлайн задачи', blank=True)
-    status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус задачи', default=1)
-    priority = models.ForeignKey('Priority', on_delete=models.CASCADE, verbose_name='Приоритет задачи')
-    author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор задачи',
+    status = models.ForeignKey('Status', on_delete=models.SET_NULL, verbose_name='Статус задачи', default=1)
+    priority = models.ForeignKey('Priority', on_delete=models.SET_NULL, verbose_name='Приоритет задачи')
+    author = models.ForeignKey('accounts.DefUser', on_delete=models.SET_NULL, verbose_name='Автор задачи',
                                related_name='task_author', null=True)
-    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.CASCADE,
+    parent_task = models.ForeignKey('Task', null=True, blank=True, on_delete=models.SET_NULL,
                                     verbose_name='Связанная задача', related_name='tasks')
     destination_to_department = models.ForeignKey('accounts.Department', verbose_name='На какой отдел задача',
                                                   on_delete=models.SET_NULL, null=True, blank=True)
@@ -41,8 +41,8 @@ class Type(models.Model):
 
 
 class Comment(models.Model):
-    author = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Автор комментария')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Комментарий к задаче', related_name='comments',
+    author = models.ForeignKey('accounts.DefUser', on_delete=models.SET_NULL, verbose_name='Автор комментария')
+    task = models.ForeignKey('Task', on_delete=models.SET_NULL, verbose_name='Комментарий к задаче', related_name='comments',
                              null=True, blank=True)
     description = models.TextField(max_length=2500, verbose_name='Текст комментария')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания', blank=True, null=True)
@@ -69,18 +69,18 @@ class Priority(models.Model):
 
 class File(models.Model):
     file = models.FileField(verbose_name="Файл", upload_to='uploads/user_docs', null=True, blank=True)
-    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='От кого', null=True,
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.SET_NULL, verbose_name='От кого', null=True,
                              blank=True)
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача', null=True, blank=True)
-    checklist = models.ForeignKey('Checklist', on_delete=models.CASCADE, verbose_name='Чеклист', null=True,
+    task = models.ForeignKey('Task', on_delete=models.SET_NULL, verbose_name='Задача', null=True, blank=True)
+    checklist = models.ForeignKey('Checklist', on_delete=models.SET_NULL, verbose_name='Чеклист', null=True,
                                   blank=True, related_name='files')
     history = HistoricalRecords()
 
 
 class FileSignature(models.Model):
-    file = models.ForeignKey('File', on_delete=models.CASCADE, verbose_name='Файл')
-    user = models.ForeignKey('accounts.DefUser', on_delete=models.CASCADE, verbose_name='Пользователь')
-    task = models.ForeignKey('Task', on_delete=models.CASCADE, verbose_name='Задача')
+    file = models.ForeignKey('File', on_delete=models.SET_NULL, verbose_name='Файл')
+    user = models.ForeignKey('accounts.DefUser', on_delete=models.SET_NULL, verbose_name='Пользователь')
+    task = models.ForeignKey('Task', on_delete=models.SET_NULL, verbose_name='Задача')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
 
