@@ -193,6 +193,10 @@ def get_task_files(request, task_pk):
         if file.checklist:
             if file.checklist.users.filter(id=request.user.id).exists():
                 sign_url = f'sign_file/{file.pk}/'
+        if request.user.signature:
+            current_user_signature = True
+        else:
+            current_user_signature = False
 
         current_user_signature = ''
         if request.user.signature:
@@ -205,7 +209,6 @@ def get_task_files(request, task_pk):
             'sign_url': sign_url,
             'current_user': request.user.id,
             'current_user_signature': current_user_signature
-
         }
         file_list.append(file_data)
     signed_files = []

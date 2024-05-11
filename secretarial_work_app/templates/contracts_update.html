@@ -4,7 +4,6 @@
 {% block content %}
     <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
         {% csrf_token %}
-
         {% for error in form.non_field_errors %}
             <p class="form-error">{{ error }}</p>
         {% endfor %}
@@ -15,7 +14,6 @@
             {% endfor %}
             <p>{{ field }}</p>
         {% endfor %}
-
         {% if contracts.attachments.all %}
             <h3>Текущие вложения:</h3>
             <ul>

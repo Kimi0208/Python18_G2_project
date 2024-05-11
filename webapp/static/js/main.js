@@ -730,6 +730,7 @@ async function onGetInfo(e) {
                           </div>
                         </div>`
                 }
+
             }
         }
     });
