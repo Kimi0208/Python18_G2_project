@@ -11,16 +11,18 @@ class DefUser(AbstractUser):
 
     email = models.EmailField(verbose_name='Почтовый адрес')
     email_password = models.CharField(max_length=5000, null=True, blank=True, verbose_name='Пароль от почтового ящика')
-    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE)
+    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE, null=True, blank=True)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
     signature = models.FileField(verbose_name="Подпись", upload_to='uploads/signature', null=True, blank=True)
     patronymic = models.CharField(max_length=50, null=True, blank=True, verbose_name='Отчество')
 
     def __str__(self):
-        if self.patronymic:
+        if self.patronymic and self.first_name:
             return f'{self.last_name.capitalize()} {self.first_name[0].capitalize()}. {self.patronymic[0]}.'
-        else:
+        elif self.first_name:
             return f'{self.last_name.capitalize()} {self.first_name[0].capitalize()}.'
+        else:
+            return f'{self.username}'
 
     def save(self, *args, **kwargs):
         if self.email_password and type(self.email_password) != bytes:
