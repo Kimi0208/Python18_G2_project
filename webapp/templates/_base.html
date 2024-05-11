@@ -9,20 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>CRM</title>
-
-    <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
-    <link
-            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-            rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
     <link href="//cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css" rel="stylesheet" type="text/css">
-    <!-- Custom styles for this template-->
     <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <script src="https://kit.fontawesome.com/017fe38d81.js" crossorigin="anonymous"></script>
 
 </head>
@@ -30,13 +24,8 @@
 <body id="page-top">
 
 <div id="wrapper">
-    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column" style="height: 100vh">
-
-        <!-- Main Content -->
         <div id="content">
-
-            <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                 <a class="nav-link" href="{% url 'webapp:index' %}">
@@ -53,18 +42,19 @@
                     <i class="fas fa-fw fa-user-friends"></i>
                     <span>Отделы</span>
                 </a>
+
                 {% if request.user.is_authenticated %}
                     {% if 'Personnel Department' in request.user.groups.values_list|join:', ' or request.user.is_staff %}
                         <div class="dropdown">
-                            <button class="btn dropdown-toggle bluetext far fa-folder-open" type="button" id="dropdownMenuButton"
-                                    data-toggle="dropdown">
-                                Делопроизводство
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="nav-link" href="{% url 'secretary:companies_list_view' %}">
-                                    <i class="fa-solid fa-building"></i>
-                                    <span>Список компаний</span>
-                                </a>
+                          <button class="btn dropdown-toggle bluetext" type="button" id="dropdownMenuButton"
+                              data-toggle="dropdown">
+                              <span class="fa-folder-open far"></span> Делопроизводство
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a class="nav-link" href="{% url 'secretary:companies_list_view' %}">
+                                  <i class="fa-solid fa-building"></i>
+                                  <span>Список компаний</span>
+                              </a>
 
                                 <a class="nav-link" href="{% url 'secretary:contracts_list_view' %}">
                                     <i class="fa-solid fa-file-lines"></i>
@@ -86,21 +76,16 @@
                 {% endif %}
 
 
-                <!-- Sidebar Toggle (Topbar) -->
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                     <i class="fa fa-bars"></i>
                 </button>
 
-                <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
-
-                    <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                     <li class="nav-item dropdown no-arrow d-sm-none">
                         <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-search fa-fw"></i>
                         </a>
-                        <!-- Dropdown - Messages -->
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
                              aria-labelledby="searchDropdown">
                             <form class="form-inline mr-auto w-100 navbar-search">
@@ -123,29 +108,20 @@
                         </div>
                     </li>
 
-
                     <div class="topbar-divider d-none d-sm-block"></div>
-
-                    <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
                             <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.username }}</span>
                             <i class="fa-solid fa-user-pen"></i>
-
                         </a>
-                        <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                              aria-labelledby="userDropdown">
-
                             {% if not request.user.is_authenticated %}
                                 <a class="dropdown-item" href="{% url 'accounts:login' %}">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Вход
                                 </a>
-
-
                             {% else %}
                                 <a class="dropdown-item" href="{% url 'accounts:user_detail' pk=user.id %}">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -158,60 +134,30 @@
                                     Выход
                                 </a>
                             {% endif %}
-
                         </div>
                     </li>
-
                 </ul>
-
             </nav>
-            <!-- End of Topbar -->
 
-            <!-- Begin Page Content -->
             <div class="container-fluid">
-
-                <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">{% block title %}{% endblock %}</h1>
+                    <h1 class="h3 mb-0 text-gray-800">
+                    {% block title %}{% endblock %}</h1>
                     {% block links %}
-
                     {% endblock %}
                 </div>
-
-                <!-- Content Row -->
                 <div class="row">
                     {% block content %} {% endblock %}
                 </div>
-
-
             </div>
-            <!-- /.container-fluid -->
-
         </div>
-        <!-- End of Main Content -->
-
-        <!-- Footer -->
-        {#            <footer class="sticky-footer bg-white">#}
-        {#                <div class="container my-auto">#}
-        {#                    <div class="copyright text-center my-auto">#}
-        {#                        <span>Copyright &copy; Your Website 2021</span>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#            </footer>#}
-        {#            <!-- End of Footer -->#}
-
     </div>
-    <!-- End of Content Wrapper -->
-
 </div>
-<!-- End of Page Wrapper -->
 
-<!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
 </a>
 
-<!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -231,32 +177,33 @@
                     {% csrf_token %}
                     <button class="btn btn-secondary">Выход</button>
                 </form>
-
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap core JavaScript-->
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"
         integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
 
-<!-- Core plugin JavaScript-->
 <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
-<!-- Custom scripts for all pages-->
 <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 
-<!-- Page level plugins -->
 <script src="{% static 'vendor/chart/Chart.min.js' %}"></script>
 
 <script src="//cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
+{% block scripts %}
+{% endblock %}
+<script>
+    $(document).ready(function () {
+        $('#DataTable').DataTable();
+    });
+</script>
 
-{% block scripts %}{% endblock %}
 </body>
 
 </html>

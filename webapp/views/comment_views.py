@@ -3,6 +3,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from webapp.forms import CommentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from webapp.models import Comment, Task
+from webapp.views.task_views import get_user_info
 
 
 class CommentCreateView(PermissionRequiredMixin, CreateView):
@@ -16,15 +17,14 @@ class CommentCreateView(PermissionRequiredMixin, CreateView):
         self.object.author = self.request.user
         self.object.task = Task.objects.get(pk=self.kwargs['task_pk'])
         self.object.save()
+        author = get_user_info(self.request.user)
         comment = {
             'description': self.object.description,
             'id': self.object.id,
-            'author_first_name': self.object.author.first_name,
-            'author_last_name': self.object.author.last_name,
             'task': self.object.task.id,
             'created_at': self.object.created_at,
             'updated_at': self.object.updated_at,
-            'author_id': self.object.author.id,
+            'author': author,
             'user_id': self.request.user.id
         }
         return JsonResponse({'comment': comment})
@@ -41,15 +41,14 @@ class CommentUpdateView(PermissionRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        author = get_user_info(self.object.author)
         comment = {
             'description': self.object.description,
             'id': self.object.id,
-            'author_first_name': self.object.author.first_name,
-            'author_last_name': self.object.author.last_name,
+            'author': author,
             'task': self.object.task.id,
             'created_at': self.object.created_at,
             'updated_at': self.object.updated_at,
-            'author_id': self.object.author.id,
             'user_id': self.request.user.id
         }
         return JsonResponse({'comment': comment})

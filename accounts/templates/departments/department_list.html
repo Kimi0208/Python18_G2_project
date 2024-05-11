@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block links %}
+
     {% if request.user.is_superuser or request.user.is_staff %}
         <a href="{% url 'accounts:create_department' %}"
            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
@@ -36,6 +37,7 @@
                             <td style="text-align: center;">{{ department.num_users }}</td>
                             
                             <td>
+
                                 {% if request.user.is_superuser or request.user.is_staff %}
                                     <a href="{% url 'accounts:update_department' department.id %}"><i
                                             class="fas fa-fw fa-edit"></i></a>
@@ -83,9 +85,4 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        $(document).ready(function () {
-            $('#DataTable').DataTable();
-        });
-    </script>
 {% endblock %}

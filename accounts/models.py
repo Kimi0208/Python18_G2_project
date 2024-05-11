@@ -6,19 +6,21 @@ from crm import settings
 
 class DefUser(AbstractUser):
 
-    first_name = models.CharField(max_length=30, null=False, blank=False, verbose_name='Имя сотрудника')
-    last_name = models.CharField(max_length=30, null=False, blank=False, verbose_name='Фамилия сотрудника')
+    first_name = models.CharField(max_length=30, verbose_name='Имя сотрудника')
+    last_name = models.CharField(max_length=30, verbose_name='Фамилия сотрудника')
 
-    email = models.EmailField(null=False, blank=False, verbose_name='Почтовый адрес')
+    email = models.EmailField(verbose_name='Почтовый адрес')
     email_password = models.CharField(max_length=5000, null=True, blank=True, verbose_name='Пароль от почтового ящика')
-    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE,
-
-                                 null=True, blank=True)
+    position = models.ForeignKey('Position', max_length=30, verbose_name='Должность', on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=30, null=False, blank=False, verbose_name='Номер телефона')
     signature = models.FileField(verbose_name="Подпись", upload_to='uploads/signature', null=True, blank=True)
+    patronymic = models.CharField(max_length=50, null=True, blank=True, verbose_name='Отчество')
 
     def __str__(self):
-        return self.username
+        if self.patronymic:
+            return f'{self.last_name.capitalize()} {self.first_name[0].capitalize()}. {self.patronymic[0]}.'
+        else:
+            return f'{self.last_name.capitalize()} {self.first_name[0].capitalize()}.'
 
     def save(self, *args, **kwargs):
         if self.email_password and type(self.email_password) != bytes:
@@ -42,7 +44,7 @@ class DefUser(AbstractUser):
 
 
 class Position(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название должности', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Должность')
     department = models.ForeignKey('Department', on_delete=models.CASCADE, verbose_name='Отдел')
 
     def __str__(self):
@@ -50,7 +52,7 @@ class Position(models.Model):
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название отдела', unique=True)
+    name = models.CharField(max_length=100, verbose_name='Отдел', unique=True)
 
     def __str__(self):
         return self.name

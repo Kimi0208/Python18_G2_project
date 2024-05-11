@@ -3,7 +3,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from secretarial_work_app.forms import CompaniesListForm, ContractsForm, InMailsForm, OutMailsForm
 from secretarial_work_app.models import CompaniesList, ContractRegistry, InMails, OutMails, Attachment
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView
 
 
 class CompanyCreateView(PermissionRequiredMixin, CreateView):
