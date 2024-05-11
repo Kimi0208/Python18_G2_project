@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
@@ -111,6 +112,7 @@ def get_files_history(task_pk):
         author = get_user_initials(file_history.history_user)
         history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
                          author, file_history.file)]
+
         files_history_list.append(history_info)
     return files_history_list
 
@@ -141,6 +143,7 @@ def get_subtask_history(task_pk):
     for subtask in subtasks:
         author = get_user_initials(subtask.author)
         history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), author,
+
                          subtask.title)]
         subtask_history_list.append(history_info)
     return subtask_history_list
@@ -276,7 +279,7 @@ def get_comments(task_pk, user_id):
     return comments_list
 
 
-class TaskView(DetailView):
+class TaskView(PermissionRequiredMixin, DetailView):
     model = Task
     permission_required = 'webapp.view_task'
 
@@ -325,7 +328,7 @@ class TaskView(DetailView):
         return JsonResponse({'task': task_data})
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(PermissionRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_create.html'
@@ -374,7 +377,7 @@ class TaskCreateView(CreateView):
         return JsonResponse(task_data)
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = 'task_proposal_edit.html'
@@ -382,6 +385,9 @@ class TaskUpdateView(UpdateView):
 
     def form_invalid(self, form):
         return JsonResponse({'errors': form.errors})
+
+    def has_permission(self):
+        return super().has_permission() and self.request.user == self.get_object().author
 
     def form_valid(self, form):
         self.object = form.save()
@@ -421,9 +427,10 @@ class TaskUpdateView(UpdateView):
         return JsonResponse(task_data)
 
 
-class TaskDeleteView(DeleteView):
+class TaskDeleteView(PermissionRequiredMixin, DeleteView):
     model = Task
     template_name = 'task_proposal_delete.html'
+    permission_required = 'webapp.delete_task'
 
     def get_success_url(self):
         return reverse('webapp:index')
@@ -488,10 +495,11 @@ def add_subtasks(request, checklist_pk, task_pk):
     return JsonResponse({'subtasks': subtasks})
 
 
-class FileAddView(CreateView):
+class FileAddView(PermissionRequiredMixin, CreateView):
     model = File
     form_class = FileForm
     template_name = 'file_add.html'
+    permission_required = 'webapp.add_file'
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -506,9 +514,10 @@ class FileAddView(CreateView):
         return JsonResponse({'file': None})
 
 
-class FileDeleteView(DeleteView):
+class FileDeleteView(PermissionRequiredMixin, DeleteView):
     model = File
     template_name = 'partial/file_delete.html'
+    permission_required = 'webapp.delete_file'
 
     def form_valid(self, form):
         file_id = self.object.id
