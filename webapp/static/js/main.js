@@ -39,7 +39,7 @@ async function onClick(e) {
     let modal = document.getElementById('action-task-modal_window')
     modal.innerHTML = datar
     modal.style.display = 'block'
-    let form = document.getElementById('test_form');
+    let form = document.getElementById('form_for_action');
     $(document).ready(function () {
         $(form.elements['destination_to_user']).select2();
         $(form.elements['destination_to_department']).select2();

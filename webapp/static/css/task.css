@@ -1,21 +1,21 @@
-#test_form {
+#form_for_action {
     margin-top: 20px;
 }
 
-#test_form label {
+#form_for_action label {
     display: block;
     margin-bottom: 8px;
 }
 
-#test_form input,
-#test_form select {
+#form_for_action input,
+#form_for_action select {
     width: 100%;
     padding: 8px;
     margin-bottom: 12px;
     box-sizing: border-box;
 }
 
-#test_form button {
+#form_for_action button {
     padding: 10px 15px;
 }
 
