@@ -25,6 +25,12 @@ class Task(models.Model):
     type = models.ForeignKey('Type', on_delete=models.DO_NOTHING, verbose_name='Тип')
     history = HistoricalRecords()
 
+    class Meta:
+        permissions = [
+            ("chief_department_edit_tasks", "Могут редактировать все задачи своего отдела"),
+            ("ordinary_employee_edit_tasks", "Могут редактировать только свои задачи"),
+        ]
+
     def clean(self):
         if self.deadline and self.deadline < timezone.now():
             raise ValidationError('Нельзя установить дедлайн раньше текущей даты и времени.')

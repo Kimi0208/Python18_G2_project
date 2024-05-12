@@ -11,17 +11,17 @@ class MyUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = DefUser
         fields = (
-            'username', 'password1', 'password2', 'first_name', 'last_name', 'patronymic', 'email', 'email_password', 'phone_number')
+            'username', 'password1', 'password2', 'first_name', 'last_name', 'patronymic', 'email', 'phone_number')
         labels = {'username': 'Логин', 'first_name': 'Имя', 'last_name': 'Фамилия', 'patronymic': 'Отчество', 'email': 'Email',
-                  'phone_number': 'Номер телефона', 'email_password': 'Пароль от почтового ящика'}
+                  'phone_number': 'Номер телефона'}
 
 
 class UserChangeForm(forms.ModelForm):
     class Meta:
         model = DefUser
-        fields = ['first_name', 'last_name', 'patronymic', 'email', 'email_password', 'phone_number']
+        fields = ['first_name', 'last_name', 'patronymic', 'email', 'phone_number']
         labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'patronymic': 'Отчество', 'email': 'Email',
-                  'email_password': 'Пароль от почтового ящика', 'phone_number': 'Номер телефона'}
+                  'phone_number': 'Номер телефона'}
 
 
 class MyPasswordChangeForm(PasswordChangeForm):
@@ -42,13 +42,12 @@ class MyPasswordChangeForm(PasswordChangeForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = DefUser
-        fields = ('username', 'password', 'first_name', 'last_name', 'patronymic', 'email', 'email_password', 'position', 'phone_number')
+        fields = ('username', 'password', 'first_name', 'last_name', 'patronymic', 'email', 'position', 'phone_number')
     username = forms.CharField(max_length=50, required=True, label="Логин")
     password = forms.CharField(max_length=250, required=True, label="Пароль")
     first_name = forms.CharField(max_length=50, required=True, label="Имя")
     last_name = forms.CharField(max_length=50, required=True, label="Фамилия")
     patronymic = forms.CharField(max_length=50, label="Отчество", required=False)
-    email_password = forms.CharField(max_length=5000, required=False, label="Пароль от почтового ящика")
     email = forms.EmailField(required=True, label="Email", max_length=5000)
     phone_number = forms.CharField(required=True, label="Номер телефона")
     position = forms.ModelChoiceField(queryset=Position.objects.all(), label="Должность")

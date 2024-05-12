@@ -386,14 +386,13 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
         author
     ];
     let newTask = dataTable.row.add(data).draw().node();
-
-    if (newTask) {
-        newTask.classList.add('detail-btn_task');
-        newTask.dataset.detail_task = url;
-        newTask.style.cursor = 'pointer';
-        newTask.id = `task_id_${id}`;
-        newTask.addEventListener('click', onGetDetailTask)
-    }
+    let table = dataTable
+    table.on('click', 'tbody tr', function (e) {
+        let task_id = table.row(this).data()[0];
+        this.dataset.detail_task = `/task/${task_id}/`;
+        this.id = `task_id_${task_id}`
+        onGetDetailTask(e);
+    });
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'none'
     modal.innerHTML = ''
