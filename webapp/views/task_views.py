@@ -536,7 +536,7 @@ class FileDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 def check_new_task(request):
-    tasks = Task.objects.filter(destination_to_user=request.user, status_id=1)
+    tasks = Task.objects.filter(destination_to_user=request.user.id, status_id=1)
     if len(tasks) == 0:
         return JsonResponse({'task_count': 0})
     else:
