@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
@@ -40,7 +40,7 @@ def get_user_initials(user_object):
     return author
 
 
-class TaskListView(ListView):
+class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'tasks'

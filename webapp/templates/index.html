@@ -15,41 +15,44 @@
 {% endblock %}
 
 {% block content %}
-    <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;"
-         class="list-group" ; id="user_dep_list_area">
-        <table class="table table-hover" style="margin-bottom: 0px">
-            <thead>
-            <tr>
-                <th scope="col">Отделы и сотрудники</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for department in departments %}
+    {% if request.user.is_authenticated %}
+        <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;"
+             class="list-group" ; id="user_dep_list_area">
+            <table class="table table-hover" style="margin-bottom: 0px">
+                <thead>
                 <tr>
-                    <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}"
-                        data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk %}">{{ department.name }}</td>
+                    <th scope="col">Отделы и сотрудники</th>
                 </tr>
-            {% endfor %}
-            {% for user in users %}
-                <tr>
-                    {% if user.patronymic %}
-                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
-                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
-                            {{ user.first_name }} {{ user.patronymic }}</td>
-                    {% else %}
-                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
-                            data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
-                            {{ user.first_name }}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div id="main_area" style="width:60%">
-        {% include 'partial/tables.html' %}
-    </div>
+                </thead>
+                <tbody>
+                {% for department in departments %}
+                    <tr>
+                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}"
+                            data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk %}">{{ department.name }}</td>
+                    </tr>
+                {% endfor %}
+                {% for user in users %}
+                    <tr>
+                        {% if user.patronymic %}
+                            <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                                data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
+                                {{ user.first_name }} {{ user.patronymic }}</td>
+                        {% else %}
+                            <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                                data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
+                                {{ user.first_name }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+        <div id="main_area" style="width:60%">
+            {% include 'partial/tables.html' %}
+        </div>
+    {% endif %}
     {% if request.user.is_authenticated %}
         <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%; 
       padding-right: 0px">
