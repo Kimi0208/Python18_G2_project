@@ -39,7 +39,7 @@ async function onClick(e) {
     let modal = document.getElementById('action-task-modal_window')
     modal.innerHTML = datar
     modal.style.display = 'block'
-    let form = document.getElementById('test_form');
+    let form = document.getElementById('form_for_action');
     $(document).ready(function () {
         $(form.elements['destination_to_user']).select2();
         $(form.elements['destination_to_department']).select2();
@@ -348,14 +348,14 @@ async function onGetTasks(e) {
         await loadTasks(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author)
     }
 
-    table.on('click', 'tbody tr', function (e) {
+    table.draw()
+    table.off('click', 'tbody tr').on('click', 'tbody tr', function (e) {
+
         let task_id = table.row(this).data()[0];
         this.dataset.detail_task = `/task/${task_id}/`;
         this.id = `task_id_${task_id}`
         onGetDetailTask(e);
     });
-
-    dataTable.draw()
     hideLoadingProcess()
 }
 
@@ -386,14 +386,13 @@ async function addTask(id, title, type, created_at, status, priority, deadline, 
         author
     ];
     let newTask = dataTable.row.add(data).draw().node();
-
-    if (newTask) {
-        newTask.classList.add('detail-btn_task');
-        newTask.dataset.detail_task = url;
-        newTask.style.cursor = 'pointer';
-        newTask.id = `task_id_${id}`;
-        newTask.addEventListener('click', onGetDetailTask)
-    }
+    let table = dataTable
+    table.on('click', 'tbody tr', function (e) {
+        let task_id = table.row(this).data()[0];
+        this.dataset.detail_task = `/task/${task_id}/`;
+        this.id = `task_id_${task_id}`
+        onGetDetailTask(e);
+    });
     let modal = document.getElementById('action-task-modal_window');
     modal.style.display = 'none'
     modal.innerHTML = ''

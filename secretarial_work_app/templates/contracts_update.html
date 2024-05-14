@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Обновить запись{% endblock %}
 {% block content %}
-    <form id="test_form" method="post" enctype="multipart/form-data" style="margin-top: 20px">
+    <form id="form_for_action" method="post" enctype="multipart/form-data" style="margin-top: 20px">
         {% csrf_token %}
 
         {% for error in form.non_field_errors %}

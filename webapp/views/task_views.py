@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import reverse, get_object_or_404
 from webapp.forms import TaskForm, FileForm
@@ -40,7 +40,7 @@ def get_user_initials(user_object):
     return author
 
 
-class TaskListView(ListView):
+class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'index.html'
     context_object_name = 'tasks'
@@ -392,7 +392,12 @@ class TaskUpdateView(PermissionRequiredMixin, UpdateView):
         return JsonResponse({'errors': form.errors})
 
     def has_permission(self):
-        return super().has_permission() and self.request.user == self.get_object().author
+        task_author_department = Department.objects.filter(position=self.get_object().author.position).first()
+        request_user_department = Department.objects.filter(position=self.request.user.position).first()
+        return (super().has_permission() or self.request.user.has_perm('webapp.ordinary_employee_edit_tasks') and self.request.user == self.get_object().author or
+            self.request.user.has_perm('webapp.chief_department_edit_tasks') and task_author_department == request_user_department or
+                self.request.user == self.get_object().destination_to_user or
+                self.request.user.has_perm('webapp.chief_department_edit_tasks') and self.get_object().destination_to_department == request_user_department)
 
     def form_valid(self, form):
         self.object = form.save()
@@ -531,7 +536,7 @@ class FileDeleteView(PermissionRequiredMixin, DeleteView):
 
 
 def check_new_task(request):
-    tasks = Task.objects.filter(destination_to_user=request.user, status_id=1)
+    tasks = Task.objects.filter(destination_to_user=request.user.id, status_id=1)
     if len(tasks) == 0:
         return JsonResponse({'task_count': 0})
     else:
