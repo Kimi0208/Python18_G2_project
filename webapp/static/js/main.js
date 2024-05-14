@@ -348,14 +348,14 @@ async function onGetTasks(e) {
         await loadTasks(task.id, task.title, task.type, formatDate(task.created_at), task.status, task.priority, formatDate(task.deadline), task.author)
     }
 
-    table.on('click', 'tbody tr', function (e) {
+    table.draw()
+    table.off('click', 'tbody tr').on('click', 'tbody tr', function (e) {
+
         let task_id = table.row(this).data()[0];
         this.dataset.detail_task = `/task/${task_id}/`;
         this.id = `task_id_${task_id}`
         onGetDetailTask(e);
     });
-
-    dataTable.draw()
     hideLoadingProcess()
 }
 
