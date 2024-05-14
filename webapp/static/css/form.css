@@ -1,0 +1,35 @@
+label {
+    font-weight: bold;
+    padding-top: 10px;
+    margin-bottom: 0;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    box-sizing: border-box;
+}
+
+input[type="submit"] {
+    box-sizing: border-box;
+    background-color: #4CAF50;
+    min-width: 200px;
+    color: white;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.text-danger {
+    color: white;
+}
+
+.custom_form {
+    margin-left: 50px;
+    width: 400px;
+}

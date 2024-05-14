@@ -1,0 +1,82 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>№ Документа</th>
+                <th>Название компании</th>
+                <th>Номер входящего документа</th>
+                <th>Описание документа</th>
+                <th>Дата заключения договора</th>
+                <th>Ответственный сотрудник</th>
+                <th>Расположение договора</th>
+                <th>Вложение</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for contract  in contracts %}
+                <tr>
+                    <td>{{ contract.document_auto_number }}</td>
+                    <td>{{ contract.company.company_name }}</td>
+                    <td>{{ contract.input_contract_number }}</td>
+                    <td>{{ contract.description }}</td>
+                    <td>{{ contract.consultion_date }}</td>
+                    <td>{{ contract.responsible_employee }}</td>
+                    <td>{{ contract.contract_location }}</td>
+                    <td>
+                        {% if contract.attachments.all %}
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        style="padding: 0; border: none; font-size: 14px">
+                                    {{ contract.attachments.all.count }}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"
+                                     style="max-height: 200px; overflow-y: auto;">
+                                    {% for attachment in contract.attachments.all %}
+                                        <a class="dropdown-item" href="{{ attachment.file.url }}"
+                                           download>{{ attachment | cut:'uploads/contracts/' }}</a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <span>Нет вложений</span>
+                        {% endif %}
+                    <td>
+                        <a href="{% url 'secretary:contracts_update_view' pk=contract.pk %}"><i
+                                class="fas fa-fw fa-edit"></i></a>
+
+                        <i class="fas fa-fw fa-trash-alt" type="button" data-toggle="modal"
+                           data-target="#contractDeleteModal{{ contract.pk }}" style="color: #4e73df"></i>
+                        <div class="modal fade" id="contractDeleteModal{{ contract.pk }}" tabindex="-1"
+                             aria-labelledby="contractDeleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="contractDeleteModalLabel{{ contract.pk }}">
+                                            Подтвердите действие</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Вы уверены что хотите удалить контракт?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть
+                                        </button>
+                                        <a href="{% url 'secretary:contracts_delete_view' pk=contract.pk %}">
+                                            <button type="button" class="btn btn-danger">Да</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

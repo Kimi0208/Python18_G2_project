@@ -1,0 +1,171 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block links %}
+    {% if request.user.is_authenticated %}
+        {% if perms.webapp.add_task %}
+            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm action-btn_task"
+                    data-action_task="{% url 'webapp:create_task' %}">
+                <i class="fa-solid fa-plus"></i> Создать задачу
+            </button>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        <div style="width: 15%; border-right: 1px solid #e3e6f0; overflow-x: auto; white-space: nowrap; border-radius: 0; overflow-y: auto; font-size: 14px; border-bottom: 1px solid #e3e6f0;"
+             class="list-group" ; id="user_dep_list_area">
+            <table class="table table-hover" style="margin-bottom: 0px">
+                <thead>
+                <tr>
+                    <th scope="col">Отделы и сотрудники</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for department in departments %}
+                    <tr>
+                        <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ department.name }}"
+                            data-get_tasks="{% url 'webapp:department_tasks' pk=department.pk %}">{{ department.name }}</td>
+                    </tr>
+                {% endfor %}
+                {% for user in users %}
+                    <tr>
+                        {% if user.patronymic %}
+                            <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                                data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
+                                {{ user.first_name }} {{ user.patronymic }}</td>
+                        {% else %}
+                            <td style="cursor: pointer" class="get-tasks_btn" data-whose_table="{{ user.username }}"
+                                data-get_tasks="{% url 'webapp:user_tasks' pk=user.pk %}">{{ user.last_name }}
+                                {{ user.first_name }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+        <div id="main_area" style="width:60%">
+            {% include 'partial/tables.html' %}
+        </div>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+        <div class="card-body" id="task-detail-info" style="border-left: solid 1px #e3e6f0;  font-size: 14px; width: 25%; 
+      padding-right: 0px">
+            <div style="display: flex; justify-content: space-between;" class="bg-primary">
+                <button class="action-btn_task btn btn-primary btn-sm" data-action_task="" id="task_edit">Редактировать
+                </button>
+                <button class="get-info-btn_task btn btn-primary btn-sm" data-get_info_task="" id="task_files">Файлы
+                </button>
+                <button class="btn btn-primary btn-sm" data-get_history_task="" id="task_history">История</button>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Добавить
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% if perms.webapp.add_task %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="add_subtask">Подзадачу
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_file %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="add_file">Файл
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_comment %}
+                            <button class="dropdown-item action-btn_task" data-action_task="" id="comment_add">
+                                Комментарий
+                            </button>
+                        {% endif %}
+                        {% if perms.webapp.add_checklist %}
+                            <div class="dropleft" id="checklist_dropdown">
+                                <button class="dropdown-item dropdown-toggle" type="button"
+                                        id="checklist_dropdown_button"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    Чеклист
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="checklist_dropdown_button">
+                                    {% for checklist in checklists %}
+                                        {% if request.user.signature %}
+                                            <button class="dropdown-item add_checklist_btn"
+                                                    data-checklist_id="{{ checklist.pk }}"
+                                                    data-add_checklist="">{{ checklist.name }}</button>
+                                        {% else %}
+                                            <button class="dropdown-item add_checklist_btn" disabled
+                                                    data-checklist_id="{{ checklist.pk }}"
+                                                    data-add_checklist="">{{ checklist.name }}</button>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="card-title" style="word-wrap: break-word" id="task_title"></h4>
+            <p class="card-text" id="task_type"></p>
+            <p class="card-text" id="task_created_at"></p>
+            <p class="card-text" id="task_start_date"></p>
+            <p class="card-text" id="task_status"></p>
+            <p class="card-text" id="task_priority"></p>
+            <p class="card-text" id="task_updated_at"></p>
+            <p class="card-text" id="task_done_at"></p>
+            <p class="card-text" id="task_deadline"></p>
+            <p class="card-text" id="task_author"></p>
+            <div id="description_field">
+                <h4 id="description_field_header" style="background: antiquewhite; word-wrap: break-word">Описание</h4>
+                <div id="description_info">
+                    <span id="task_description"></span>
+                </div>
+            </div>
+            <div id="parent_field">
+                <h4 id="parent_field_header" style="background: antiquewhite">Относится к</h4>
+                <div id="parent_info">
+                </div>
+            </div>
+            <div id="subtasks_field">
+                <h4 id="subtasks_field_header" style="background: antiquewhite">Подзадачи</h4>
+                <div id="subtasks_info">
+                </div>
+            </div>
+            <div id="comments_field">
+                <h4 id="comments_field_header" style="background: antiquewhite">Комментарии</h4>
+                <div id="comments_info">
+                </div>
+            </div>
+        </div>
+
+        <div id="action-task-modal_window" class="modal action_task_modal"></div>
+        <div id="overlay" class="overlay">
+            <div class="loader"></div>
+        </div>
+        <!--         <div id="detail-task-modal_window" class="modal action_task_modal"></div> -->
+
+    {% endif %}
+
+{% endblock %}
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let checklistDropdown = document.getElementById('checklist_dropdown');
+            let checklistDropdownMenu = checklistDropdown.querySelector('.dropdown-menu');
+
+            let checklistDropdownButton = document.getElementById('checklist_dropdown_button');
+
+            checklistDropdownButton.addEventListener('click', function (event) {
+                checklistDropdownMenu.classList.toggle('show');
+                event.stopPropagation();
+            });
+            document.addEventListener('click', function (event) {
+                if (!checklistDropdown.contains(event.target)) {
+                    checklistDropdownMenu.classList.remove('show');
+                }
+            });
+        });
+    </script>
+{% endblock %}

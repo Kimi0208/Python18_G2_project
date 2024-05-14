@@ -1,0 +1,17 @@
+.card {
+    width: 70%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title, .card-text {
+    margin-bottom: 5px;
+}
+
+.btn {
+    margin-right: 10px;
+}
+

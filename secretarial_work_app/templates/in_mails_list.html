@@ -1,0 +1,24 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+    Список входящих писем
+{% endblock %}
+
+{% block menu %}
+    <a class="nav-link" aria-current="page" href={% url 'webapp:index' %}>На главную</a>
+{% endblock %}
+{% block links %}
+    {% if request.user.is_authenticated %}
+            <a href="{% url 'secretary:in_mails_create_view' %}"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                <i class="fa-solid fa-plus"></i>
+                Добавить входящее письмо
+            </a>
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div id="main_area" style="overflow-x:auto; ">
+            {% include 'partial/in_mails_table.html' %}
+    </div>
+{% endblock %}

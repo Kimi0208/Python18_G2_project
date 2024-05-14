@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+
+
+  web:
+    build: .
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    ports:
+      - 6379:6379
+
+  celery:
+    build: .
+    command: celery -A crm worker -B -l info
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    depends_on:
+      - db

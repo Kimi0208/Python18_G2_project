@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}Добавить пользователя{% endblock %}
+
+{% block content %}
+
+    <form id="form_for_action" method="post" enctype="multipart/form-data"  style="margin-top: 20px">
+        {% include 'partial/form.html' with button_text='Добавить'%}
+    </form>
+
+{% endblock %}

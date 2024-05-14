@@ -1,0 +1,79 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="DataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>Исходящий № документа</th>
+                <th>Дата регистрации</th>
+                <th>Кому адресован документ</th>
+                <th>Краткое содержание</th>
+                <th>Кол-во страниц</th>
+                <th>Какой входящий № документ исполнения</th>
+                <th>ФИО исполнителя/подписавший документ</th>
+                <th>Статус</th>
+                <th>Комментарии</th>
+                <th>Вложение</th>
+            </tr>
+            </thead>
+            <tbody id="table_body">
+            {% for out_mail in out_mails %}
+                <tr>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton{{ out_mail.pk }}"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    style="padding: 0; border: none; font-size: 14px">
+                                {{ out_mail.out_mail_number }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ out_mail.pk }}">
+                                <a class="dropdown-item"
+                                   href="{% url 'secretary:out_mails_update_view' pk=out_mail.pk %}">Изменить</a>
+                                <span class="dropdown-item" type="button" data-toggle="modal"
+                                      data-target="#outMailDeleteModal{{ out_mail.pk }}">Удалить</span>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="outMailDeleteModal{{ out_mail.pk }}" tabindex="-1"
+                             aria-labelledby="outMailDeleteModalLabel{{ out_mail.pk }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="outMailDeleteModalLabel{{ out_mail.pk }}">
+                                            Подтвердите действие</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Вы уверены что хотите удалить исходящее письмо?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть
+                                        </button>
+                                        <a href="{% url 'secretary:out_mails_delete_view' pk=out_mail.pk %}">
+                                            <button type="button" class="btn btn-danger">Да</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ out_mail.registration_date }}</td>
+                    <td>{{ out_mail.receiver }}</td>
+                    <td>{{ out_mail.description }}</td>
+                    <td>{{ out_mail.pages_count }}</td>
+                    <td>{{ out_mail.input_mail_number }}</td>
+                    <td>{{ out_mail.responsible_person }}</td>
+                    <td>{{ out_mail.status }}</td>
+                    <td>{{ out_mail.comments }}</td>
+                    <td>{% if out_mail.attachment %}
+                        <a href={{ out_mail.attachment.url }} download>{{ out_mail.attachment | cut:'uploads/out_mails/' }}</a>
+                    {% else %}
+                        <span>Нет вложений</span>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

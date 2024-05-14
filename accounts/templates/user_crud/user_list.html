@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+    Cписок пользователей
+{% endblock %}
+{% block links %}
+    {% if request.user.is_superuser or request.user.is_staff %}
+        <a href="{% url 'accounts:add_user' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fa-solid fa-plus"></i>
+            Добавить пользователя
+        </a>
+    {% endif %}
+{% endblock %}
+{% block menu %}
+{% endblock %}
+
+{% block content %}
+    <div id="main_area">
+         {% include 'partial/tables_users.html' %}
+    </div>
+
+    <div id="action-task-modal_window" class="modal">
+
+    </div>
+
+{% endblock %}
+{% block scripts %}
+{% endblock %}
