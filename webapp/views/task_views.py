@@ -12,6 +12,7 @@ from django.db.models import ForeignKey
 from accounts.models import DefUser, Department
 from docx import Document
 from docx.shared import Inches
+from pytz import timezone
 
 
 def get_user_info(user_object):
@@ -110,7 +111,7 @@ def get_files_history(task_pk):
         elif file_history.history_type == "-":
             action = "Удален файл:"
         author = get_user_initials(file_history.history_user)
-        history_info = [(action, file_history.history_date.strftime("%d-%m-%Y %H:%M"),
+        history_info = [(action, file_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
                          author, file_history.file)]
 
         files_history_list.append(history_info)
@@ -132,7 +133,8 @@ def get_comments_history(task_pk):
             action = f"Удален комментарий: {comment_history.description}"
         author = get_user_initials(comment_history.history_user)
         history_info = [
-            (action, comment_history.history_date.strftime("%d-%m-%Y %H:%M"), author)]
+            (action, comment_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+             author)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -142,7 +144,8 @@ def get_subtask_history(task_pk):
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
         author = get_user_initials(subtask.author)
-        history_info = [('Создана подзадача', subtask.created_at.strftime("%d-%m-%Y %H:%M"), author,
+        history_info = [('Создана подзадача', subtask.created_at.astimezone(timezone('Asia/Bishkek')).
+                         strftime("%d-%m-%Y %H:%M"), author,
 
                          subtask.title)]
         subtask_history_list.append(history_info)
@@ -157,16 +160,16 @@ def get_history_task(request, task_pk):
         current_record = task_history[i]
         previous_record = task_history[i - 1]
         delta = current_record.diff_against(previous_record)
-        change_date = current_record.history_date.strftime("%d-%m-%Y %H:%M")
+        change_date = current_record.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M")
         change_user = current_record.history_user
         changes = []
         for change in delta.changes:
             verbose_name = current_record._meta.get_field(change.field).verbose_name
             field = current_record._meta.get_field(change.field)
             if type(change.old) == datetime:
-                change.old = change.old.strftime("%d-%m-%Y %H:%M")
+                change.old = change.old.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M")
             if type(change.new) == datetime:
-                change.new = change.new.strftime("%d-%m-%Y %H:%M")
+                change.new = change.new.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M")
             old, new = check_is_foreign_key(field, change.old, change.new)
             change_author = get_user_initials(change_user)
             change_info = (verbose_name, change_date, change_author, str(old), str(new))
@@ -176,7 +179,8 @@ def get_history_task(request, task_pk):
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
     task_author = get_user_initials(task.author)
-    create_record = [('Создана задача', task.created_at.strftime("%d-%m-%Y %H:%M"), task_author, task.title)]
+    create_record = [('Создана задача', task.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+                      task_author, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
