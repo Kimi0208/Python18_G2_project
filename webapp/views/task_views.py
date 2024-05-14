@@ -37,7 +37,10 @@ def get_user_initials(user_object):
         author = (f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}. '
                   f'{user_object.patronymic[0].capitalize()}.')
     else:
-        author = f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}.'
+        first_name = user_object.first_name
+        if first_name:
+            first_name = user_object.first_name[0].capitalize()
+        author = f'{user_object.last_name.capitalize()} {first_name}.'
     return author
 
 
@@ -133,7 +136,8 @@ def get_comments_history(task_pk):
             action = f"Удален комментарий: {comment_history.description}"
         author = get_user_initials(comment_history.history_user)
         history_info = [
-            (action, comment_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), author)]
+            (action, comment_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+             author)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -143,9 +147,9 @@ def get_subtask_history(task_pk):
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
         author = get_user_initials(subtask.author)
-        history_info = [('Создана подзадача', subtask.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), author,
-
-                         subtask.title)]
+        history_info = [('Создана подзадача', subtask.created_at.astimezone(timezone('Asia/Bishkek')).
+                         strftime("%d-%m-%Y %H:%M"), author, subtask.title)]
+                  
         subtask_history_list.append(history_info)
     return subtask_history_list
 
@@ -177,7 +181,8 @@ def get_history_task(request, task_pk):
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
     task_author = get_user_initials(task.author)
-    create_record = [('Создана задача', task.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), task_author, task.title)]
+    create_record = [('Создана задача', task.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+                      task_author, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
@@ -455,11 +460,11 @@ def add_subtasks(request, checklist_pk, task_pk):
     description = f'Необходима подпись документа в задаче #{task_pk}'
     status = Status.objects.get(pk=1)
     priority = Priority.objects.get(pk=1)
-    type = Type.objects.get(pk=1)
+    type_task = Type.objects.get(pk=1)
     for user in users:
         task = Task.objects.create(author=main_task.author, title=title, description=description, status=status,
                                    priority=priority,
-                                   type=type, destination_to_user=user, parent_task=main_task)
+                                   type=type_task, destination_to_user=user, parent_task=main_task)
         subject = f'CRM: Новая подзадача #{task.id}  {task.title}'
         message = task.description
         try:
@@ -534,6 +539,9 @@ class FileDeleteView(PermissionRequiredMixin, DeleteView):
         file_id = self.object.id
         self.object.delete()
         return JsonResponse({'file_id': file_id})
+
+    def get_success_url(self):
+        return reverse('webapp:index')
 
 
 def check_new_task(request):

@@ -15,7 +15,7 @@
             </thead>
             <tbody id="table_body" data-whose_table="{{ request.user.username }}">
             {% for task in tasks %}
-                <tr style="cursor: pointer" class="detail-btn_task"
+                <tr data-type="task" style="cursor: pointer" class="detail-btn_task"
                     data-detail_task="{% url 'webapp:task_proposal_view' pk=task.pk %}" id="task_id_{{ task.pk }}">
                     <td>{{ task.id }}</td>
                     <td>{{ task.title }}</td>

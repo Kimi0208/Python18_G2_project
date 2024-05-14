@@ -881,7 +881,7 @@
 
     var nodesFound = _objectSpread({}, scriptsToTest, cssToTest);
 
-    var testCount = Object.keys(scriptsToTest).length + Object.keys(cssToTest).length; // The resultsCollectionMaxWait allows for the time between when the tests running under
+    var testCount = Object.keys(scriptsToTest).length + Object.keys(cssToTest).length; // The resultsCollectionMaxWait allows for the time between when the tests_accounts running under
     // child iframes call postMessage with their results, and when the parent window
     // receives and handles those events with window.onmessage.
     // Making it configurable allows us to test the scenario where this timeout is exceeded.
