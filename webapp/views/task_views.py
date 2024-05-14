@@ -136,7 +136,8 @@ def get_comments_history(task_pk):
             action = f"Удален комментарий: {comment_history.description}"
         author = get_user_initials(comment_history.history_user)
         history_info = [
-            (action, comment_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), author)]
+            (action, comment_history.history_date.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+             author)]
         comments_history_list.append(history_info)
     return comments_history_list
 
@@ -146,9 +147,9 @@ def get_subtask_history(task_pk):
     subtasks = Task.objects.filter(parent_task_id=task_pk)
     for subtask in subtasks:
         author = get_user_initials(subtask.author)
-        history_info = [('Создана подзадача', subtask.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), author,
-
-                         subtask.title)]
+        history_info = [('Создана подзадача', subtask.created_at.astimezone(timezone('Asia/Bishkek')).
+                         strftime("%d-%m-%Y %H:%M"), author, subtask.title)]
+                  
         subtask_history_list.append(history_info)
     return subtask_history_list
 
@@ -180,7 +181,8 @@ def get_history_task(request, task_pk):
     history_list.extend(get_comments_history(task_pk))
     history_list.extend(get_subtask_history(task_pk))
     task_author = get_user_initials(task.author)
-    create_record = [('Создана задача', task.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"), task_author, task.title)]
+    create_record = [('Создана задача', task.created_at.astimezone(timezone('Asia/Bishkek')).strftime("%d-%m-%Y %H:%M"),
+                      task_author, task.title)]
     history_list.extend([(create_record)])
     if history_list:
         sorted_history = sorted(history_list, key=lambda x: x[0][1], reverse=True)
