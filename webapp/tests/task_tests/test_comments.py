@@ -55,11 +55,11 @@ class CommentViewTest(TestCase):
         self.comment.refresh_from_db()
         self.assertEqual(self.comment.description, updated_description)
         self.assertEqual(response.json()["comment"]["description"], updated_description)
-        self.assertEqual(response.json()["comment"]["author_id"], self.user.id)
         self.assertEqual(response.json()["comment"]["task"], self.task.id)
         self.assertEqual(response.json()["comment"]["id"], self.comment.id)
-        self.assertEqual(response.json()["comment"]["author_first_name"], self.user.first_name)
-        self.assertEqual(response.json()["comment"]["author_last_name"], self.user.last_name)
+        self.assertEqual(response.json()["comment"]["author"]["id"], self.user.id)
+        self.assertEqual(response.json()["comment"]["author"]["first_name"], self.user.first_name)
+        self.assertEqual(response.json()["comment"]["author"]["last_name"], self.user.last_name)
 
     def test_comment_delete_view(self):
         url = reverse('webapp:comment_delete', kwargs={'pk': self.comment.pk})

@@ -21,7 +21,9 @@ class PositionFactory(DjangoModelFactory):
 class DefUserFactory(DjangoModelFactory):
     username = factory.Sequence(lambda n: f"User1 {n}")
     first_name = factory.Sequence(lambda n: f"DefUser {n}")
+    last_name = factory.Sequence(lambda n: f"DefUser {n}")
     position = factory.SubFactory(PositionFactory)
+    signature = factory.django.ImageField(filename='signature.jpg')
 
     class Meta:
         model = DefUser

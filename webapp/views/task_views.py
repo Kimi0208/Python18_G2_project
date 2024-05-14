@@ -37,7 +37,10 @@ def get_user_initials(user_object):
         author = (f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}. '
                   f'{user_object.patronymic[0].capitalize()}.')
     else:
-        author = f'{user_object.last_name.capitalize()} {user_object.first_name[0].capitalize()}.'
+        first_name = user_object.first_name
+        if first_name:
+            first_name = user_object.first_name[0].capitalize()
+        author = f'{user_object.last_name.capitalize()} {first_name}.'
     return author
 
 

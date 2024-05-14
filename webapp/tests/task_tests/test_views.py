@@ -134,7 +134,7 @@ class TaskViewsTest(TestCase):
 
 # class AddSubtasksTestCase(TestCase):
 #     def setUp(self):
-#         user, created = DefUser.objects.get_or_create(username='user')
+#         user = DefUserFactory(username="user2")
 #         user.is_superuser = True
 #         user.set_password('user')
 #         user.save()
@@ -145,10 +145,10 @@ class TaskViewsTest(TestCase):
 #
 #     @mock.patch("webapp.views.task_views.send_email_notification", return_value='ok')
 #     def test_add_subtasks(self, mock_function):
-#         self.client.login(username='user', password='user')
-#         # task_status = StatusFactory()
-#         # task_priority = PriorityFactory()
-#         # task_type = TypeFactory()
+#         self.client.login(username='user2', password='user')
+#         task_status = StatusFactory(id=1)
+#         task_priority = PriorityFactory(pk=1)
+#         task_type = TypeFactory(pk=1)
 #         url = reverse('webapp:add_subtasks', kwargs={'task_pk': self.main_task.pk, 'checklist_pk': self.checklist.pk})
 #         response = self.client.get(url)
 #         self.assertEqual(response.status_code, 200)
