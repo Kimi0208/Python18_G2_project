@@ -816,7 +816,7 @@ let dataTable;
 function onLoad() {
     setInterval(async function () {
         await onGetNewTask()
-    }, 5000);
+    }, 900000);
 
     $(document).ready(function() {
           dataTable = $('#TaskDataTable').DataTable({
